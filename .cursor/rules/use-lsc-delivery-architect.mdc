@@ -1,0 +1,59 @@
+---
+description: Always use the LSC Delivery Architect skill for LSC solution plans, prototypes, and user stories
+alwaysApply: true
+---
+
+# Always use the LSC Delivery Architect for LSC work
+
+Whenever the user asks to **create, write, draft, plan, refactor, break down,
+migrate, or prototype** a solution, user story, requirement, build spec,
+technical specification, epic, or product-owner-facing mockup for **Salesforce
+Life Sciences Cloud (LSC)**, you MUST first read and follow the skill at
+`.cursor/skills/lsc-delivery-architect/SKILL.md` (the "LSC Delivery Architect",
+formerly the "LSC User Story Solution Architect" through v1.7), and author the
+output using its contract.
+
+## Triggers (non-exhaustive)
+
+- "create/write/draft a user story", "story for …", "US-…", "acceptance criteria"
+- "break down this into stories", "epic", "decompose the spec"
+- "refactor story", "bug fix story", "build spec", "implementation plan"
+- **Plan + Prototype (no stories yet):** "plan and prototype", "plan + prototype",
+  "plan only", "just a plan", "solution plan", "prototype only", "prototype first",
+  "no stories yet", "not ready for stories"
+- **Salesforce-grounded HTML prototype**, "clickable prototype", "clickable mockup",
+  "PO mockup", "walkthrough for the product owner"
+- **LSC-specific:** Visits/Calls, Sample Management, Product Item & Production
+  Batch inventory, Territory & Cycle Plans, Action Launcher, Assessments, Medical
+  Inquiry, Consent, KOL/DOL, **SAP Concur expense integration** (visit & event
+  expenses, expense reports, estimated allocation, MuleSoft expense sync), and
+  **Veeva CRM → Salesforce LSC migration**.
+
+## Non-negotiables from the skill (hard blockers)
+
+- **Concrete business persona** — never "user"/"business user"/"developer". Use the
+  LSC role (e.g., Field Sales Representative, Medical Science Liaison (MSL), Key
+  Account Manager (KAM), Event Organizer, LSC Admin, Market Access analyst). HCPs
+  are the subject of the interaction, not the login persona.
+- **Given / When / Then in business language** (Pattern A) for behavioural ACs — no
+  Apex class names, IP versions/step numbers, SOQL, or API field names inside the AC.
+  *(Skipped only in Plan + Prototype mode, which produces no ACs.)*
+- **`## Technical Implementation (high-level)`** section after the ACs (all
+  implementation detail lives here, not in the ACs).
+- **Pattern E per-object field spec** on every "records created/updated" outcome —
+  every field enumerated, no "etc.".
+- **Declarative-first build-technology decision** (RULE 7a) — prefer OOTB Lightning
+  + Dynamic Actions / Screen Flow / Field Sets before OmniScript; OmniStudio is
+  one option, not the default.
+- **Grounded HTML prototype rule (§6.7)** — a PO prototype MUST label every element
+  with its Salesforce component (OOTB / Config / Flow / LWC / OmniScript / Apex /
+  Ext). An unlabelled generic web mockup is not acceptable.
+- **Never hallucinate component names** — verify custom components via
+  `code-review-graph` and standard LSC objects/fields via `salesforce-docs` first,
+  and scan `requirements/` for overlapping stories.
+- Include the required sections in canonical order and an **Estimated Effort** table.
+
+## If the MCP is available
+
+If an LSC Delivery Architect MCP server is connected, you may use it. If it is
+unavailable, fall back to the skill file above — do not skip the Architect contract.
