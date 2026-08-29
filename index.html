@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>LSC Delivery Architect | Working reference for Life Sciences Cloud solution architects</title>
-<meta name="description" content="A desk reference for the LSC Delivery Architect Cursor skill: route your intake to the right mode, know the artifact contract you are accountable for, look up the Veeva and LSC object maps, and repair output that misses a blocker." />
+<title>LSC Delivery Architect | An architect's guide to prototype-first Life Sciences Cloud delivery</title>
+<meta name="description" content="An architect's walkthrough of the LSC Delivery Architect Cursor skill: what it is, how it routes, how to install and verify it in fifteen minutes, and how to share it with a team." />
 <style>
   :root{
     --bg:#f7f9fc;
@@ -16,7 +16,6 @@
     --accent:#2b83ff;
     --accent2:#00b388;
     --amber:#e8a33d;
-    --red:#d1435b;
     --shadow:0 10px 30px rgba(18,38,63,.08);
   }
   *{box-sizing:border-box}
@@ -28,30 +27,55 @@
     background:linear-gradient(180deg, #fff 0%, var(--bg) 100%);
   }
   .topbar{
-    position:sticky; top:0; z-index:50;
-    display:flex; align-items:center; justify-content:space-between; gap:20px;
-    padding:16px 28px 12px;
+    position:sticky;
+    top:0;
+    z-index:50;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+    padding:18px 40px 14px;
     background:rgba(255,255,255,.94);
     backdrop-filter: blur(10px);
     border-bottom:1px solid var(--line);
   }
-  .brand{display:flex;align-items:center;gap:11px;flex:0 0 auto}
-  .brand img{display:block;width:96px;height:auto;object-fit:contain}
+  .brand{display:flex;align-items:center;gap:12px;min-width:250px}
+  .brand img{display:block;width:112px;height:auto;object-fit:contain}
   .brand-copy{display:flex;flex-direction:column;line-height:1.15}
-  .brand-copy .title{font-size:11.5px;text-transform:uppercase;letter-spacing:.14em;font-weight:700;color:#344054;white-space:nowrap}
-  .brand-copy .sub{margin-top:3px;font-size:11.5px;color:var(--muted);letter-spacing:.03em;white-space:nowrap}
+  .brand-copy .title{font-size:12px;text-transform:uppercase;letter-spacing:.16em;font-weight:700;color:#344054}
+  .brand-copy .sub{margin-top:3px;font-size:12px;color:var(--muted);letter-spacing:.04em}
 
-  .tabs{display:flex;gap:17px;align-items:center;color:#475467;font-size:12.5px;flex-wrap:wrap;justify-content:flex-end}
+  .tabs{
+    display:flex;
+    gap:24px;
+    align-items:center;
+    color:#475467;
+    font-size:13.5px;
+    flex-wrap:wrap;
+  }
   .tabs button{
-    appearance:none;border:none;background:none;padding:0 0 10px;cursor:pointer;
-    color:inherit;font:inherit;font-weight:600;letter-spacing:.02em;
-    position:relative;white-space:nowrap;opacity:.65;
+    appearance:none;
+    border:none;
+    background:none;
+    padding:0 0 10px;
+    cursor:pointer;
+    color:inherit;
+    font:inherit;
+    font-weight:600;
+    letter-spacing:.02em;
+    position:relative;
+    white-space:nowrap;
+    opacity:.65;
   }
   .tabs button:hover{opacity:.9}
   .tabs button.active{color:var(--accent);opacity:1}
   .tabs button.active::after{
-    content:"";position:absolute;left:0;right:0;bottom:-15px;
-    height:2px;border-radius:999px;background:var(--accent);
+    content:"";
+    position:absolute;
+    left:0; right:0; bottom:-15px;
+    height:2px;
+    border-radius:999px;
+    background:var(--accent);
   }
 
   .wrap{max-width:1080px;margin:0 auto;padding:32px 24px 40px}
@@ -66,27 +90,252 @@
   .doc-footer a{color:var(--accent);text-decoration:none;font-weight:600}
   .doc-footer a:hover{text-decoration:underline}
 
-  .xlabel{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:16px}
-  .xhead{font-size:40px;font-weight:300;line-height:1.18;letter-spacing:-.01em;color:#1d2939;margin:0 0 22px;max-width:880px}
-  .xsub{font-size:17px;line-height:1.62;color:var(--muted);max-width:780px;margin:0 0 8px}
+  .time-chip{
+    display:inline-flex;align-items:center;gap:6px;
+    font-size:11.5px;font-weight:600;letter-spacing:.04em;color:#5f6b7f;
+    background:var(--panel2);border:1px solid var(--line);border-radius:999px;
+    padding:4px 12px;margin-bottom:18px;
+  }
+  .time-chip::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent2)}
+
+  .xlabel{
+    display:inline-block;font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--accent);margin-bottom:16px;
+  }
+  .xhead{
+    font-size:42px;font-weight:300;line-height:1.18;letter-spacing:-.01em;color:#1d2939;
+    margin:0 0 22px;max-width:880px;
+  }
+  .xsub{font-size:17.5px;line-height:1.62;color:var(--muted);max-width:760px;margin:0 0 8px}
   .xsub strong{color:#1d2939;font-weight:600}
-  .xsub code{font-size:14.5px;background:#eef2f7;padding:2px 7px;border-radius:5px;color:#344054}
+  .xsub code{font-size:15px;background:#eef2f7;padding:2px 7px;border-radius:5px;color:#344054}
 
-  .divider-sm{width:44px;height:3px;border-radius:999px;background:linear-gradient(90deg, var(--accent), var(--accent2));margin:26px 0 30px}
+  .divider-sm{width:44px;height:3px;border-radius:999px;background:linear-gradient(90deg, var(--accent), var(--accent2));margin:28px 0 32px}
+  .act-divider{border-top:1px solid var(--line);margin:60px 0 40px}
 
-  .sec{margin-bottom:52px}
-  .sec:last-child{margin-bottom:0}
-  .sec-kicker{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
-  .sec-title{font-size:22px;font-weight:600;color:#1d2939;margin:0 0 8px;letter-spacing:-.01em}
-  .sec-title code{font-size:19px;background:#eef2f7;padding:2px 8px;border-radius:6px}
-  .sec-desc{font-size:14.5px;color:var(--muted);line-height:1.65;margin:0 0 18px;max-width:800px}
-  .sec-desc code{font-size:13px;background:#eef2f7;padding:1px 6px;border-radius:4px;color:#475467}
-  .sec-desc strong{color:#1d2939;font-weight:600}
+  /* prev / next tab navigation */
+  .tab-nav{
+    display:flex;align-items:center;justify-content:space-between;gap:16px;
+    margin-top:56px;padding-top:24px;border-top:1px solid var(--line);
+  }
+  .tab-nav button{
+    appearance:none;cursor:pointer;font:inherit;font-size:13.5px;font-weight:600;
+    background:var(--panel);border:1px solid var(--line);border-radius:10px;
+    padding:11px 18px;color:#475467;
+  }
+  .tab-nav button:hover{border-color:var(--accent);color:var(--accent)}
+  .tab-nav button.next{background:var(--accent);border-color:var(--accent);color:#fff}
+  .tab-nav button.next:hover{background:#1b6fe0;color:#fff}
+  .tab-nav .spacer{flex:1}
 
-  .mini-header{margin-top:32px;margin-bottom:14px;font-size:13.5px;font-weight:700;letter-spacing:.03em;color:#344054}
-  .footnote{margin-top:18px;font-size:13px;color:#98a2b3;line-height:1.6}
+  .chain{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;margin-top:12px}
+  .chain-card{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:24px 22px 22px;overflow:hidden}
+  .chain-num{font-size:42px;font-weight:200;color:#eef1f6;position:absolute;top:8px;right:16px;line-height:1}
+  .chain-card h3{margin:0 0 8px;font-size:16px;font-weight:600;color:#1d2939;position:relative;z-index:1;padding-right:40px}
+  .chain-card p{margin:0;font-size:14px;line-height:1.6;color:#5f6b7f;position:relative;z-index:1}
+
+  .pull-example{margin-top:24px;padding:16px 20px;border-left:3px solid var(--accent2);background:#f6fdfb;border-radius:0 10px 10px 0}
+  .pull-example p{margin:0;font-size:15px;font-style:italic;line-height:1.6;color:#1d2939}
+  .pull-example .tag{display:block;font-size:11px;font-style:normal;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#00947a;margin-bottom:6px}
+
+  .two-col{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;margin-top:12px}
+  .two-col-card{background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--accent);border-radius:12px;padding:26px 24px}
+  .two-col-card h3{margin:0 0 10px;font-size:16px;font-weight:600;color:#1d2939}
+  .two-col-card p{margin:0;font-size:14.5px;line-height:1.65;color:#5f6b7f}
+  .two-col-card.avoid-card{border-top-color:var(--amber)}
+  .two-col-card.single-card{
+    position:relative;margin-top:12px;padding:28px 28px 26px 76px;
+    background:linear-gradient(135deg, #f4fbff 0%, #e6f6fd 100%);border:1px solid #bfe6f7;border-top:none;
+  }
+  .two-col-card.single-card::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;border-radius:12px 12px 0 0;background:linear-gradient(90deg,#7dd3fc,#38bdf8,#0ea5e9)}
+  .two-col-card.single-card .warm-icon{
+    position:absolute;top:26px;left:24px;width:36px;height:36px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;letter-spacing:.02em;
+    background:linear-gradient(135deg,#7dd3fc,#0ea5e9);box-shadow:0 6px 14px rgba(14,165,233,.35);
+  }
+  .two-col-card.single-card p{color:#2b5468}
+  .two-col-card.single-card p strong{color:#0c6a94}
+
+  .mini-header{margin-top:36px;margin-bottom:16px;font-size:14px;font-weight:700;letter-spacing:.03em;color:#344054}
+
+  .steps-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+  .steps-grid.four{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .step-mini{background:var(--panel2);border:1px solid #e3e9f3;border-radius:10px;padding:16px 16px 18px}
+  .step-badge{width:26px;height:26px;border-radius:50%;background:#eaf2ff;color:var(--accent);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+  .step-mini h4{margin:0 0 6px;font-size:14px;font-weight:600;color:#1d2939}
+  .step-mini p{margin:0;font-size:12.5px;line-height:1.55;color:#667085}
+  .step-mini code{font-size:11.5px;background:#e7edf7;padding:1px 5px;border-radius:4px;color:#344054;word-break:break-all}
+  .step-mini .fname{display:block;margin:0 0 8px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;color:#2b5fce;word-break:break-all}
+
+  .payoff{position:relative;margin-top:32px;border-top:1px solid var(--line);padding:26px 0 4px 46px}
+  .payoff::before{content:"\201C";position:absolute;top:6px;left:-4px;font-size:54px;font-family:Georgia,"Times New Roman",serif;font-weight:700;color:rgba(43,131,255,.22);line-height:1;pointer-events:none}
+  .payoff p{margin:0;font-size:18px;font-style:italic;font-family:Georgia,"Times New Roman",serif;line-height:1.6;letter-spacing:-.005em;color:#1d2939}
+
+  .closing-line{margin-top:22px;font-size:13.5px;color:var(--muted);font-style:italic}
+  .footnote{margin-top:20px;font-size:13px;color:#98a2b3;line-height:1.6}
   .footnote code{font-size:12px;background:#eef2f7;padding:1px 6px;border-radius:4px;color:#475467}
-  .footnote strong{color:#667085;font-weight:600}
+
+  .ex-block{margin-bottom:44px}
+  .ex-block:last-child{margin-bottom:0}
+  .ex-kicker{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+  .ex-title{font-size:22px;font-weight:600;color:#1d2939;margin:0 0 8px}
+  .ex-title code{font-size:19px;background:#eef2f7;padding:2px 8px;border-radius:6px}
+  .ex-desc{font-size:14.5px;color:var(--muted);line-height:1.6;margin:0 0 18px;max-width:760px}
+  .ex-desc code{font-size:13px;background:#eef2f7;padding:1px 6px;border-radius:4px;color:#475467}
+
+  .tree{padding:20px 22px;border-radius:12px;border:1px solid var(--line);background:#0b1220;overflow:auto}
+  .tree pre{margin:0;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;line-height:1.7;color:#d7e3f8}
+  .tree .muted-line{color:#5b6b8c}
+  .tree .hl{color:#7fd6ff}
+
+  /* copyable prompt / terminal block */
+  .cbox{position:relative;border:1px solid var(--line);border-radius:12px;background:var(--panel);overflow:hidden;margin-top:14px}
+  .cbox-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 10px 8px 14px;background:var(--panel2);border-bottom:1px solid var(--line)}
+  .cbox-kind{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .cbox.prompt .cbox-kind{color:#2b5fce}
+  .copy-btn{
+    appearance:none;cursor:pointer;font:inherit;font-size:11.5px;font-weight:600;
+    background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:4px 11px;color:#475467;
+  }
+  .copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+  .copy-btn.done{border-color:var(--accent2);color:#00947a}
+  .cbox pre{
+    margin:0;padding:14px 16px;overflow:auto;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:12.5px;line-height:1.75;color:#344054;white-space:pre-wrap;word-break:break-word;
+  }
+  .cbox.prompt pre{background:#f7faff;color:#23395f;font-size:13px}
+  .cbox.term pre{background:#0b1220;color:#d7e3f8}
+  .cbox.term .cbox-bar{background:#111a2e;border-bottom-color:#1e2b47}
+  .cbox.term .cbox-kind{color:#6f83a8}
+  .cbox.term .copy-btn{background:#1a2440;border-color:#2a3859;color:#a9bbdd}
+  .cbox.term .copy-btn:hover{border-color:#7fd6ff;color:#7fd6ff}
+  .cbox.term .copy-btn.done{border-color:#4ade80;color:#4ade80}
+
+  /* numbered walkthrough step */
+  .bigstep{border:1px solid var(--line);border-radius:14px;background:var(--panel);box-shadow:var(--shadow);margin-bottom:20px;overflow:hidden}
+  .bigstep-head{display:flex;align-items:flex-start;gap:16px;padding:22px 24px 18px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#fbfcfe,#fff)}
+  .bigstep-n{
+    flex:0 0 32px;width:32px;height:32px;border-radius:9px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:14px;font-weight:700;color:#fff;
+    background:linear-gradient(135deg,var(--accent),#1b6fe0);
+  }
+  .bigstep-head h3{margin:2px 0 5px;font-size:17px;font-weight:650;color:#1d2939;letter-spacing:-.01em}
+  .bigstep-head p{margin:0;font-size:13.5px;line-height:1.6;color:var(--muted)}
+  .bigstep-body{padding:20px 24px 24px}
+  .bigstep-body > p{margin:0 0 4px;font-size:14px;line-height:1.65;color:#3d4757}
+  .bigstep-body ul{margin:14px 0 0;padding-left:20px}
+  .bigstep-body li{margin:6px 0;font-size:13.5px;line-height:1.6;color:#3d4757}
+  .bigstep-body li code{font-size:12px;background:#eef2f7;padding:1px 6px;border-radius:4px;color:#475467}
+  .bigstep-body strong{color:#1d2939;font-weight:600}
+
+  .checkpoint{margin-top:18px;border:1px solid #b7f0dd;border-left:3px solid var(--accent2);border-radius:0 10px 10px 0;background:#f6fdfb;padding:16px 18px}
+  .checkpoint .cp-label{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#00947a;margin-bottom:8px}
+  .checkpoint p{margin:0;font-size:13.5px;line-height:1.65;color:#245c4f}
+  .checkpoint p strong{color:#0f4a3d;font-weight:650}
+  .checkpoint .cbox{margin-top:12px;border-color:#c7ecdf}
+  .checkpoint .cbox-bar{background:#eefaf5;border-bottom-color:#c7ecdf}
+  .checkpoint .cbox-kind{color:#00947a}
+
+  .callout{margin-top:20px;border:1px solid #fed7aa;border-left:3px solid var(--amber);border-radius:0 10px 10px 0;background:#fffaf1;padding:16px 18px}
+  .callout .co-label{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#b45309;margin-bottom:8px}
+  .callout p{margin:0 0 8px;font-size:13.5px;line-height:1.65;color:#78411a}
+  .callout p:last-child{margin-bottom:0}
+  .callout strong{color:#7c2d12;font-weight:650}
+  .callout code{font-size:12px;background:#fef1de;padding:1px 6px;border-radius:4px;color:#8a4b12}
+
+  .decision-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:6px}
+  .decision-col{border-radius:10px;padding:16px 18px;border:1px solid var(--line)}
+  .decision-col.can{border-left:3px solid var(--accent2);background:#f6fdfb}
+  .decision-col.approval{border-left:3px solid #e8a33d;background:#fffaf1}
+  .decision-label{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px}
+  .decision-col.can .decision-label{color:#00947a}
+  .decision-col.approval .decision-label{color:#b45309}
+  .decision-col ul{margin:0;padding-left:16px}
+  .decision-col li{font-size:13px;line-height:1.6;color:#3d4757;margin:5px 0}
+  .decision-col li code{font-size:11.5px;background:rgba(0,0,0,.05);padding:1px 5px;border-radius:4px}
+
+  .illustrative-note{display:inline-block;margin-bottom:14px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#b45309;background:#fef3e2;border:1px solid #fed7aa;padding:4px 10px;border-radius:999px}
+  .real-note{display:inline-block;margin-bottom:14px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#00947a;background:#eafff8;border:1px solid #b7f0dd;padding:4px 10px;border-radius:999px}
+
+  .file-preview{border:1px solid var(--line);border-radius:12px;background:var(--panel);box-shadow:var(--shadow);overflow:hidden}
+  .fp-bar{display:flex;align-items:center;gap:8px;padding:12px 16px;background:#f3f6fb;border-bottom:1px solid var(--line)}
+  .fp-dot{width:9px;height:9px;border-radius:50%;background:#dfe5ef}
+  .fp-name{margin-left:8px;font-size:12.5px;font-weight:600;color:#475467;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  .fp-body{padding:24px 28px}
+  .fp-h1{font-size:19px;font-weight:600;color:#1d2939;margin:0 0 4px}
+  .fp-role{font-size:13.5px;color:var(--muted);margin:0 0 22px}
+  .fp-section{margin-bottom:20px}
+  .fp-section:last-child{margin-bottom:0}
+  .fp-section h4{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin:0 0 8px}
+  .fp-section p, .fp-section li{margin:0;font-size:14px;line-height:1.7;color:#3d4757}
+  .fp-section ul{margin:0;padding-left:18px}
+  .fp-section li{margin:2px 0}
+  .fp-section blockquote{margin:8px 0 0;padding-left:12px;border-left:2px solid var(--line);font-style:italic;color:#5f6b7f;font-size:13.5px;line-height:1.6}
+  .fp-gwt strong{display:inline-block;min-width:52px;color:var(--accent);font-weight:700}
+  .fp-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+  .fp-tag{font-size:12px;padding:4px 10px;border-radius:999px;background:#eef4ff;color:#2b5fce;font-weight:600}
+
+  .value-tagline{margin:4px 0 20px;font-size:17px;font-weight:600;color:#1d2939;letter-spacing:-.01em}
+  .value-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+  .value-card{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px 22px 20px;overflow:hidden}
+  .value-card::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg, var(--accent), var(--accent2))}
+  .value-card h4{margin:0 0 8px;font-size:16px;font-weight:700;color:#1d2939;letter-spacing:-.01em}
+  .value-card p{margin:0;font-size:13.5px;line-height:1.6;color:#5f6b7f}
+
+  .badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .badge{
+    font-size:11.5px;font-weight:700;letter-spacing:.03em;
+    padding:4px 10px;border-radius:5px;border:1px solid;
+  }
+  .badge.ootb{color:#047857;border-color:#a7f3d0;background:#ecfdf5}
+  .badge.config{color:#1d4ed8;border-color:#bfdbfe;background:#eff6ff}
+  .badge.flow{color:#6d28d9;border-color:#ddd6fe;background:#f5f3ff}
+  .badge.lwc{color:#b45309;border-color:#fde68a;background:#fffbeb}
+  .badge.os{color:#be185d;border-color:#fbcfe8;background:#fdf2f8}
+  .badge.apex{color:#c2410c;border-color:#fdba74;background:#fff7ed}
+  .badge.ext{color:#475467;border-color:var(--line);background:#f8fafc}
+
+  .ladder{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-top:12px}
+  .ladder-step{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 12px;text-align:center}
+  .ladder-step .ls-n{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
+  .ladder-step p{margin:0;font-size:12.5px;line-height:1.4;color:#344054;font-weight:600}
+
+  .modes{width:100%;border-collapse:collapse;font-size:13.5px;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .modes th,.modes td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.55}
+  .modes th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);background:#f1f5f9;font-weight:650}
+  .modes tr:last-child td{border-bottom:0}
+  .modes code{font-size:12px;background:#eef2f7;padding:1px 6px;border-radius:4px;color:#475467}
+  .modes em{color:#98a2b3;font-style:italic}
+
+  .proto-frame{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;box-shadow:var(--shadow)}
+  .proto-chrome{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;background:#0176d3;color:#fff;font-size:13px;font-weight:600;flex-wrap:wrap}
+  .proto-chrome .pc-sub{font-weight:400;opacity:.85;font-size:11.5px}
+  .proto-body{padding:18px 20px;display:grid;gap:12px}
+  .proto-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .proto-field{border:1px solid #dddbda;border-radius:4px;padding:8px 10px;background:#fff}
+  .proto-field label{display:block;font-size:11px;color:#706e6b;margin-bottom:2px}
+  .proto-field span{font-size:13.5px;color:#181818}
+  .proto-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:4px;flex-wrap:wrap}
+  .proto-btn{font-size:12.5px;font-weight:600;padding:7px 14px;border-radius:4px;border:1px solid #dddbda;background:#fff;color:#0176d3}
+  .proto-btn.primary{background:#0176d3;color:#fff;border-color:#0176d3}
+  .el-badge{
+    display:inline-block;margin-left:6px;font-size:9.5px;font-weight:700;letter-spacing:.04em;
+    padding:1px 6px;border-radius:3px;vertical-align:middle;
+  }
+
+  .compare{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:14px}
+  .cmp{border-radius:12px;padding:20px 22px;border:1px solid var(--line);background:var(--panel)}
+  .cmp.bad{border-top:3px solid var(--amber)}
+  .cmp.good{border-top:3px solid var(--accent2)}
+  .cmp .cmp-label{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px}
+  .cmp.bad .cmp-label{color:#b45309}
+  .cmp.good .cmp-label{color:#00947a}
+  .cmp .quote{margin:0 0 12px;font-size:14px;font-style:italic;line-height:1.6;color:#3d4757;padding-left:12px;border-left:2px solid var(--line)}
+  .cmp p{margin:0 0 10px;font-size:13.5px;line-height:1.65;color:#5f6b7f}
+  .cmp p:last-child{margin-bottom:0}
+  .cmp .miss{font-size:12.5px;color:#b45309;font-weight:600}
 
   /* ---------- intake router ---------- */
   .router{display:grid;gap:10px;margin-top:16px}
@@ -94,12 +343,12 @@
   .rcard.open{border-color:#bcd8ff;box-shadow:var(--shadow)}
   .rcard-btn{
     width:100%;appearance:none;background:none;border:none;cursor:pointer;font:inherit;text-align:left;
-    display:flex;align-items:center;gap:14px;padding:16px 18px;
+    display:flex;align-items:center;gap:14px;padding:15px 18px;
   }
   .rcard-btn:hover{background:#fafcff}
   .rcard-icon{
-    flex:0 0 34px;width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;
-    font-size:15px;background:#eef4ff;color:var(--accent);
+    flex:0 0 32px;width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;
+    font-size:14px;background:#eef4ff;color:var(--accent);
   }
   .rcard-txt{flex:1;min-width:0}
   .rcard-txt .rq{display:block;font-size:14.5px;font-weight:600;color:#1d2939;line-height:1.4}
@@ -107,65 +356,14 @@
   .rcard-txt .rm b{color:#2b5fce;font-weight:650}
   .rcard-chev{flex:0 0 auto;color:#98a2b3;font-size:13px;transition:transform .18s}
   .rcard.open .rcard-chev{transform:rotate(90deg);color:var(--accent)}
-  .rcard-body{display:none;padding:0 18px 20px;border-top:1px solid var(--line);margin-top:0}
-  .rcard.open .rcard-body{display:block;padding-top:18px}
-  .rcard-body .rrow{display:grid;grid-template-columns:126px 1fr;gap:14px;margin-bottom:12px}
-  .rcard-body .rk{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding-top:2px}
-  .rcard-body .rv{font-size:13.5px;line-height:1.65;color:#3d4757}
-  .rcard-body .rv code{font-size:12px;background:#eef2f7;padding:1px 6px;border-radius:4px;color:#475467}
-  .rcard-body .rv strong{color:#1d2939;font-weight:600}
+  .rcard-body{display:none;padding:0 18px 18px;border-top:1px solid var(--line)}
+  .rcard.open .rcard-body{display:block;padding-top:16px}
+  .rcard-body p{margin:0 0 10px;font-size:13.5px;line-height:1.65;color:#3d4757}
+  .rcard-body p:last-child{margin-bottom:0}
+  .rcard-body p strong{color:#1d2939;font-weight:600}
+  .rcard-body p code{font-size:12px;background:#eef2f7;padding:1px 6px;border-radius:4px;color:#475467}
 
-  /* ---------- copyable blocks ---------- */
-  .cbox{position:relative;border:1px solid var(--line);border-radius:10px;background:var(--panel);overflow:hidden;margin-top:10px}
-  .cbox-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:7px 9px 7px 13px;background:var(--panel2);border-bottom:1px solid var(--line)}
-  .cbox-kind{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
-  .cbox.prompt .cbox-kind{color:#2b5fce}
-  .copy-btn{
-    appearance:none;cursor:pointer;font:inherit;font-size:11px;font-weight:600;
-    background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:3px 10px;color:#475467;
-  }
-  .copy-btn:hover{border-color:var(--accent);color:var(--accent)}
-  .copy-btn.done{border-color:var(--accent2);color:#00947a}
-  .cbox pre{
-    margin:0;padding:13px 15px;overflow:auto;
-    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
-    font-size:12.5px;line-height:1.7;color:#344054;white-space:pre-wrap;word-break:break-word;
-  }
-  .cbox.prompt pre{background:#f7faff;color:#23395f}
-  .cbox.term pre{background:#0b1220;color:#d7e3f8}
-  .cbox.term .cbox-bar{background:#111a2e;border-bottom-color:#1e2b47}
-  .cbox.term .cbox-kind{color:#6f83a8}
-  .cbox.term .copy-btn{background:#1a2440;border-color:#2a3859;color:#a9bbdd}
-  .cbox.term .copy-btn:hover{border-color:#7fd6ff;color:#7fd6ff}
-  .cbox.term .copy-btn.done{border-color:#4ade80;color:#4ade80}
-  .cbox.term .muted-line{color:#5b6b8c}
-
-  /* ---------- tables ---------- */
-  .rt{width:100%;border-collapse:collapse;font-size:13.5px;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
-  .rt th,.rt td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.55}
-  .rt th{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);background:#f1f5f9;font-weight:700}
-  .rt tr:last-child td{border-bottom:0}
-  .rt tbody tr:hover{background:#fafcff}
-  .rt code{font-size:12px;background:#eef2f7;padding:1px 6px;border-radius:4px;color:#475467}
-  .rt strong{color:#1d2939;font-weight:650}
-  .rt em{color:#98a2b3;font-style:italic}
-  .rt .arrow{color:var(--accent2);font-weight:700}
-  .rt.compact th,.rt.compact td{padding:8px 12px;font-size:13px}
-
-  /* ---------- filter ---------- */
-  .filter-wrap{position:relative;margin:6px 0 8px;max-width:460px}
-  .filter-wrap input{
-    width:100%;font:inherit;font-size:14px;padding:11px 14px 11px 38px;
-    border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--text);
-  }
-  .filter-wrap input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(43,131,255,.12)}
-  .filter-wrap::before{content:"⌕";position:absolute;left:14px;top:50%;transform:translateY(-52%);font-size:17px;color:#98a2b3}
-  .filter-count{margin-top:8px;font-size:12.5px;color:var(--muted)}
-  .filter-count b{color:var(--accent);font-weight:700}
-  .ref-group.hidden{display:none}
-  .rt tbody tr.hidden{display:none}
-
-  /* ---------- checklist ---------- */
+  /* ---------- pre-flight checklists ---------- */
   .cl-wrap{border:1px solid var(--line);border-radius:14px;background:var(--panel);box-shadow:var(--shadow);overflow:hidden;margin-top:16px}
   .cl-head{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:16px 20px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#fbfcfe,#fff);flex-wrap:wrap}
   .cl-head h4{margin:0;font-size:15px;font-weight:650;color:#1d2939}
@@ -183,134 +381,17 @@
   .cl-item input:checked + label{color:#98a2b3}
   .cl-item input:checked + label strong{color:#98a2b3}
 
-  /* ---------- cards ---------- */
-  .grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:12px}
-  .grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:12px}
-  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px 20px 18px}
-  .card h4{margin:0 0 8px;font-size:14.5px;font-weight:650;color:#1d2939}
-  .card p{margin:0;font-size:13.5px;line-height:1.6;color:#5f6b7f}
-  .card p + p{margin-top:8px}
-  .card code{font-size:12px;background:#eef2f7;padding:1px 6px;border-radius:4px;color:#475467}
-  .card .ptag{
-    display:inline-block;margin-bottom:10px;font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
-    padding:3px 9px;border-radius:5px;background:#eef4ff;color:#2b5fce;
-  }
-  .card.dflt{border-top:3px solid var(--accent)}
-  .card.mand{border-top:3px solid var(--red)}
-  .card.mand .ptag{background:#fdeef1;color:#b02a44}
-
-  .callout{margin-top:20px;border:1px solid #fed7aa;border-left:3px solid var(--amber);border-radius:0 10px 10px 0;background:#fffaf1;padding:16px 18px}
-  .callout .co-label{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#b45309;margin-bottom:8px}
-  .callout p{margin:0 0 8px;font-size:13.5px;line-height:1.65;color:#78411a}
-  .callout p:last-child{margin-bottom:0}
-  .callout strong{color:#7c2d12;font-weight:650}
-  .callout code{font-size:12px;background:#fef1de;padding:1px 6px;border-radius:4px;color:#8a4b12}
-
-  .note{margin-top:20px;border:1px solid #b7f0dd;border-left:3px solid var(--accent2);border-radius:0 10px 10px 0;background:#f6fdfb;padding:16px 18px}
-  .note .co-label{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#00947a;margin-bottom:8px}
-  .note p{margin:0 0 8px;font-size:13.5px;line-height:1.65;color:#245c4f}
-  .note p:last-child{margin-bottom:0}
-  .note strong{color:#0f4a3d;font-weight:650}
-  .note code{font-size:12px;background:#e4f7f0;padding:1px 6px;border-radius:4px;color:#0f6b57}
-
-  .install{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:14px}
-  .install .card{padding:18px 20px}
-
-  .tree{padding:18px 20px;border-radius:12px;border:1px solid var(--line);background:#0b1220;overflow:auto}
-  .tree pre{margin:0;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;line-height:1.75;color:#d7e3f8}
-  .tree .muted-line{color:#5b6b8c}
-  .tree .hl{color:#7fd6ff}
-
-  /* ---------- badges / ladder ---------- */
-  .badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-  .badge{font-size:11.5px;font-weight:700;letter-spacing:.03em;padding:4px 10px;border-radius:5px;border:1px solid}
-  .badge.ootb{color:#047857;border-color:#a7f3d0;background:#ecfdf5}
-  .badge.config{color:#1d4ed8;border-color:#bfdbfe;background:#eff6ff}
-  .badge.flow{color:#6d28d9;border-color:#ddd6fe;background:#f5f3ff}
-  .badge.lwc{color:#b45309;border-color:#fde68a;background:#fffbeb}
-  .badge.os{color:#be185d;border-color:#fbcfe8;background:#fdf2f8}
-  .badge.apex{color:#c2410c;border-color:#fdba74;background:#fff7ed}
-  .badge.ext{color:#475467;border-color:var(--line);background:#f8fafc}
-
-  .ladder{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-top:12px}
-  .ladder-step{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:13px 11px;text-align:center;position:relative}
-  .ladder-step .ls-n{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
-  .ladder-step p{margin:0;font-size:12px;line-height:1.4;color:#344054;font-weight:600}
-  .ladder-step.declarative{background:#f6fdfb;border-color:#b7f0dd}
-  .ladder-step.declarative .ls-n{color:#00947a}
-  .ladder-lbls{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-top:8px}
-  .ladder-lbl{font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;text-align:center;color:#98a2b3}
-  .ladder-lbl.dec{grid-column:1 / span 3;color:#00947a}
-  .ladder-lbl.cus{grid-column:4 / span 3;color:#b45309}
-
-  .proto-frame{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;box-shadow:var(--shadow);margin-top:14px}
-  .proto-chrome{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;background:#0176d3;color:#fff;font-size:13px;font-weight:600;flex-wrap:wrap}
-  .proto-chrome .pc-sub{font-weight:400;opacity:.85;font-size:11.5px}
-  .proto-body{padding:18px 20px;display:grid;gap:12px}
-  .proto-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  .proto-field{border:1px solid #dddbda;border-radius:4px;padding:8px 10px;background:#fff}
-  .proto-field label{display:block;font-size:11px;color:#706e6b;margin-bottom:2px}
-  .proto-field span{font-size:13.5px;color:#181818}
-  .proto-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:4px;flex-wrap:wrap}
-  .proto-btn{font-size:12.5px;font-weight:600;padding:7px 14px;border-radius:4px;border:1px solid #dddbda;background:#fff;color:#0176d3}
-  .proto-btn.primary{background:#0176d3;color:#fff;border-color:#0176d3}
-  .el-badge{display:inline-block;margin-left:6px;font-size:9.5px;font-weight:700;letter-spacing:.04em;padding:1px 6px;border-radius:3px;vertical-align:middle}
-
-  /* ---------- chips ---------- */
-  .chip{
-    display:inline-block;font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
-    padding:2px 7px;border-radius:4px;border:1px solid;white-space:nowrap;vertical-align:middle;
-  }
-  .chip.blocker{color:#b02a44;border-color:#f7cdd6;background:#fdeef1}
-  .chip.ground{color:#00947a;border-color:#b7f0dd;background:#eafff8}
-  .chip.rule{color:#475467;border-color:var(--line);background:#f4f6fa;text-transform:none;letter-spacing:.02em;font-size:10px}
-
-  /* ---------- pipeline ---------- */
-  .pipe{display:grid;gap:0;margin-top:16px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--panel)}
-  .pipe-row{display:grid;grid-template-columns:74px 1fr 226px;gap:16px;padding:15px 18px;border-bottom:1px solid var(--line);align-items:start}
-  .pipe-row:last-child{border-bottom:0}
-  .pipe-row:hover{background:#fafcff}
-  .pipe-n{font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);padding-top:2px}
-  .pipe-main h4{margin:0 0 5px;font-size:14px;font-weight:650;color:#1d2939}
-  .pipe-main p{margin:0;font-size:13px;line-height:1.6;color:#5f6b7f}
-  .pipe-main p code{font-size:11.5px;background:#eef2f7;padding:1px 5px;border-radius:4px;color:#475467}
-  .pipe-side{font-size:12px;line-height:1.6;color:#98a2b3}
-  .pipe-side b{display:block;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#b9c0cc;margin-bottom:3px}
-  .pipe-side code{font-size:11px;background:#f4f6fa;padding:1px 5px;border-radius:4px;color:#667085}
-
-  /* ---------- matrix cells ---------- */
-  .rt td.yes{color:#047857;font-weight:700;text-align:center}
-  .rt td.no{color:#c9ced8;font-weight:700;text-align:center}
-  .rt td.part{color:#b45309;font-weight:700;text-align:center;font-size:11.5px}
-
-  /* ---------- stop list ---------- */
-  .stops{margin-top:16px;display:grid;gap:8px}
-  .stop{
-    display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start;
-    border:1px solid var(--line);border-left:3px solid var(--red);border-radius:0 10px 10px 0;
-    background:var(--panel);padding:13px 16px;
-  }
-  .stop .sl{font-size:13px;line-height:1.6;color:#3d4757}
-  .stop .sr{font-size:13px;line-height:1.6;color:#5f6b7f}
-  .stop .sr::before{content:"STOP ";font-size:9.5px;font-weight:700;letter-spacing:.1em;color:var(--red)}
-  .stop code{font-size:11.5px;background:#eef2f7;padding:1px 5px;border-radius:4px;color:#475467}
-  .stop strong{color:#1d2939;font-weight:650}
-
   .kbd-hint{position:fixed;bottom:16px;right:20px;font-size:11.5px;color:#98a2b3;letter-spacing:.03em;z-index:20}
 
   @media (max-width: 900px){
     .topbar{flex-direction:column;align-items:flex-start;gap:14px;padding:16px 20px 12px}
-    .xhead{font-size:29px}
-    .grid2,.grid3,.install,.proto-row{grid-template-columns:1fr}
-    .ladder{grid-template-columns:repeat(2,1fr)}
-    .ladder-lbls{display:none}
-    .rcard-body .rrow{grid-template-columns:1fr;gap:4px}
+    .xhead{font-size:30px}
+    .chain,.two-col,.value-grid,.decision-grid,.proto-row,.compare{grid-template-columns:1fr}
+    .steps-grid,.steps-grid.four,.ladder{grid-template-columns:repeat(2,1fr)}
+    .fp-body,.bigstep-body{padding:20px}
     .kbd-hint{display:none}
-    .rt{font-size:12.5px}
-    .rt th,.rt td{padding:8px 10px}
-    .pipe-row{grid-template-columns:1fr;gap:8px}
-    .pipe-side{border-top:1px solid var(--line);padding-top:8px}
-    .stop{grid-template-columns:1fr;gap:8px}
+    .tab-nav{flex-wrap:wrap}
+    .rcard-btn{padding:14px}
   }
 </style>
 </head>
@@ -321,659 +402,289 @@
     <img alt="Salesforce" src="https://upload.wikimedia.org/wikipedia/commons/f/f9/Salesforce.com_logo.svg" />
     <div class="brand-copy">
       <div class="title">Life Sciences Cloud</div>
-      <div class="sub">Delivery Architect · Reference</div>
+      <div class="sub">Delivery Architect · Prototype-first, story-second</div>
     </div>
   </div>
-  <nav class="tabs" aria-label="Reference sections">
-    <button class="active" data-tab="route">Route Your Ask</button>
-    <button data-tab="internals">Inside the Skill</button>
-    <button data-tab="contract">Artifact Contract</button>
-    <button data-tab="build">Build Decisions</button>
-    <button data-tab="lookup">LSC Lookups</button>
-    <button data-tab="repair">Repair &amp; Review</button>
+  <nav class="tabs" aria-label="Guide sections">
+    <button class="active" data-tab="why">Why It Exists</button>
+    <button data-tab="how">How It Works</button>
+    <button data-tab="see">See It Work</button>
+    <button data-tab="run">Run It Yourself</button>
+    <button data-tab="adopt">Adopt &amp; Maintain</button>
   </nav>
 </header>
 
 <main class="wrap">
 
-  <!-- ============================================================ ROUTE YOUR ASK -->
-  <section id="route" class="panel active">
-    <div class="xlabel">Route Your Ask</div>
-    <h1 class="xhead">Start from whatever is actually on your desk.</h1>
-    <p class="xsub">This is a reference, not a deck — open the row that matches your intake and take the prompt. The skill detects the mode from your phrasing, so the only thing you need to get right is <strong>describing what you have and what you want to stop at.</strong></p>
+  <!-- ============================================================ WHY IT EXISTS -->
+  <section id="why" class="panel active">
+    <span class="time-chip">~2 min read</span>
+    <div class="xlabel">Why It Exists</div>
+    <h1 class="xhead">Every LSC engagement argues about the same two questions — and always too late.</h1>
+    <p class="xsub">A product owner is asked to sign Given/When/Then acceptance criteria before they have seen a screen or heard a build-technology decision. This skill inverts that order: <strong>plan and prototype first, stories second.</strong></p>
 
     <div class="divider-sm"></div>
 
-    <div class="sec">
-      <div class="sec-kicker">Intake router</div>
-      <h2 class="sec-title">Six intakes, six contracts</h2>
-      <p class="sec-desc">Each row shows the mode STEP 0 will detect, how much of the question flow you will be put through, and a prompt you can paste as-is. <strong>The most common mistake is not saying where to stop</strong> — if you do not say "no stories yet," you will get stories.</p>
-
-      <div class="router">
-
-        <div class="rcard">
-          <button class="rcard-btn" type="button" aria-expanded="false">
-            <span class="rcard-icon" aria-hidden="true">◇</span>
-            <span class="rcard-txt">
-              <span class="rq">A vague ask from a stakeholder. Nothing is written down yet.</span>
-              <span class="rm">Routes to <b>Plan + Prototype</b> · Phase 1–2 questions only · no ACs</span>
-            </span>
-            <span class="rcard-chev" aria-hidden="true">›</span>
-          </button>
-          <div class="rcard-body">
-            <div class="rrow"><div class="rk">You get</div><div class="rv">A <strong>Solution Plan</strong> with the build-technology decision and its rejected alternative, plus a <strong>grounded HTML prototype</strong> where every control is badged. Deliberately no acceptance criteria and no field specs.</div></div>
-            <div class="rrow"><div class="rk">Use it when</div><div class="rv">You need something to put in front of a product owner before the team commits to a shape. This is the mode that changes the refinement conversation.</div></div>
-            <div class="rrow"><div class="rk">Prompt</div><div class="rv">
-              <div class="cbox prompt">
-                <div class="cbox-bar"><span class="cbox-kind">Prompt</span><button class="copy-btn" type="button">Copy</button></div>
-<pre>Plan and prototype a compliant sample drop on a visit for field sales reps — no stories yet.</pre>
-              </div>
-            </div></div>
-          </div>
-        </div>
-
-        <div class="rcard">
-          <button class="rcard-btn" type="button" aria-expanded="false">
-            <span class="rcard-icon" aria-hidden="true">▤</span>
-            <span class="rcard-txt">
-              <span class="rq">A scope document or SOW section with many capabilities in it.</span>
-              <span class="rm">Routes to <b>Epic Breakdown</b> · decomposition approved first · up to 10 stories</span>
-            </span>
-            <span class="rcard-chev" aria-hidden="true">›</span>
-          </button>
-          <div class="rcard-body">
-            <div class="rrow"><div class="rk">You get</div><div class="rv">A proposed decomposition <strong>for your approval first</strong> — then up to ten cross-referenced, dependency-ordered stories. It will not generate all of them before you agree to the split.</div></div>
-            <div class="rrow"><div class="rk">Watch for</div><div class="rv">Review the decomposition against your sprint shape before approving. Ten stories generated off a bad split costs more to unpick than to re-plan.</div></div>
-            <div class="rrow"><div class="rk">Prompt</div><div class="rv">
-              <div class="cbox prompt">
-                <div class="cbox-bar"><span class="cbox-kind">Prompt</span><button class="copy-btn" type="button">Copy</button></div>
-<pre>Break this scope section into user stories. Propose the decomposition first and wait for my approval before generating any of them.</pre>
-              </div>
-            </div></div>
-          </div>
-        </div>
-
-        <div class="rcard">
-          <button class="rcard-btn" type="button" aria-expanded="false">
-            <span class="rcard-icon" aria-hidden="true">✎</span>
-            <span class="rcard-txt">
-              <span class="rq">One capability that is already well understood and agreed.</span>
-              <span class="rm">Routes to <b>New Feature</b> · full Phase 1–4 flow · Pattern A + E + effort</span>
-            </span>
-            <span class="rcard-chev" aria-hidden="true">›</span>
-          </button>
-          <div class="rcard-body">
-            <div class="rrow"><div class="rk">You get</div><div class="rv">One complete story: concrete persona, business-language Given/When/Then, a Pattern E field table on every write, Technical Implementation, Definition of Done, and effort sizing.</div></div>
-            <div class="rrow"><div class="rk">Expect</div><div class="rv">The longest question flow — up to sixteen questions across four phases. If it starts writing before asking, the contract is not being applied.</div></div>
-            <div class="rrow"><div class="rk">Prompt</div><div class="rv">
-              <div class="cbox prompt">
-                <div class="cbox-bar"><span class="cbox-kind">Prompt</span><button class="copy-btn" type="button">Copy</button></div>
-<pre>Write a user story for capturing an HCP signature on a sample disbursement, including the inventory decrement.</pre>
-              </div>
-            </div></div>
-          </div>
-        </div>
-
-        <div class="rcard">
-          <button class="rcard-btn" type="button" aria-expanded="false">
-            <span class="rcard-icon" aria-hidden="true">⇄</span>
-            <span class="rcard-txt">
-              <span class="rq">A Veeva CRM requirement or legacy spec to bring across.</span>
-              <span class="rm">Routes to <b>Veeva → LSC</b> · terminology translated · original kept in a source header</span>
-            </span>
-            <span class="rcard-chev" aria-hidden="true">›</span>
-          </button>
-          <div class="rcard-body">
-            <div class="rrow"><div class="rk">You get</div><div class="rv">LSC-native wording throughout. Call becomes <strong>Visit</strong>, Sample Lot becomes <strong>Production Batch Item</strong>, Action Bar becomes <strong>Action Launcher</strong>. The Veeva original is recorded in a source header, never in the story body.</div></div>
-            <div class="rrow"><div class="rk">Watch for</div><div class="rv">Anything with no clean LSC equivalent should come back as a <em>clarification</em>, not a quiet guess. Offline sync and Vault content are the usual suspects — see the translation table under <strong>LSC Lookups</strong>.</div></div>
-            <div class="rrow"><div class="rk">Prompt</div><div class="rv">
-              <div class="cbox prompt">
-                <div class="cbox-bar"><span class="cbox-kind">Prompt</span><button class="copy-btn" type="button">Copy</button></div>
-<pre>Migrate this Veeva requirement to Salesforce LSC, keeping the original verbatim in a source header: "As a Field Rep, I need a Sample Inventory screen to view my on-hand sample lots and initiate sample orders, so I can manage inventory and stay PDMA compliant."</pre>
-              </div>
-            </div></div>
-          </div>
-        </div>
-
-        <div class="rcard">
-          <button class="rcard-btn" type="button" aria-expanded="false">
-            <span class="rcard-icon" aria-hidden="true">⟳</span>
-            <span class="rcard-txt">
-              <span class="rq">An existing component that needs to change.</span>
-              <span class="rm">Routes to <b>Refactor</b> · skips sub-domain selection · starts at technical discovery</span>
-            </span>
-            <span class="rcard-chev" aria-hidden="true">›</span>
-          </button>
-          <div class="rcard-body">
-            <div class="rrow"><div class="rk">You get</div><div class="rv">A story anchored on a <strong>named</strong> existing component, with an impact analysis rather than a greenfield design.</div></div>
-            <div class="rrow"><div class="rk">Do this first</div><div class="rv">Name the component precisely. The skill verifies custom components before it names them, so a vague "the visit thing" gets you a <em>(proposed)</em> label instead of a real dependency map.</div></div>
-            <div class="rrow"><div class="rk">Prompt</div><div class="rv">
-              <div class="cbox prompt">
-                <div class="cbox-bar"><span class="cbox-kind">Prompt</span><button class="copy-btn" type="button">Copy</button></div>
-<pre>Change the existing sample disbursement Screen Flow so the quantity field is blocked above on-hand. Name every component you would touch and flag the regression risk.</pre>
-              </div>
-            </div></div>
-          </div>
-        </div>
-
-        <div class="rcard">
-          <button class="rcard-btn" type="button" aria-expanded="false">
-            <span class="rcard-icon" aria-hidden="true">⚠</span>
-            <span class="rcard-txt">
-              <span class="rq">A defect ticket with current-versus-expected behaviour.</span>
-              <span class="rm">Routes to <b>Bug Fix</b> · vertical questions skipped entirely</span>
-            </span>
-            <span class="rcard-chev" aria-hidden="true">›</span>
-          </button>
-          <div class="rcard-body">
-            <div class="rrow"><div class="rk">You get</div><div class="rv">A tight story focused on current versus expected behaviour. No sub-domain or persona discovery — it assumes you already know the context.</div></div>
-            <div class="rrow"><div class="rk">Give it</div><div class="rv">Both halves. "It is broken" produces a worse story than "it currently allows a drop above on-hand; it should block and show the remaining count."</div></div>
-            <div class="rrow"><div class="rk">Prompt</div><div class="rv">
-              <div class="cbox prompt">
-                <div class="cbox-bar"><span class="cbox-kind">Prompt</span><button class="copy-btn" type="button">Copy</button></div>
-<pre>Defect: a sample drop currently saves even when the quantity exceeds the on-hand balance for the lot. Expected: it should block and show the remaining count. Write the bug-fix story.</pre>
-              </div>
-            </div></div>
-          </div>
-        </div>
-
+    <div class="chain">
+      <div class="chain-card">
+        <div class="chain-num">01</div>
+        <h3>Stories arrive before shape</h3>
+        <p>A Given/When/Then pack is signed before anyone has seen the screen. So the product owner hedges, and refinement becomes an argument about wording instead of about what gets built.</p>
+      </div>
+      <div class="chain-card">
+        <div class="chain-num">02</div>
+        <h3>"Can we do this out of the box?"</h3>
+        <p>The build-technology call — Dynamic Actions, Screen Flow, LWC, OmniScript — gets made after the estimate is committed. That is where the cost surprise lives.</p>
+      </div>
+      <div class="chain-card">
+        <div class="chain-num">03</div>
+        <h3>Same ask, different stack</h3>
+        <p>One architect defaults every guided flow to OmniScript, another to Screen Flow. The decision was never written down, so it is re-derived on every engagement.</p>
       </div>
     </div>
 
-    <div class="sec">
-      <div class="sec-kicker">Before any of the above</div>
-      <h2 class="sec-title">Install, then prove it loaded</h2>
-      <p class="sec-desc">Two files matter and people routinely copy only one of them. <strong>The rule is what makes the skill fire</strong>; the skill on its own is inert because nothing routes to it.</p>
-      <div class="cbox term">
-        <div class="cbox-bar"><span class="cbox-kind">Terminal</span><button class="copy-btn" type="button">Copy</button></div>
-<pre>git clone https://github.com/p-kothapalli/lsc-delivery-architect.git
-cp -R lsc-delivery-architect/.cursor /path/to/your-project/
+    <div class="pull-example">
+      <span class="tag">What product owners actually ask first</span>
+      <p>"What will this look like on-screen — and can we build it with out-of-the-box Lightning, or do we need LWC / Flow / OmniStudio?"</p>
+    </div>
 
-<span class="muted-line"># then reload the Cursor window — a skill added while Cursor is</span>
-<span class="muted-line"># running is not always picked up until it reloads</span></pre>
+    <div class="payoff">
+      <p>Until those two questions are answered, Given/When/Then is theatre. The team is arguing about acceptance criteria for a shape nobody has agreed to.</p>
+    </div>
+
+    <div class="act-divider"></div>
+
+    <div class="xlabel">The Shift</div>
+    <h2 class="xhead" style="font-size:34px;">LSC delivery does not need more acceptance criteria. It needs the build made visible first.</h2>
+    <p class="xsub">Before anyone writes a Given/When/Then line, the product owner should be able to click the feature and see, on every control, whether it is <strong>standard Salesforce</strong> or <strong>something the team has to build</strong>.</p>
+
+    <div class="two-col" style="margin-top:28px">
+      <div class="two-col-card avoid-card">
+        <h3>Today</h3>
+        <p>Stories first, mockup maybe, build technology decided last. Personas drift to "as a user," records are specified as "and related fields are updated," and the developer books a follow-up meeting before writing a line of code.</p>
       </div>
-
-      <div class="install">
-        <div class="card">
-          <h4>The two files</h4>
-          <p><code>.cursor/rules/use-lsc-delivery-architect.mdc</code> — always-on trigger. Routes any LSC planning, prototyping, or story request to the Architect contract.</p>
-          <p><code>.cursor/skills/lsc-delivery-architect/SKILL.md</code> — the contract itself: STEP 0–6, the hard blockers, and pointers to eleven references it loads on demand.</p>
-        </div>
-        <div class="card">
-          <h4>Prove the routing, not just the load</h4>
-          <p>Ask it to route three asks it has never seen. If it cannot explain <em>why</em> it chose each mode, the rule file is not being applied.</p>
-          <div class="cbox prompt">
-            <div class="cbox-bar"><span class="cbox-kind">Prompt</span><button class="copy-btn" type="button">Copy</button></div>
-<pre>Which skill and rule are you applying to LSC requests? Route these three and explain why: a Concur expense enhancement, a defect in medical inquiry intake, and a scope doc with eight capabilities.</pre>
-          </div>
-        </div>
-      </div>
-
-      <div class="note">
-        <div class="co-label">What a correct answer looks like</div>
-        <p>The Concur ask should reach for <code>concur-integration.md</code>. The defect should route to <strong>Bug Fix</strong> and skip the vertical questions. The scope doc should route to <strong>Epic Breakdown</strong> and offer a decomposition before generating anything.</p>
+      <div class="two-col-card">
+        <h3>With the Delivery Architect</h3>
+        <p>A Solution Plan and a grounded prototype land first, on a declarative-first build decision. Stories follow once the product owner has walked the mockup and agreed to the shape — with every field enumerated.</p>
       </div>
     </div>
 
-    <div class="sec">
-      <div class="sec-kicker">Why it loads fast</div>
-      <h2 class="sec-title">Eleven references, loaded on demand</h2>
-      <p class="sec-desc"><code>SKILL.md</code> is navigational. A bug-fix request does not drag ~350 objects into the context window, which is why the question flow stays short when the mode is narrow.</p>
-      <div class="tree">
-<pre>.cursor/skills/lsc-delivery-architect/references/
-├── plan-prototype-mode.md          <span class="muted-line">← Solution Plan contract (no stories)</span>
-├── output-template.md              <span class="muted-line">← Story template, DoD, effort bands</span>
-├── ac-pattern-library.md           <span class="muted-line">← Persona cheatsheet + AC Patterns A–E</span>
-├── story-examples.md               <span class="muted-line">← Worked reference stories</span>
-├── <span class="hl">lsc-standard-objects-catalog.md</span>  <span class="muted-line">← ~350 objects, Summer '26 / API v67.0</span>
-├── lsc-object-model.md             <span class="muted-line">← Commercial · Medical · Market Access</span>
-├── lsc-components.md               <span class="muted-line">← RULE 7a build-technology decision guide</span>
-├── concur-integration.md           <span class="muted-line">← SAP Concur ⇄ LSC expense sync</span>
-├── veeva-to-lsc-mapping.md         <span class="muted-line">← Veeva → LSC terminology + migration</span>
-├── slds2-lsc-primer.md             <span class="muted-line">← SLDS 2 / Cosmos + badge overlay</span>
-└── post-generation-offers.md       <span class="muted-line">← STEP 6 offers, incl. §6.7 prototype</span></pre>
+    <div class="pull-example" style="margin-top:24px">
+      <span class="tag">From the skill contract</span>
+      <p>"A prototype without the grounding is worse than no prototype — it misleads the product owner on cost shape. That is the whole point."</p>
+    </div>
+
+    <div class="two-col-card single-card">
+      <span class="warm-icon" aria-hidden="true">✦</span>
+      <p>The agent already knows the LSC personas, the ~350 standard objects, the Veeva translation, and the Concur expense model — so <strong>no architect starts from a blank page</strong>, and no one carries the standard alone. The time goes to the judgment calls only an architect can make.</p>
+    </div>
+
+    <div class="mini-header">Three artifacts — take any one, any combination, or all three</div>
+    <div class="chain">
+      <div class="chain-card">
+        <div class="chain-num">01</div>
+        <h3>Solution Plan</h3>
+        <p>Build-technology decision with its rejected alternative, component inventory with effort sizing, and open questions. Deliberately no ACs and no field specs — it is built for refinement before stories exist.</p>
       </div>
-      <p class="footnote">Three evaluation scenarios sit alongside them in <code>evaluations/</code> — Veeva migration, sample drop, and field creation — each with a pass/fail rubric. They are the source of truth for whether a reference edit broke a blocker.</p>
+      <div class="chain-card">
+        <div class="chain-num">02</div>
+        <h3>Grounded prototype</h3>
+        <p>One self-contained <code>.html</code> file, SLDS 2 styling, clickable state toggles. Every element badged with the Salesforce component that will implement it.</p>
+      </div>
+      <div class="chain-card">
+        <div class="chain-num">03</div>
+        <h3>Implementation-ready story</h3>
+        <p>Concrete LSC persona, business-language Given/When/Then, a per-field record spec on every write, Technical Implementation table, Definition of Done, and effort sizing.</p>
+      </div>
+    </div>
+
+    <p class="footnote">This is not a story generator with a mockup bolted on. It is a Delivery Architect that can stop at the plan, stop at the prototype, or continue to implementation-ready stories — on demand, independently.</p>
+
+    <div class="tab-nav">
+      <div class="spacer"></div>
+      <button class="next" data-goto="how">How It Works →</button>
     </div>
   </section>
 
-  <!-- ============================================================ INSIDE THE SKILL -->
-  <section id="internals" class="panel">
-    <div class="xlabel">Inside the Skill</div>
-    <h1 class="xhead">Seventeen rules, a seven-step pipeline, and a validator that runs before you see anything.</h1>
-    <p class="xsub">Every rule in the skill carries its own stated rationale — the <em>because</em> clause is written into the rule, not left implied. That is what makes the behaviour predictable enough to argue with. This tab is the whole mechanism, unabridged.</p>
+  <!-- ============================================================ HOW IT WORKS -->
+  <section id="how" class="panel">
+    <span class="time-chip">~4 min read · the mechanics</span>
+    <div class="xlabel">How It Works</div>
+    <h1 class="xhead">Not a new methodology. An existing delivery standard, made visible to the agent.</h1>
+    <p class="xsub">The LSC object model, the persona contract, and the build-technology decision guide already exist in architects' heads. These files put them somewhere Cursor can read — defined once, applied every session.</p>
 
     <div class="divider-sm"></div>
 
-    <div class="sec">
-      <div class="sec-kicker">STEP 0–6</div>
-      <h2 class="sec-title">The pipeline every request goes through</h2>
-      <p class="sec-desc">Steps are not optional, but the <strong>mode decides which ones do real work.</strong> STEP 3 is where grounding happens and STEP 5 is where the skill checks its own output — both run whether or not you asked for them.</p>
-      <div class="pipe">
-        <div class="pipe-row">
-          <div class="pipe-n">STEP 0</div>
-          <div class="pipe-main">
-            <h4>Workflow detection</h4>
-            <p>Maps your phrasing to one of six modes, which then determines the question phases and the output contract. Ambiguous input defaults to <strong>New Feature</strong> and asks rather than guessing.</p>
-          </div>
-          <div class="pipe-side"><b>Nuance</b>Natural language always works; the prompt templates are optional accelerators, not required syntax.</div>
+    <div class="ex-block">
+      <div class="ex-kicker">Four moving parts</div>
+      <h2 class="ex-title">What is actually installed</h2>
+      <p class="ex-desc">An always-on rule routes the request, the skill holds the contract, references carry the domain knowledge, and evaluations prove the whole thing still works after an edit.</p>
+      <div class="steps-grid four">
+        <div class="step-mini">
+          <div class="step-badge">1</div>
+          <h4>Trigger</h4>
+          <span class="fname">rules/use-lsc-delivery-architect.mdc</span>
+          <p>Always-on. Any LSC planning, prototyping, or story request routes to the Architect contract instead of a generic answer. This is the piece people forget to copy.</p>
         </div>
-        <div class="pipe-row">
-          <div class="pipe-n">STEP 1</div>
-          <div class="pipe-main">
-            <h4>Sub-domain selection</h4>
-            <p>Commercial, Medical, Market Access, Cross-domain / Platform, or Custom. <strong>Five options, not three</strong> — the cross-domain option exists for shared Account, Consent, and Data Cloud work that belongs to no single vertical.</p>
-          </div>
-          <div class="pipe-side"><b>Why first</b>Each sub-domain names different objects and personas. Wrong sub-domain produces a story that is unbuildable, not merely inaccurate.</div>
+        <div class="step-mini">
+          <div class="step-badge">2</div>
+          <h4>The skill</h4>
+          <span class="fname">skills/lsc-delivery-architect/SKILL.md</span>
+          <p>Identity, the STEP 0–6 workflow, and the hard blockers. Navigational by design — it loads only the reference the current mode needs.</p>
         </div>
-        <div class="pipe-row">
-          <div class="pipe-n">STEP 2</div>
-          <div class="pipe-main">
-            <h4>Clarifying questions — question-first</h4>
-            <p>Four phases, <strong>minimum 5 and maximum 16 questions</strong>, delivered through the <code>AskQuestion</code> tool as a structured picker rather than prose.</p>
-          </div>
-          <div class="pipe-side"><b>Nuance</b>The floor of 5 matters as much as the ceiling of 16 — it is what stops a detailed-looking prompt from bypassing discovery.</div>
+        <div class="step-mini">
+          <div class="step-badge">3</div>
+          <h4>Knowledge pack</h4>
+          <span class="fname">references/*.md</span>
+          <p>Eleven references: the LSC object catalog, the AC pattern library, the Veeva map, the Concur model, the SLDS 2 primer, and the build-tech decision guide.</p>
         </div>
-        <div class="pipe-row">
-          <div class="pipe-n">STEP 3</div>
-          <div class="pipe-main">
-            <h4>Codebase &amp; docs analysis — graph-first</h4>
-            <p>Custom components resolve through <code>code-review-graph</code>; standard LSC objects through <code>salesforce-docs</code>. Grep and Glob are the <em>fallback</em>, not the first move.</p>
-          </div>
-          <div class="pipe-side"><b>Ordering</b>Mandated by a separate workspace rule, <code>code-review-graph-first.mdc</code> — not by this skill alone.</div>
-        </div>
-        <div class="pipe-row">
-          <div class="pipe-n">STEP 4</div>
-          <div class="pipe-main">
-            <h4>Generate</h4>
-            <p>Produces the artifact in the canonical section order from <code>output-template.md</code>. In Plan + Prototype mode this step produces a Solution Plan and prototype instead of a story.</p>
-          </div>
-          <div class="pipe-side"><b>Nuance</b>Section order is fixed on purpose so developers and QA find ACs, effort, and impact in the same place every time.</div>
-        </div>
-        <div class="pipe-row">
-          <div class="pipe-n">STEP 5</div>
-          <div class="pipe-main">
-            <h4>Review &amp; iterate — the validator loop</h4>
-            <p>Ten checks run against the draft, and failures are fixed <strong>before</strong> the artifact is presented to you. Four of the ten are hard blockers that stop presentation outright.</p>
-          </div>
-          <div class="pipe-side"><b>Implication</b>If a blocker reaches your screen, the loop did not run — which usually means the skill is not actually loaded.</div>
-        </div>
-        <div class="pipe-row">
-          <div class="pipe-n">STEP 6</div>
-          <div class="pipe-main">
-            <h4>Post-generation offers</h4>
-            <p>Seven optional next steps, offered <strong>only where the underlying MCP server or CLI is actually connected</strong> — it verifies availability first rather than offering something that will fail.</p>
-          </div>
-          <div class="pipe-side"><b>Nuance</b>§6.7, the grounded product-owner prototype, lives here — which is why you can request it after a story, not only before one.</div>
+        <div class="step-mini">
+          <div class="step-badge">4</div>
+          <h4>Evaluations</h4>
+          <span class="fname">evaluations/*.json</span>
+          <p>Scenarios with pass/fail rubrics. The source of truth for whether the skill still behaves after you change a reference.</p>
         </div>
       </div>
     </div>
 
-    <div class="sec">
-      <div class="sec-kicker">Mode behaviour</div>
-      <h2 class="sec-title">Which phases each mode actually runs</h2>
-      <p class="sec-desc">This is the nuance most people miss: modes do not just change the output, <strong>they change how much you get asked.</strong> If a bug fix is putting you through vertical discovery questions, STEP 0 mis-routed.</p>
-      <table class="rt compact">
+    <div class="ex-block">
+      <div class="ex-kicker">The structure behind the standard</div>
+      <h2 class="ex-title">How it is organized on disk</h2>
+      <p class="ex-desc">This is the exact pack in the repository. The agent never loads all eleven references at once — <code>SKILL.md</code> pulls only what the detected mode requires, which is why a bug-fix request does not drag ~350 objects into the context window.</p>
+      <div class="tree">
+<pre>.cursor/
+├── rules/
+│   └── use-lsc-delivery-architect.mdc     <span class="muted-line">← Always-on trigger + non-negotiables</span>
+└── skills/lsc-delivery-architect/
+    ├── SKILL.md                           <span class="muted-line">← Identity, STEP 0–6, hard blockers, version history</span>
+    ├── references/
+    │   ├── plan-prototype-mode.md         <span class="muted-line">← Solution Plan contract (no stories)</span>
+    │   ├── output-template.md             <span class="muted-line">← Story template + effort sizing</span>
+    │   ├── ac-pattern-library.md          <span class="muted-line">← Persona contract + AC Patterns A–E</span>
+    │   ├── story-examples.md              <span class="muted-line">← Worked reference stories</span>
+    │   ├── <span class="hl">lsc-standard-objects-catalog.md</span>  <span class="muted-line">← ~350 LSC objects, Summer '26 / API v67.0</span>
+    │   ├── lsc-object-model.md            <span class="muted-line">← Commercial · Medical · Market Access</span>
+    │   ├── lsc-components.md              <span class="muted-line">← RULE 7a declarative-first decision guide</span>
+    │   ├── concur-integration.md          <span class="muted-line">← SAP Concur ⇄ LSC expense sync</span>
+    │   ├── veeva-to-lsc-mapping.md        <span class="muted-line">← Veeva → LSC terminology + migration</span>
+    │   ├── slds2-lsc-primer.md            <span class="muted-line">← SLDS 2 / Cosmos styling + badge overlay</span>
+    │   └── post-generation-offers.md      <span class="muted-line">← STEP 6 offers, including §6.7 prototype</span>
+    └── evaluations/                       <span class="muted-line">← Scenarios + rubric, one JSON per mode</span></pre>
+      </div>
+    </div>
+
+    <div class="ex-block">
+      <div class="ex-kicker">STEP 0 · smart routing</div>
+      <h2 class="ex-title">Six modes, detected from how you phrase the ask</h2>
+      <p class="ex-desc">You never pick a template. STEP 0 reads the prompt, names the mode it detected, and changes both the question flow and the output contract to match. Phrase it in plain English and check that the mode it announces is the one you wanted.</p>
+      <table class="modes">
         <thead>
-          <tr>
-            <th style="width:20%">Mode</th>
-            <th style="width:11%">STEP 1<br />sub-domain</th>
-            <th style="width:10%">Phase 1<br />context</th>
-            <th style="width:10%">Phase 2<br />business</th>
-            <th style="width:10%">Phase 3<br />technical</th>
-            <th style="width:10%">Phase 4<br />acceptance</th>
-            <th>Story blockers</th>
-          </tr>
+          <tr><th style="width:20%">Mode</th><th style="width:34%">Triggered by phrasing like</th><th>What changes</th></tr>
         </thead>
         <tbody>
           <tr>
-            <td><strong>New Feature</strong></td>
-            <td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td>
-            <td>All apply. The full contract.</td>
-          </tr>
-          <tr>
             <td><strong>Plan + Prototype</strong></td>
-            <td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">—</td><td class="no">—</td>
-            <td><span class="chip blocker">Story blockers skipped</span> <span class="chip ground">Grounding still applies</span></td>
+            <td>"plan and prototype", "no stories yet", "prototype only"</td>
+            <td>Phase 1–2 questions only, then a Solution Plan and a mockup. Story blockers deliberately skipped — <em>no ACs are written.</em></td>
           </tr>
           <tr>
-            <td><strong>Refactor</strong></td>
-            <td class="no">—</td><td class="part">part</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td>
-            <td>All apply. Starts at Phase 2 against a named component.</td>
-          </tr>
-          <tr>
-            <td><strong>Bug Fix</strong></td>
-            <td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="yes">✓</td><td class="yes">✓</td>
-            <td>All apply. Asks for the defect reference instead.</td>
+            <td><strong>New Feature</strong></td>
+            <td>"write a user story for…"</td>
+            <td>Full Phase 1–4 question flow, then one complete story with Pattern A + E and an effort table.</td>
           </tr>
           <tr>
             <td><strong>Epic Breakdown</strong></td>
-            <td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td>
-            <td>All apply, per story. Decomposition approved first; <strong>max 10 stories</strong> per epic.</td>
+            <td>"break down this spec", "decompose this scope doc"</td>
+            <td>Proposes a decomposition for your approval <em>first</em>, then generates up to ten cross-referenced, dependency-ordered stories.</td>
+          </tr>
+          <tr>
+            <td><strong>Refactor</strong></td>
+            <td>"change the existing…", "modify"</td>
+            <td>Skips sub-domain selection and starts at technical discovery, anchored on a named existing component.</td>
+          </tr>
+          <tr>
+            <td><strong>Bug Fix</strong></td>
+            <td>"defect", "broken", "fix"</td>
+            <td>Skips the vertical questions entirely and focuses on current versus expected behaviour.</td>
           </tr>
           <tr>
             <td><strong>Veeva → LSC</strong></td>
-            <td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td>
-            <td>All apply, plus mandatory terminology translation.</td>
+            <td>"migrate", "from Veeva", "this Veeva requirement"</td>
+            <td>Translates every term to LSC-native wording and keeps the Veeva original in a source header only, never in the story body.</td>
           </tr>
         </tbody>
       </table>
-      <div class="note">
-        <div class="co-label">The distinction worth internalising</div>
-        <p>Plan + Prototype drops the <strong>story</strong> blockers — Pattern A, Pattern E, Technical Implementation, Definition of Done — because its deliverable is a plan. It does <em>not</em> drop the <strong>grounding</strong> blockers: the build-technology decision must still be stated, every prototype element must still be labelled, and no component name may be invented. A "lighter" mode is not a licence to guess.</p>
-      </div>
     </div>
 
-    <div class="sec">
-      <div class="sec-kicker">Critical rules</div>
-      <h2 class="sec-title">Every rule states why it exists</h2>
-      <p class="sec-desc">Seventeen rules including the two sub-rules. The <em>because</em> clause is part of the rule text, which means you can challenge a rule on its own stated grounds — and it is why the skill can explain its behaviour when asked.</p>
-      <table class="rt compact">
-        <thead><tr><th style="width:7%">Rule</th><th style="width:37%">What it mandates</th><th>Stated rationale</th></tr></thead>
-        <tbody>
-          <tr><td><strong>1</strong></td><td>Confirm the sub-domain, and whether this is a Veeva migration, first</td><td>Each sub-domain names different objects and personas — the wrong one produces an unbuildable story</td></tr>
-          <tr><td><strong>2</strong></td><td>Ask clarifying questions before generating — 5 to 16, via <code>AskQuestion</code> <span class="chip blocker">blocker</span></td><td>A story built on assumptions forces the follow-up meeting the skill exists to eliminate</td></tr>
-          <tr><td><strong>3</strong></td><td>Never invent component, object, or field names — verify custom via <code>code-review-graph</code>, standard via <code>salesforce-docs</code></td><td>Grep is slower and returns no structural context: no callers, dependents, or covering tests</td></tr>
-          <tr><td><strong>3a</strong></td><td>Mark unverifiable components <em>proposed / to-be-created</em> in the Clarification Questions table</td><td>LSC metadata may not exist in the target org, so most stories are greenfield — asserting existence is the error that survives to a sprint commitment</td></tr>
-          <tr><td><strong>4</strong></td><td>Follow the canonical output format and section order</td><td>Developers and QA find ACs, effort, and impact in the same place every time</td></tr>
-          <tr><td><strong>5</strong></td><td>Include a Clarification Questions table for anything undetermined</td><td>Surfacing an unknown beats silently guessing at it</td></tr>
-          <tr><td><strong>6</strong></td><td>Scan <code>requirements/</code> for overlapping or conflicting stories</td><td>Duplicate or contradictory stories cause conflicting builds</td></tr>
-          <tr><td><strong>7</strong></td><td>Use LSC naming conventions</td><td>Off-convention names break component resolution and obscure whether something is new or existing</td></tr>
-          <tr><td><strong>7a</strong></td><td>Declarative-first build technology; OmniStudio is additive, not the default. Confirm the <strong>runtime</strong> for any OmniStudio work</td><td>LSC is a standard-platform product — OmniStudio is supported but additive, so the lowest-complexity fit wins</td></tr>
-          <tr><td><strong>8</strong></td><td>Include an Estimated Effort section with component-level sizing</td><td>Sprint planning depends on it</td></tr>
-          <tr><td><strong>9</strong></td><td>Detect the workflow mode and adapt the question flow</td><td>Asking Phase 1 vertical questions on a bug fix wastes the architect's time</td></tr>
-          <tr><td><strong>10</strong></td><td>Offer the QTA test bridge after generating ACs, where configured</td><td>ACs convert to automated tests most cheaply while they are still fresh</td></tr>
-          <tr><td><strong>11</strong></td><td>Given / When / Then for every behavioural AC — three explicit lines, no prose <span class="chip blocker">blocker</span></td><td>Pattern A is executable by QA as written; prose ACs are not</td></tr>
-          <tr><td><strong>12</strong></td><td>Concrete LSC business-role persona. HCP / HCO / KOL / DOL are subjects, not the login <span class="chip blocker">blocker</span></td><td>The persona is the Salesforce user — you cannot build a permission set for "a user"</td></tr>
-          <tr><td><strong>13</strong></td><td>ACs in business language. No Apex, IP steps, SOQL, picklist API values, <code>*__c</code>, or <code>Limits.*</code> inside a GWT <span class="chip blocker">blocker</span></td><td>Technical detail belongs in Technical Implementation. Patterns B and C are the stated exception</td></tr>
-          <tr><td><strong>14</strong></td><td>Every story carries <code>## Technical Implementation (high-level)</code> after the ACs <span class="chip blocker">blocker</span></td><td>A concise component table — explicitly <em>not</em> a re-spec of the acceptance criteria</td></tr>
-          <tr><td><strong>15</strong></td><td>Pattern E on every created or updated record — every object, every field, exact value, parents before children. Never "etc." <span class="chip blocker">blocker</span></td><td>A Pattern A line says "the drop is recorded"; it does not tell a developer <code>Status = Submitted</code></td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="sec">
-      <div class="sec-kicker">STEP 3 · resolution order</div>
-      <h2 class="sec-title">What it reaches for, in what order</h2>
-      <p class="sec-desc">Worth knowing precisely, because it tells you what an answer is grounded in. If a server is unavailable the skill says so briefly and falls back — <strong>silent degradation is not the designed behaviour.</strong></p>
-      <table class="rt compact">
-        <thead><tr><th style="width:38%">Goal</th><th style="width:34%">Uses first</th><th>Fallback</th></tr></thead>
-        <tbody>
-          <tr><td>Confirm a <strong>custom</strong> component exists</td><td><code>code-review-graph: semantic_search_nodes</code></td><td>Glob / Grep</td></tr>
-          <tr><td>Trace who calls an IP, Data Mapper, or Apex class</td><td><code>query_graph</code> — <code>callers_of</code> / <code>callees_of</code></td><td>Grep + Read</td></tr>
-          <tr><td>Populate the Impact Analysis table</td><td><code>get_impact_radius</code> / <code>get_affected_flows</code></td><td>Manual Grep tracing</td></tr>
-          <tr><td>Find tests covering a component</td><td><code>query_graph</code> — <code>tests_for</code></td><td>Glob the test directories</td></tr>
-          <tr><td>Verify a <strong>standard LSC</strong> object, field, or feature</td><td><code>salesforce-docs: salesforce_docs_search</code></td><td>Curated catalog reference</td></tr>
-          <tr><td>Find related existing stories</td><td>Grep <code>requirements/*.md</code></td><td><em>none — this one has no fallback</em></td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="sec">
-      <div class="sec-kicker">STEP 5 · validator loop</div>
-      <h2 class="sec-title">The ten checks it runs on itself</h2>
-      <p class="sec-desc">This runs after generation and before presentation. <strong>Checks 2, 3, 4, and 5 are hard blockers</strong> — the skill will not present an artifact that violates the persona, AC-format, business-language, or Technical-Implementation contract. The other six are quality checks it fixes silently.</p>
-      <table class="rt compact">
-        <thead><tr><th style="width:5%">#</th><th style="width:26%">Check</th><th>What it is actually asserting</th></tr></thead>
-        <tbody>
-          <tr><td>1</td><td>Completeness</td><td>All required sections present: Header, Story, Why it matters, ACs, Technical Implementation, Definition of Done, Estimated Effort</td></tr>
-          <tr><td>2</td><td>Persona contract <span class="chip blocker">blocker</span></td><td>A concrete LSC role; HCP/HCO used only as subject unless it is a genuine portal story; <strong>the same role appears in "As a / I want / So that"</strong></td></tr>
-          <tr><td>3</td><td>AC format contract <span class="chip blocker">blocker</span></td><td>Every AC uses Pattern A–E; Pattern A has three explicit lines and a single <em>When</em>; every records-written outcome carries Pattern E with no "etc."</td></tr>
-          <tr><td>4</td><td>Business-language contract <span class="chip blocker">blocker</span></td><td>No Apex class, IP version or step, custom-field API name, SOQL, picklist API value, or <code>Limits.*</code> inside any Pattern-A line</td></tr>
-          <tr><td>5</td><td>Technical Implementation contract <span class="chip blocker">blocker</span></td><td>Present after the AC block, concise, and cross-references the AC numbers it implements</td></tr>
-          <tr><td>6</td><td>Accuracy</td><td>Custom components verified via the graph, standard objects via docs — or explicitly flagged <em>proposed</em></td></tr>
-          <tr><td>7</td><td>Naming</td><td>New component names follow LSC conventions</td></tr>
-          <tr><td>8</td><td>Cross-references</td><td>No conflict with existing stories in <code>requirements/</code></td></tr>
-          <tr><td>9</td><td>Actionability</td><td>Can a developer start building <em>without follow-up questions?</em></td></tr>
-          <tr><td>10</td><td>Effort sanity</td><td>Estimates match the complexity of each change</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="sec">
-      <div class="sec-kicker">STEP 6 · offers</div>
-      <h2 class="sec-title">Seven optional next steps, gated on availability</h2>
-      <p class="sec-desc">Each is offered only when its server or CLI is connected. Knowing the list matters because <strong>several of these are things architects otherwise do by hand</strong> after the story is written.</p>
-      <table class="rt compact">
-        <thead><tr><th style="width:8%">§</th><th style="width:32%">Offer</th><th>Depends on</th></tr></thead>
-        <tbody>
-          <tr><td>6.1</td><td>QTA test prompts — converts ACs to automated tests</td><td><code>qta-core</code></td></tr>
-          <tr><td>6.2</td><td>Diagram generation</td><td><code>udd-whiteboard</code> / <code>figma</code> / <code>diagram-beautifier</code> — Mermaid fallback</td></tr>
-          <tr><td>6.3</td><td>GUS work item creation</td><td><code>gus_server</code>, or the <code>sf data</code> CLI</td></tr>
-          <tr><td>6.4</td><td>Salesforce Docs verification pass</td><td><code>salesforce-docs</code></td></tr>
-          <tr><td>6.5</td><td>Knowledge base — Life Sciences Librarian</td><td><code>notebooklm</code></td></tr>
-          <tr><td>6.6</td><td>Story dependency check</td><td>Scans <code>requirements/</code> — always available</td></tr>
-          <tr><td>6.7</td><td><strong>Product-owner HTML prototype</strong>, grounded in a build-technology decision</td><td>None — always available</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="sec">
-      <div class="sec-kicker">Naming &amp; styling nuances</div>
-      <h2 class="sec-title">Three specifics that are easy to get wrong</h2>
-      <div class="grid3">
-        <div class="card">
-          <span class="ptag">Terminology</span>
-          <h4>It is Omnistudio Data Mapper</h4>
-          <p><strong>"DataRaptor" is the legacy name.</strong> Writing it in new story prose is an explicit stop condition. The skill will correct it — and so should you in review.</p>
+    <div class="ex-block">
+      <div class="ex-kicker">STEP 2 · question-first</div>
+      <h2 class="ex-title">What it asks you before it writes anything</h2>
+      <p class="ex-desc">Between five and sixteen questions, delivered as a structured multiple-choice picker rather than a wall of prose. The mode decides which phases run — Plan + Prototype stops after Phase 2. If it starts writing before asking, the contract is not being applied.</p>
+      <div class="steps-grid four">
+        <div class="step-mini">
+          <div class="step-badge">1</div>
+          <h4>Context · all 3</h4>
+          <p>Sub-domain, persona, and the business outcome. This is what stops the persona drifting to "as a user."</p>
         </div>
-        <div class="card">
-          <span class="ptag">Runtime</span>
-          <h4>Standard, not managed-package</h4>
-          <p>New OmniStudio work defaults to the <strong>Standard runtime</strong> — native objects, Salesforce CLI deployable, Agentforce-ready. The managed-package Vlocity runtime is maintenance-mode. A verdict that omits the runtime is incomplete.</p>
+        <div class="step-mini">
+          <div class="step-badge">2</div>
+          <h4>Business requirements · 3–5</h4>
+          <p>Scope, regulatory constraints, and the records that must be written. Chosen by relevance, not asked mechanically.</p>
         </div>
-        <div class="card">
-          <span class="ptag">Prototype CSS</span>
-          <h4>The primer is mandatory</h4>
-          <p>Hand-rolled SLDS-flavoured CSS is <strong>non-compliant</strong>. Every prototype opens with the primer's <code>:root</code> variable block, uses its utility classes and blueprint recipes, applies the <code>.lsc-badge</code> overlay, and records a self-check score in a header comment.</p>
+        <div class="step-mini">
+          <div class="step-badge">3</div>
+          <h4>Technical discovery · 3–5</h4>
+          <p>Existing components, integrations, and org constraints. Skipped for Plan + Prototype; entered directly for Refactor.</p>
         </div>
-      </div>
-      <p class="footnote">The badge classes on a compliant prototype are literal: <code>.lsc-badge.ootb</code>, <code>.config</code>, <code>.flow</code>, <code>.lwc</code>, <code>.os</code>, <code>.apex</code>, <code>.ext</code>. If you are reviewing a prototype and the badges are ad-hoc spans, it was not built against the primer.</p>
-    </div>
-  </section>
-
-  <!-- ============================================================ ARTIFACT CONTRACT -->
-  <section id="contract" class="panel">
-    <div class="xlabel">Artifact Contract</div>
-    <h1 class="xhead">What the artifact guarantees — and what you are accountable for.</h1>
-    <p class="xsub">You sign the output, not the agent. This is what the contract promises, expressed precisely enough that you can tell when it has been broken.</p>
-
-    <div class="divider-sm"></div>
-
-    <div class="sec">
-      <div class="sec-kicker">The five AC patterns</div>
-      <h2 class="sec-title">Every acceptance criterion uses exactly one of these</h2>
-      <p class="sec-desc">Neither a GWT shape nor a field table fits everything. Picking the wrong pattern is the most common quality problem in a story that otherwise passes every blocker — <strong>do not force Given/When/Then onto a metadata spec.</strong></p>
-      <div class="grid3">
-        <div class="card dflt">
-          <span class="ptag">Pattern A · default</span>
-          <h4>Behavioural</h4>
-          <p>Given / When / Then. Use for anything the persona can <em>observe</em>: a record is created, a field changes, an error appears, inventory moves, routing happens.</p>
-          <p>Business verbs only — "the on-hand balance is reduced," never "<code>Quantity__c</code> is decremented."</p>
-        </div>
-        <div class="card">
-          <span class="ptag">Pattern B</span>
-          <h4>Field / object / metadata</h4>
-          <p>New custom fields, objects, Custom Metadata Types. A specification table, not a behaviour — so it does not take a GWT shape.</p>
-        </div>
-        <div class="card">
-          <span class="ptag">Pattern C</span>
-          <h4>Permission set / FLS</h4>
-          <p>Who can see and edit what. Pairs with Pattern B whenever fields are added — and with the Definition of Done gate on access.</p>
-        </div>
-        <div class="card">
-          <span class="ptag">Pattern D</span>
-          <h4>Field update rules</h4>
-          <p>Business calculation tables. Use when the requirement is a matrix of input conditions to resulting values rather than a single observable outcome.</p>
-        </div>
-        <div class="card mand">
-          <span class="ptag">Pattern E · mandatory</span>
-          <h4>Record &amp; field specification</h4>
-          <p>Required on <em>every</em> outcome where records are created or updated. One block per object, every field, exact value, parents before children.</p>
-        </div>
-        <div class="card">
-          <span class="ptag">Rule of thumb</span>
-          <h4>Pair A with E</h4>
-          <p>Pattern A says "the sample drop is recorded." That does not tell a developer <code>Status = Submitted</code>. Whenever an A outcome writes records, an E block must sit beside it.</p>
+        <div class="step-mini">
+          <div class="step-badge">4</div>
+          <h4>Acceptance &amp; validation · 2–3</h4>
+          <p>Edge cases and how the outcome will be verified. Feeds the Definition of Done rather than being invented later.</p>
         </div>
       </div>
     </div>
 
-    <div class="sec">
-      <div class="sec-kicker">Pattern E anatomy</div>
-      <h2 class="sec-title">This is what "no follow-up meeting" looks like</h2>
-      <p class="sec-desc">One sub-block per object, in creation order. Every field enumerated with its exact value or formula, so a developer can build the write and QA can assert each field without translating anything.</p>
-      <p class="mini-header" style="margin-top:22px">Sample Disbursement — Create</p>
-      <table class="rt compact">
-        <thead><tr><th style="width:30%">Field</th><th style="width:34%">Value</th><th>Notes</th></tr></thead>
-        <tbody>
-          <tr><td>Record Type</td><td>Sample Disbursement</td><td>new / existing</td></tr>
-          <tr><td>Status</td><td>Submitted</td><td></td></tr>
-          <tr><td>Disbursement Date</td><td><code>{TODAY}</code></td><td></td></tr>
-          <tr><td>Account (HCP)</td><td><code>{Visited HCP}</code></td><td>lookup</td></tr>
-          <tr><td>Product</td><td><code>{Selected Product}</code></td><td>lookup</td></tr>
-          <tr><td>Quantity</td><td><code>{Disbursed Qty}</code></td><td></td></tr>
-        </tbody>
-      </table>
-      <div class="callout">
-        <div class="co-label">Reject this sentence on sight</div>
-        <p><strong>"…and related fields are updated."</strong> That clause is where the follow-up meeting comes from, and it is a blocker failure, not a style preference. There is a repair prompt for it under <strong>Repair &amp; Review</strong>.</p>
+    <div class="ex-block">
+      <span class="real-note">Hard blockers — an artifact does not ship without these</span>
+      <div class="ex-kicker">The contract</div>
+      <h2 class="ex-title">Four things that must be true, and one thing it refuses to do</h2>
+      <div class="decision-grid" style="margin-top:16px">
+        <div class="decision-col can">
+          <div class="decision-label">Must be true</div>
+          <ul>
+            <li><strong>Concrete LSC persona.</strong> Field Sales Representative, MSL, KAM, Event Organizer. Never "user." HCPs, HCOs, and KOLs are the subject of the work, not the login role.</li>
+            <li><strong>Business-language Given/When/Then.</strong> Three explicit lines, one <em>When</em>. No Apex class names, OmniScript step numbers, SOQL, or API field names inside an AC — which is why QA can execute the criteria without a developer translating first.</li>
+            <li><strong>Per-field record spec (Pattern E).</strong> Every "records are created or updated" outcome enumerates each object and each field with its exact value. Never "etc."</li>
+            <li><strong>Technical Implementation after the ACs.</strong> The build-technology decision is stated with its rejected alternative, and prototype elements are labelled.</li>
+          </ul>
+        </div>
+        <div class="decision-col approval">
+          <div class="decision-label">Will not invent</div>
+          <ul>
+            <li>Custom components are verified through the <code>code-review-graph</code> index before they are named.</li>
+            <li>Standard LSC objects and fields are verified through <code>salesforce-docs</code> — ~350 objects, Summer '26 / API v67.0.</li>
+            <li>Anything unverifiable is written as <em>(proposed)</em> rather than asserted. A confidently wrong object name is the one error that survives all the way to a sprint commitment.</li>
+            <li>OmniScript is never the silent default. Dynamic Actions, Action Launcher, Screen Flow, and Field Sets are checked first.</li>
+          </ul>
+        </div>
       </div>
     </div>
 
-    <div class="sec">
-      <div class="sec-kicker">Persona cheatsheet</div>
-      <h2 class="sec-title">Ten LSC roles the skill will use instead of "the user"</h2>
-      <p class="sec-desc">Detected on first run by scanning <code>requirements/</code> and <code>permissionsets/</code> for role labels. If you name a persona outside this list it is accepted verbatim — and your workspace's established term always beats a casual one.</p>
-      <table class="rt">
-        <thead><tr><th style="width:52%">Sub-domain / context</th><th>Persona</th></tr></thead>
-        <tbody>
-          <tr><td>Field sales visits, calls, sample drops</td><td><strong>Field Sales Representative</strong></td></tr>
-          <tr><td>Sample inventory, lot reconciliation, accountability</td><td><strong>Sample Accountability Manager</strong> <em>(or Field Sales Rep for on-hand)</em></td></tr>
-          <tr><td>Key account planning &amp; strategy</td><td><strong>Key Account Manager (KAM)</strong></td></tr>
-          <tr><td>Medical affairs, scientific engagement, KOL/DOL</td><td><strong>Medical Science Liaison (MSL)</strong></td></tr>
-          <tr><td>Medical information requests</td><td><strong>Medical Information Specialist</strong></td></tr>
-          <tr><td>Territory design, alignment, cycle plans</td><td><strong>Commercial Operations Analyst</strong> <em>(or Sales Operations Manager)</em></td></tr>
-          <tr><td>Payer, formulary, contracts</td><td><strong>Market Access Manager</strong></td></tr>
-          <tr><td>Content, approved email, CLM</td><td><strong>Marketing Operations Specialist</strong></td></tr>
-          <tr><td>Compliance oversight — Sunshine Act, PDMA, consent</td><td><strong>Compliance Specialist</strong></td></tr>
-          <tr><td>First-line field management</td><td><strong>District Sales Manager</strong></td></tr>
-        </tbody>
-      </table>
-      <div class="callout">
-        <div class="co-label">The HCP trap — LSC-specific</div>
-        <p>An HCP, HCO, KOL, or DOL is <strong>the subject of the work, not the login role.</strong> "As an HCP, I want to receive a sample" is wrong: the rep is the one using Salesforce. Getting this backwards produces a story nobody can build a permission set for.</p>
-      </div>
-    </div>
-
-    <div class="sec">
-      <div class="sec-kicker">Effort sizing</div>
-      <h2 class="sec-title">What S through XXL actually mean in hours</h2>
-      <p class="sec-desc">Sized per component, then totalled. Always labelled <strong>AI-estimated — validate with team</strong>, because a number that looks authoritative is worse than one that admits it needs a human check. Story points are included when the story feeds a sprint backlog.</p>
-      <table class="rt">
-        <thead><tr><th style="width:8%">Size</th><th style="width:12%">Hours</th><th style="width:8%">Points</th><th style="width:26%">Description</th><th>Typical examples</th></tr></thead>
-        <tbody>
-          <tr><td><strong>S</strong></td><td>&lt; 1 hr</td><td>1</td><td>Config change, no code</td><td>Picklist value, custom metadata record, permission set update</td></tr>
-          <tr><td><strong>M</strong></td><td>2–4 hrs</td><td>2</td><td>Single component edit</td><td>OmniScript element change, Data Mapper field add, Screen Flow tweak, Dynamic Action rule</td></tr>
-          <tr><td><strong>L</strong></td><td>4–8 hrs</td><td>3</td><td>New component, or multi-element change</td><td>New Data Mapper, new IP step, OmniScript step redesign, new Screen Flow, Action Launcher action</td></tr>
-          <tr><td><strong>XL</strong></td><td>1–2 days</td><td>5</td><td>Complex logic, or cross-component</td><td>New Apex class, complex IP chain, new OmniScript flow, LWC, inventory reconciliation logic</td></tr>
-          <tr><td><strong>XXL</strong></td><td>3+ days</td><td>8+</td><td>Multi-component integration</td><td>Cross-flow redesign, new object model, Veeva→LSC data migration, multi-system integration</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="sec">
-      <div class="sec-kicker">Definition of Done</div>
-      <h2 class="sec-title">Verifiable outcomes, not activities</h2>
-      <p class="sec-desc">Five gates, each conditional on what the story actually changed. A DoD that lists activities ("build the flow") instead of outcomes is a failed DoD.</p>
-      <table class="rt">
-        <thead><tr><th style="width:56%">Gate</th><th>Applies when</th></tr></thead>
-        <tbody>
-          <tr><td>Primary happy-path behaviour verified in the target org</td><td>Always</td></tr>
-          <tr><td>Key edge case or negative path verified against its AC</td><td>Always — the edge case is mandatory, not optional</td></tr>
-          <tr><td>New fields and objects deployed with FLS applied per the permission-set AC</td><td>Fields or objects changed</td></tr>
-          <tr><td><strong>≥ 85% Apex test coverage</strong>, including bulk and negative paths</td><td>Apex changed</td></tr>
-          <tr><td>No regression to the flows named in Impact Analysis</td><td>Always — and it is why Refactor mode names components</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-  <!-- ============================================================ BUILD DECISIONS -->
-  <section id="build" class="panel">
-    <div class="xlabel">Build Decisions</div>
-    <h1 class="xhead">The argument you have on every engagement, settled in writing.</h1>
-    <p class="xsub">RULE 7a is declarative-first: take the <strong>lowest-complexity option that actually meets the requirement</strong>, and write down what you rejected. OmniStudio is one option on the ladder, never the silent default.</p>
-
-    <div class="divider-sm"></div>
-
-    <div class="sec">
-      <div class="sec-kicker">RULE 7a</div>
-      <h2 class="sec-title">The ladder, and where the line sits</h2>
+    <div class="ex-block">
+      <div class="ex-kicker">RULE 7a · declarative-first</div>
+      <h2 class="ex-title">The build-technology ladder</h2>
+      <p class="ex-desc">The lowest-complexity option that actually meets the requirement wins. The chosen technology, the rationale, and the rejected alternative all go in the plan — so refinement stops arguing "should this be a flow?" and starts arguing scope.</p>
       <div class="ladder">
-        <div class="ladder-step declarative"><div class="ls-n">1</div><p>Lightning + Dynamic Actions</p></div>
-        <div class="ladder-step declarative"><div class="ls-n">2</div><p>Action Launcher · Field Sets</p></div>
-        <div class="ladder-step declarative"><div class="ls-n">3</div><p>Screen Flow</p></div>
+        <div class="ladder-step"><div class="ls-n">1</div><p>Lightning + Dynamic Actions</p></div>
+        <div class="ladder-step"><div class="ls-n">2</div><p>Action Launcher · Field Sets</p></div>
+        <div class="ladder-step"><div class="ls-n">3</div><p>Screen Flow</p></div>
         <div class="ladder-step"><div class="ls-n">4</div><p>LWC</p></div>
         <div class="ladder-step"><div class="ls-n">5</div><p>OmniScript · FlexCard · IP</p></div>
         <div class="ladder-step"><div class="ls-n">6</div><p>Apex · External</p></div>
       </div>
-      <div class="ladder-lbls">
-        <div class="ladder-lbl dec">Declarative — try these first</div>
-        <div class="ladder-lbl cus">Custom — needs a stated reason</div>
-      </div>
-      <p class="footnote">Every plan states the <strong>chosen</strong> technology, the <strong>rationale</strong>, and the <strong>rejected alternative</strong>. That last one is the part worth reading — it is the record of a decision you would otherwise re-litigate in refinement.</p>
-    </div>
+      <p class="footnote">New OmniStudio work defaults to the Standard runtime — native objects, Salesforce CLI, Agentforce-ready — not the managed-package runtime.</p>
 
-    <div class="sec">
-      <div class="sec-kicker">Worked verdicts</div>
-      <h2 class="sec-title">Requirement shape to build technology</h2>
-      <p class="sec-desc">Use this to sanity-check a verdict the skill produced. If the shape in the left column matches your requirement but the plan proposed something heavier, ask it to walk the ladder explicitly — there is a repair prompt for exactly that.</p>
-      <table class="rt">
-        <thead><tr><th style="width:34%">Requirement shape</th><th style="width:24%">Expected verdict</th><th>Why</th></tr></thead>
-        <tbody>
-          <tr>
-            <td>Add a field and surface it on a record page</td>
-            <td><span class="badge config">Config</span></td>
-            <td>Dynamic Forms or a Field Set. No code, and Pattern B + C carry the whole story.</td>
-          </tr>
-          <tr>
-            <td>Short, status-driven capture launched from a record</td>
-            <td><span class="badge config">Config</span> <span class="badge flow">Flow</span></td>
-            <td>Dynamic Actions plus a Screen Flow. Action Launcher already covers launch, and there is no branching to justify a runtime dependency.</td>
-          </tr>
-          <tr>
-            <td>As above, plus a control Lightning cannot render — signature, canvas, map</td>
-            <td><span class="badge flow">Flow</span> <span class="badge lwc">LWC</span></td>
-            <td>Keep the LWC as narrow as possible: <strong>one control, not the whole flow.</strong> A "thin LWC" verdict should look thin in the component inventory.</td>
-          </tr>
-          <tr>
-            <td>Branching intake across several related objects, with routing</td>
-            <td><span class="badge os">OmniScript</span> <span class="badge apex">Apex</span></td>
-            <td>Genuine branching and multi-object writes — medical inquiry intake is the canonical case. OmniStudio earns its place here.</td>
-          </tr>
-          <tr>
-            <td>Recalculate or roll up on save across many records</td>
-            <td><span class="badge flow">Flow</span> <span class="badge apex">Apex</span></td>
-            <td>Record-triggered Flow first; Apex when bulk behaviour or negative paths demand it — which then pulls in the 85% coverage gate.</td>
-          </tr>
-          <tr>
-            <td>Move data in or out of another system</td>
-            <td><span class="badge ext">Ext</span> <span class="badge apex">Apex</span></td>
-            <td>MuleSoft connector plus sync-status tracking. <code>IntegrationJobRun</code> belongs in the story, not as an afterthought.</td>
-          </tr>
-        </tbody>
-      </table>
-      <div class="note">
-        <div class="co-label">Runtime call, made once</div>
-        <p>New OmniStudio work defaults to the <strong>Standard runtime</strong> — native objects, Salesforce CLI deployable, Agentforce-ready — not the managed-package runtime. If a plan proposes OmniStudio without naming the runtime, that is an incomplete verdict.</p>
-      </div>
-    </div>
-
-    <div class="sec">
-      <div class="sec-kicker">Prototype grounding · §6.7</div>
-      <h2 class="sec-title">The badge vocabulary is the cost conversation</h2>
-      <p class="sec-desc">Standard and custom get deliberately different colours. That contrast is the whole mechanism — a product owner reads cost shape off the screen without anyone talking them through an estimate.</p>
+      <div class="mini-header">The badge vocabulary a product owner sees on every prototype</div>
       <div class="badges">
         <span class="badge ootb">OOTB</span>
         <span class="badge config">Config / Dynamic Actions</span>
@@ -983,7 +694,124 @@ cp -R lsc-delivery-architect/.cursor /path/to/your-project/
         <span class="badge apex">Apex</span>
         <span class="badge ext">MuleSoft · Concur · Data Cloud</span>
       </div>
+      <p class="footnote">Standard and custom are deliberately distinct colours. That contrast <em>is</em> the cost-shape conversation.</p>
+    </div>
 
+    <div class="ex-block">
+      <div class="ex-kicker">The knowledge pack</div>
+      <h2 class="ex-title">What it already knows about Life Sciences Cloud</h2>
+      <div class="steps-grid four">
+        <div class="step-mini">
+          <div class="step-badge">C</div>
+          <h4>Commercial</h4>
+          <p>Visits, Sample Management, Product Item and Production Batch inventory, Territory and Cycle Plans, Managed Events, Action Launcher.</p>
+        </div>
+        <div class="step-mini">
+          <div class="step-badge">M</div>
+          <h4>Medical</h4>
+          <p>Medical Inquiry, KOL / DOL engagement, Assessments, Consent, Scientific Interactions.</p>
+        </div>
+        <div class="step-mini">
+          <div class="step-badge">A</div>
+          <h4>Market Access</h4>
+          <p>Payer and formulary, contracts, pricing, access programs.</p>
+        </div>
+        <div class="step-mini">
+          <div class="step-badge">X</div>
+          <h4>Cross-cutting</h4>
+          <p>SAP Concur expense sync for Visits and Events, the MuleSoft connector, and the Veeva CRM → LSC terminology map.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-nav">
+      <button data-goto="why">← Why It Exists</button>
+      <div class="spacer"></div>
+      <button class="next" data-goto="see">See It Work →</button>
+    </div>
+  </section>
+
+  <!-- ============================================================ SEE IT WORK -->
+  <section id="see" class="panel">
+    <span class="time-chip">~4 min read · worked example</span>
+    <div class="xlabel">See It Work</div>
+    <h1 class="xhead">One ask, run with and without the contract.</h1>
+    <p class="xsub">The prompt is the same either way: <strong>"plan and prototype a compliant sample drop on a visit — no stories yet."</strong> What comes back is not.</p>
+
+    <div class="divider-sm"></div>
+
+    <div class="ex-block">
+      <div class="compare">
+        <div class="cmp bad">
+          <div class="cmp-label">Without grounding · generic assistant</div>
+          <p class="quote">"Here's a sample drop mockup with a product picker, a quantity field, and a signature pad."</p>
+          <p class="miss">No persona. No object names. Nothing about which control is standard and which is custom.</p>
+          <p>The product owner approves a picture. The estimate lands three weeks later and the signature pad turns out to be a custom Lightning Web Component nobody scoped.</p>
+        </div>
+        <div class="cmp good">
+          <div class="cmp-label">With the Architect contract</div>
+          <p>A Solution Plan naming the build technology <strong>and its rejected alternative</strong>, plus a clickable prototype where every control carries the component that will implement it — and each standard object behind it marked verified or proposed.</p>
+          <div class="badges">
+            <span class="badge ootb">OOTB</span>
+            <span class="badge config">Config</span>
+            <span class="badge flow">Flow</span>
+            <span class="badge lwc">LWC</span>
+            <span class="badge os">OmniScript</span>
+            <span class="badge apex">Apex</span>
+            <span class="badge ext">Ext</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ex-block">
+      <span class="illustrative-note">Illustrative walkthrough</span>
+      <div class="ex-kicker">Step 1 · the prompt</div>
+      <h2 class="ex-title">Plain English. No Salesforce vocabulary required.</h2>
+      <p class="ex-desc">STEP 0 announces the mode it detected, then asks Phase 1 and Phase 2 questions before writing anything.</p>
+      <div class="cbox prompt">
+        <div class="cbox-bar"><span class="cbox-kind">Prompt</span><button class="copy-btn" type="button">Copy</button></div>
+<pre>Plan and prototype a compliant sample drop on a visit for field sales reps — no stories yet.</pre>
+      </div>
+      <p class="footnote">Detected — Mode: <strong>Plan + Prototype</strong> · Sub-domain: Commercial · Persona: Field Sales Representative</p>
+    </div>
+
+    <div class="ex-block">
+      <div class="ex-kicker">Step 2 · artifact 1</div>
+      <h2 class="ex-title">The Solution Plan states the verdict and what it rejected</h2>
+      <div class="file-preview">
+        <div class="fp-bar">
+          <span class="fp-dot"></span><span class="fp-dot"></span><span class="fp-dot"></span>
+          <span class="fp-name">requirements/LSC_SampleDrop_SolutionPlan.md</span>
+        </div>
+        <div class="fp-body">
+          <p class="fp-h1">Compliant Sample Drop on a Visit</p>
+          <p class="fp-role">Mode: Plan + Prototype · Sub-domain: Commercial · Persona: Field Sales Representative</p>
+          <div class="fp-section">
+            <h4>Build technology — chosen</h4>
+            <p>Dynamic Actions on the Visit record page, a <strong>Screen Flow</strong> for product and lot selection with an on-hand quantity guard, and a <strong>thin LWC</strong> for signature capture.</p>
+          </div>
+          <div class="fp-section">
+            <h4>Build technology — rejected, and why</h4>
+            <p><strong>OmniScript.</strong> The path is short and status-driven with no meaningful branching, and Action Launcher already covers launch from the Visit. OmniStudio would add a runtime dependency for no functional gain.</p>
+          </div>
+          <div class="fp-section">
+            <h4>Objects referenced</h4>
+            <p>Visit, ProductItem, ProductionBatch, HealthcareProvider — all from the Summer '26 / API v67.0 catalog, each flagged <em>proposed</em> where the LSC package is not deployed in the target org.</p>
+          </div>
+          <div class="fp-section">
+            <h4>Deliberately absent</h4>
+            <p>No acceptance criteria and no field specs. This artifact exists to get agreement on shape and cost <em>before</em> anyone argues about Given/When/Then.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ex-block">
+      <span class="illustrative-note">Prototype excerpt — every control labelled</span>
+      <div class="ex-kicker">Step 3 · artifact 2</div>
+      <h2 class="ex-title">What the product owner clicks through</h2>
+      <p class="ex-desc">One self-contained HTML file, SLDS 2 styled. The banner names the build technology, every control carries its badge, and the footer legend mirrors the component inventory in the plan.</p>
       <div class="proto-frame">
         <div class="proto-chrome">
           <span>Visit · Dr. Elena Vargas, City Endocrinology<span class="el-badge badge ootb" style="color:#ecfdf5;border-color:transparent;background:rgba(255,255,255,.2)">OOTB record page</span></span>
@@ -1014,318 +842,131 @@ cp -R lsc-delivery-architect/.cursor /path/to/your-project/
           </div>
         </div>
       </div>
-      <p class="footnote">Fictional HCP — prototypes use invented data by rule. A build-technology banner at the top and a legend at the foot are both mandatory; an unlabelled generic mockup is treated as a defect, not a draft.</p>
-    </div>
-  </section>
-
-  <!-- ============================================================ LSC LOOKUPS -->
-  <section id="lookup" class="panel">
-    <div class="xlabel">LSC Lookups</div>
-    <h1 class="xhead">The tables you actually open mid-conversation.</h1>
-    <p class="xsub">Filter across every table below at once — type an object, a Veeva term, a compliance concern, or a persona. This is the content the skill reasons over, so it is also the content worth checking it against.</p>
-
-    <div class="divider-sm"></div>
-
-    <div class="filter-wrap">
-      <input type="search" id="refFilter" placeholder="Filter all tables — try &quot;sample&quot;, &quot;consent&quot;, &quot;expense&quot;" aria-label="Filter reference tables" />
-    </div>
-    <div class="filter-count" id="filterCount"></div>
-
-    <div class="sec ref-group" style="margin-top:32px">
-      <div class="sec-kicker">Migration lookup</div>
-      <h2 class="sec-title">Veeva CRM to Salesforce LSC</h2>
-      <p class="sec-desc">The translation the skill applies in Veeva → LSC mode. Where the right-hand column is vague, treat it as a clarification to raise rather than a mapping to accept.</p>
-      <table class="rt compact">
-        <thead><tr><th style="width:32%">Veeva CRM term</th><th style="width:36%">LSC equivalent</th><th>Notes</th></tr></thead>
-        <tbody>
-          <tr><td>Call / Call2</td><td><strong>Visit</strong> (+ Visit Task)</td><td>The field interaction</td></tr>
-          <tr><td>Call Objective</td><td><strong>Visit Task / Objective</strong></td><td></td></tr>
-          <tr><td>My Schedule / Daily Planner</td><td><strong>Visit scheduling / Calendar</strong></td><td></td></tr>
-          <tr><td>Account (HCP)</td><td><strong>Account (Person Account)</strong></td><td>Individual provider</td></tr>
-          <tr><td>Account (HCO)</td><td><strong>Account (Business Account)</strong></td><td>Organization</td></tr>
-          <tr><td>Address</td><td><strong>Address / Location</strong></td><td>Sampleable location</td></tr>
-          <tr><td>Sample Management</td><td><strong>Product Item + Inventory</strong></td><td>On-hand stock model</td></tr>
-          <tr><td>Sample Lot</td><td><strong>Production Batch / Production Batch Item</strong></td><td>Lot + expiry</td></tr>
-          <tr><td>Sample Transaction / Disbursement</td><td><strong>Sample Transaction / Disbursement</strong></td><td>With signature</td></tr>
-          <tr><td>Sample Order</td><td><strong>Sample Order / Sample Request</strong></td><td>Replenishment</td></tr>
-          <tr><td>Sample Inventory reconciliation</td><td><strong>Inventory Count / Reconciliation</strong></td><td>Physical vs. system</td></tr>
-          <tr><td>Product / Detail</td><td><strong>Product (Product2)</strong></td><td></td></tr>
-          <tr><td>CLM / Media (presentations)</td><td><strong>Engage / Content (Approved Documents / DAM)</strong></td><td>Approved content</td></tr>
-          <tr><td>Approved Email</td><td><strong>Approved email / Content distribution</strong></td><td></td></tr>
-          <tr><td>Territory / Alignment</td><td><strong>Territory Management / Alignment</strong></td><td></td></tr>
-          <tr><td>Cycle Plan / Call Plan</td><td><strong>MC Cycle Plan / Call Plan / Target</strong></td><td>Reach &amp; frequency</td></tr>
-          <tr><td>Medical Inquiry (Veeva Medical)</td><td><strong>Medical Inquiry / Medical Information Request</strong></td><td>SLA-tracked</td></tr>
-          <tr><td>KOL / Stakeholder Navigator</td><td><strong>KOL/DOL management on Account + Assessment</strong></td><td>Scoring / tiering</td></tr>
-          <tr><td>Consent capture</td><td><strong>Consent / Communication Subscription</strong></td><td></td></tr>
-          <tr><td>Veeva Vault (content / docs)</td><td><strong>Salesforce Files / DAM / external Vault integration</strong></td><td><em>May stay in Vault via integration — confirm</em></td></tr>
-          <tr><td>Zvod / offline sync</td><td><strong>Salesforce mobile offline / Field Service offline</strong></td><td><em>Verify offline capability — common gap</em></td></tr>
-          <tr><td>MyInsights</td><td><strong>CRM Analytics / Dashboards / LWC</strong></td><td></td></tr>
-          <tr><td>Action Bar / quick actions</td><td><strong>Action Launcher</strong></td><td>Guided actions</td></tr>
-          <tr><td>Call Expenses / Concur</td><td><strong>Visit Expenses + Expense Report + Concur sync</strong></td><td>Bidirectional MuleSoft sync</td></tr>
-        </tbody>
-      </table>
+      <p class="footnote">Fictional HCP. The badges are the point: the product owner can see which pieces are configuration and which are custom before anyone writes a story.</p>
     </div>
 
-    <div class="sec ref-group">
-      <div class="sec-kicker">Non-functional driver</div>
-      <h2 class="sec-title">Compliance concerns and what each one does to a story</h2>
-      <p class="sec-desc">These feed the Phase 2 non-functional question. If your story touches the middle column and the right column is absent from the output, the story is incomplete regardless of how clean the ACs read.</p>
-      <table class="rt compact">
-        <thead><tr><th style="width:22%">Concern</th><th style="width:30%">When it applies</th><th>Story implication</th></tr></thead>
-        <tbody>
-          <tr><td><strong>Sample accountability (PDMA)</strong></td><td>Any sample or product disbursement to HCPs</td><td>On-hand reconciliation, signatures, lot and expiry tracking, eligibility by license</td></tr>
-          <tr><td><strong>Consent management</strong></td><td>Contacting HCPs by email, call, or channel</td><td>Capture and enforce consent before engagement</td></tr>
-          <tr><td><strong>Open Payments / Sunshine Act</strong></td><td>Spend or transfers of value to HCPs</td><td>Capture spend, meals, honoraria for reporting</td></tr>
-          <tr><td><strong>GxP / validation</strong></td><td>Regulated data and audited workflows</td><td>Field history, audit trail, validated changes</td></tr>
-          <tr><td><strong>HCP licensure</strong></td><td>Sampling and prescribing-related actions</td><td>Validate active license plus state eligibility</td></tr>
-          <tr><td><strong>Expense / spend integrity</strong></td><td>Visit expenses synced to SAP Concur</td><td>Sync-status tracking, edit locks while syncing or submitted, attachment limits</td></tr>
-        </tbody>
-      </table>
-    </div>
+    <div class="ex-block">
+      <span class="real-note">Real excerpt · condensed</span>
+      <div class="ex-kicker">Step 4 · artifact 3</div>
+      <h2 class="ex-title">What a developer receives once the plan is promoted</h2>
+      <div class="file-preview">
+        <div class="fp-bar">
+          <span class="fp-dot"></span><span class="fp-dot"></span><span class="fp-dot"></span>
+          <span class="fp-name">requirements/LSC_CompliantSampleDrop_UserStory.md</span>
+        </div>
+        <div class="fp-body">
+          <p class="fp-h1">Compliant Sample Drop on a Visit</p>
+          <p class="fp-role">Persona: Field Sales Representative · Sub-domain: Commercial · Priority: P1</p>
 
-    <div class="sec ref-group">
-      <div class="sec-kicker">Commercial</div>
-      <h2 class="sec-title">Field sales object model</h2>
-      <p class="sec-desc">Business terms as the skill uses them. Exact API names are verified through <code>salesforce-docs</code> against the ~350-object catalog before they appear in an artifact.</p>
-      <table class="rt compact">
-        <thead><tr><th style="width:34%">Object</th><th style="width:36%">Purpose</th><th>Notes</th></tr></thead>
-        <tbody>
-          <tr><td><strong>Account</strong> (HCP = Person, HCO = Business)</td><td>The provider or organization being engaged</td><td>Person Accounts for individual HCPs</td></tr>
-          <tr><td><strong>Address / Location</strong></td><td>Where an account can be visited or sampled</td><td>An HCP may have many addresses</td></tr>
-          <tr><td><strong>Visit</strong> <em>(formerly Veeva "Call")</em></td><td>A field interaction with an account</td><td>Parent of visit tasks and details</td></tr>
-          <tr><td><strong>Visit Task / Call Objective</strong></td><td>Planned activities within a visit</td><td>Present product, drop sample</td></tr>
-          <tr><td><strong>Call Report / Interaction</strong></td><td>The recorded outcome of a visit</td><td></td></tr>
-          <tr><td><strong>Product</strong> (Product2)</td><td>The marketed product or brand</td><td></td></tr>
-          <tr><td><strong>Product Item</strong></td><td>On-hand inventory of a product at a location</td><td>The LSC inventory unit</td></tr>
-          <tr><td><strong>Production Batch / Batch Item</strong></td><td>Manufactured lot and lot line for samples</td><td>Lot number, expiration</td></tr>
-          <tr><td><strong>Sample Order / Request</strong></td><td>Request to replenish samples</td><td></td></tr>
-          <tr><td><strong>Sample Transaction / Disbursement</strong></td><td>Sample given to an HCP</td><td>Signature, quantity, lot</td></tr>
-          <tr><td><strong>Inventory Count / Reconciliation</strong></td><td>Periodic physical count vs. system</td><td>Discrepancy handling</td></tr>
-          <tr><td><strong>Product Transfer</strong></td><td>Move stock between locations or reps</td><td></td></tr>
-          <tr><td><strong>Territory / Alignment</strong></td><td>Which accounts a rep owns</td><td></td></tr>
-          <tr><td><strong>MC Cycle Plan / Call Plan / Target</strong></td><td>Planned reach and frequency per account</td><td></td></tr>
-          <tr><td><strong>Action Launcher</strong></td><td>Guided quick actions on a record</td><td>Launches OmniScripts and flows</td></tr>
-          <tr><td><strong>Event / Meeting</strong> (Managed Event)</td><td>Parent record for an event or meeting</td><td>Actual and estimated expenses</td></tr>
-        </tbody>
-      </table>
-    </div>
+          <div class="fp-section">
+            <h4>The story</h4>
+            <p>As a <strong>Field Sales Representative</strong>, I want to record the samples I hand to a health care provider during a visit, so that the drop is captured against the correct lot and the provider's signature is on file before I leave the office.</p>
+          </div>
 
-    <div class="sec ref-group">
-      <div class="sec-kicker">Concur expense chain</div>
-      <h2 class="sec-title">The link is a junction, and people get this wrong</h2>
-      <p class="sec-desc">The single most misunderstood part of the LSC expense model: an Expense is <strong>not</strong> related to an Expense Report by a lookup field. It goes through a junction record.</p>
-      <table class="rt compact">
-        <thead><tr><th style="width:34%">Object</th><th style="width:36%">Purpose</th><th>Notes</th></tr></thead>
-        <tbody>
-          <tr><td><strong>Expense</strong> (<code>ExpenseEntry</code>)</td><td>An expense line — meal, travel, honoraria</td><td>Created under a Visit or Event; syncs to SAP Concur</td></tr>
-          <tr><td><strong>Expense Type</strong></td><td>Classifies an expense</td><td>Holds the estimated-allocation Distribution Type</td></tr>
-          <tr><td><strong>Expense Report</strong></td><td>Grouping of expenses submitted together</td><td>Maps 1:1 to a Concur report</td></tr>
-          <tr><td><strong>Expense Report Entry</strong></td><td><strong>Junction</strong> linking an Expense to an Expense Report</td><td><em>Not a lookup field on Expense — this is the trap</em></td></tr>
-          <tr><td><strong>Expense Participant</strong></td><td>Attendee or participant allocation of an expense</td><td>Attendees, Speakers, Colleagues, Write-Ins, Non-Profiled Attendees</td></tr>
-          <tr><td><strong>IntegrationJobRun</strong></td><td>Stores each MuleSoft sync job run</td><td>Job name, timestamp, status, processed count</td></tr>
-        </tbody>
-      </table>
-      <p class="footnote">Any expense or Concur story should also account for the sync-status model and edit matrix — records lock while syncing or submitted. The full model, including estimated allocation to participants and the admin configuration tile, is in <code>concur-integration.md</code>.</p>
-    </div>
+          <div class="fp-section fp-gwt">
+            <h4>Acceptance criteria — Pattern A</h4>
+            <p><strong>Given</strong> I am on a visit with a provider whose license is active<br />
+            <strong>When</strong> I record a sample drop for a product lot that has stock on hand<br />
+            <strong>Then</strong> the quantity I entered is accepted and the provider is asked to sign<br />
+            <strong>And</strong> the remaining on-hand quantity for that lot is reduced by what I gave out</p>
+          </div>
 
-    <div class="sec ref-group">
-      <div class="sec-kicker">Medical &amp; Market Access</div>
-      <h2 class="sec-title">The other two sub-domains</h2>
-      <table class="rt compact">
-        <thead><tr><th style="width:34%">Object</th><th style="width:36%">Purpose</th><th>Notes</th></tr></thead>
-        <tbody>
-          <tr><td><strong>Account</strong> (KOL/DOL flagged)</td><td>Scientific stakeholders</td><td>KOL/DOL scoring and tiering</td></tr>
-          <tr><td><strong>Scientific Interaction / Engagement</strong></td><td>MSL touchpoint with a KOL</td><td>Non-promotional</td></tr>
-          <tr><td><strong>Medical Inquiry / Information Request</strong></td><td>HCP question routed to Medical</td><td>SLA and response tracking</td></tr>
-          <tr><td><strong>Assessment / Assessment Task</strong></td><td>Structured evaluations, e.g. KOL profiling</td><td>Uses the Assessment framework</td></tr>
-          <tr><td><strong>Consent</strong></td><td>Permission to engage on channels</td><td></td></tr>
-          <tr><td><strong>Adverse Event</strong> (intake)</td><td>Safety signal capture during interactions</td><td>Routed to pharmacovigilance</td></tr>
-          <tr><td><strong>Payer Account</strong> (HCO subtype)</td><td>Insurers and PBMs</td><td>Market Access</td></tr>
-          <tr><td><strong>Formulary / Coverage</strong></td><td>Product coverage status by payer</td><td>Market Access</td></tr>
-          <tr><td><strong>Contract / Agreement</strong></td><td>Access and pricing agreements</td><td>Market Access</td></tr>
-          <tr><td><strong>Program / Access Program</strong></td><td>Patient and access support programs</td><td>Market Access</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
+          <div class="fp-section fp-gwt">
+            <h4>The edge case is mandatory, not optional</h4>
+            <p><strong>Given</strong> the lot I selected has fewer units on hand than I am trying to give out<br />
+            <strong>When</strong> I enter the quantity<br />
+            <strong>Then</strong> I am told how many units remain and cannot continue until the quantity fits</p>
+          </div>
 
-  <!-- ============================================================ REPAIR & REVIEW -->
-  <section id="repair" class="panel">
-    <div class="xlabel">Repair &amp; Review</div>
-    <h1 class="xhead">When the output misses a blocker, fix it with a prompt — not by hand.</h1>
-    <p class="xsub">Editing a bad artifact yourself hides the failure and you will hit it again next sprint. Naming the blocker back to the agent repairs the artifact <strong>and</strong> tells you whether the contract is loaded at all.</p>
+          <div class="fp-section">
+            <h4>Business language is enforced</h4>
+            <p>No Apex class name, OmniScript step number, SOQL query, or <code>*__c</code> API name appears inside any Given/When/Then line. All of it moves to Technical Implementation — which is why QA can execute these criteria without a developer translating first.</p>
+            <div class="fp-tags">
+              <span class="fp-tag">Persona</span>
+              <span class="fp-tag">Pattern A</span>
+              <span class="fp-tag">Pattern E field spec</span>
+              <span class="fp-tag">Tech Implementation</span>
+              <span class="fp-tag">Definition of Done</span>
+              <span class="fp-tag">Effort S–XXL</span>
+            </div>
+          </div>
 
-    <div class="divider-sm"></div>
+          <div class="fp-section">
+            <h4>Pattern E — every field, no "etc."</h4>
+            <p>Each object written by the story gets its own table: object, field, value, and source. A "and related fields are updated" outcome is treated as an incomplete story, because that sentence is where the follow-up meeting comes from.</p>
+          </div>
 
-    <div class="sec">
-      <div class="sec-kicker">Symptom to repair</div>
-      <h2 class="sec-title">Eight failures, and the prompt that fixes each</h2>
-      <p class="sec-desc">If several of these fire at once, stop repairing and check the install — it usually means the trigger rule never landed in <code>.cursor/rules/</code>, or the window was not reloaded after you copied it.</p>
-
-      <table class="rt">
-        <thead><tr><th style="width:30%">Symptom</th><th style="width:26%">Likely cause</th><th>Repair</th></tr></thead>
-        <tbody>
-          <tr>
-            <td>It wrote acceptance criteria after you said "no stories yet"</td>
-            <td>STEP 0 routed to New Feature instead of Plan + Prototype</td>
-            <td>Re-run in Plan + Prototype mode. Produce only the Solution Plan and the grounded prototype — no acceptance criteria, no field specs.</td>
-          </tr>
-          <tr>
-            <td>The persona is "the user" or "a business user"</td>
-            <td>The persona blocker was not applied — often the rule file is missing</td>
-            <td>The persona is not a concrete LSC business role. Re-anchor it to the persona cheatsheet and rewrite the story header.</td>
-          </tr>
-          <tr>
-            <td>An AC contains an Apex class, an IP step number, or a <code>*__c</code> field</td>
-            <td>The business-language blocker was skipped</td>
-            <td>Move every technical name out of the Given/When/Then lines into Technical Implementation, and restate each criterion in language a QA analyst can execute directly.</td>
-          </tr>
-          <tr>
-            <td>A "records are updated" outcome has no field table</td>
-            <td>Pattern E missing — the single most common gap</td>
-            <td>That outcome writes records but has no Pattern E block. Enumerate every object and every field with its exact value, parents before children. No "etc."</td>
-          </tr>
-          <tr>
-            <td>It chose OmniScript for a short three-field form</td>
-            <td>The RULE 7a ladder was not walked</td>
-            <td>Walk the declarative-first ladder explicitly. Show me why Dynamic Actions, Action Launcher, Field Sets, and Screen Flow were each insufficient before OmniScript.</td>
-          </tr>
-          <tr>
-            <td>It named an object or component you do not recognise</td>
-            <td>Verification indexes unavailable, and it asserted anyway</td>
-            <td>Which of the objects and components you named did you verify, and against what? Mark everything unverified as <em>(proposed)</em> and list what you could not confirm.</td>
-          </tr>
-          <tr>
-            <td>The prototype looks like a generic web app</td>
-            <td>The §6.7 grounding rule was skipped</td>
-            <td>Every interactive element needs the Salesforce component that will implement it, plus the build-technology banner and the footer legend. Re-issue it grounded.</td>
-          </tr>
-          <tr>
-            <td>It answers generically and never names a mode</td>
-            <td>The rule is not in <code>.cursor/rules/</code>, or the window was not reloaded</td>
-            <td>Which skill and rule are you applying to this request, and which workflow mode did you detect? — then reload the window if it cannot say.</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div class="mini-header">The two repairs worth keeping to hand</div>
-      <div class="cbox prompt">
-        <div class="cbox-bar"><span class="cbox-kind">Prompt · missing field spec</span><button class="copy-btn" type="button">Copy</button></div>
-<pre>That outcome creates or updates records but has no Pattern E block. Enumerate every object and every field with its exact value, parents before children, one table per object. Remove any "and related fields are updated" phrasing.</pre>
+          <div class="fp-section">
+            <h4>Definition of Done and effort</h4>
+            <p>A checkbox list covering profile and field-level access where fields changed, plus the ≥85% Apex coverage gate including bulk and negative paths if Apex changed. Effort is sized per component from S to XXL and always labelled <em>AI-estimated — validate with team</em>, because a number that looks authoritative is worse than one that admits it needs a human check.</p>
+          </div>
+        </div>
       </div>
-      <div class="cbox prompt">
-        <div class="cbox-bar"><span class="cbox-kind">Prompt · unjustified build tech</span><button class="copy-btn" type="button">Copy</button></div>
-<pre>Walk the RULE 7a declarative-first ladder explicitly for this requirement. Show me why Dynamic Actions, Action Launcher, Field Sets, and Screen Flow were each insufficient before you reached for anything custom, and state the rejected alternative in the plan.</pre>
-      </div>
+      <p class="footnote">Structure and contract are real; this excerpt is condensed. Full stories are written to <code>requirements/</code>.</p>
     </div>
 
-    <div class="sec">
-      <div class="sec-kicker">Red flags · the STOP list</div>
-      <h2 class="sec-title">The tripwires the skill sets on itself</h2>
-      <p class="sec-desc">These are written into <code>SKILL.md</code> as explicit "about to do X → STOP" conditions. They are worth knowing verbatim, because <strong>they double as your review checklist</strong> — anything on this list that reaches your screen is a blocker that got past the validator.</p>
-      <div class="stops">
-        <div class="stop">
-          <div class="sl">About to write "As a user", "business user", or "system"</div>
-          <div class="sr">Use the concrete LSC role.</div>
+    <div class="ex-block">
+      <div class="ex-kicker">Step 5 · the evidence it is governed</div>
+      <h2 class="ex-title">Same skill, two asks, two different verdicts</h2>
+      <p class="ex-desc">The stack is chosen because of the requirement, not because OmniStudio happened to be the house default. Both rationales are written into the plan.</p>
+      <div class="two-col">
+        <div class="two-col-card">
+          <h3>Scenario A — Field Sales Representative</h3>
+          <p>"Field reps need to hand out samples on visits and stay compliant."</p>
+          <div class="badges">
+            <span class="badge ootb">OOTB</span>
+            <span class="badge flow">Flow</span>
+            <span class="badge lwc">LWC</span>
+          </div>
+          <p style="margin-top:12px">Short, status-driven, and Action Launcher is already on the Visit. OmniStudio is not justified.</p>
         </div>
-        <div class="stop">
-          <div class="sl">About to write "As an HCP / HCO" for an <strong>internal</strong> feature</div>
-          <div class="sr">The persona is the field or medical user. The HCP is the subject.</div>
-        </div>
-        <div class="stop">
-          <div class="sl">A Given/When/Then/And line contains an Apex class, IP version or step, SOQL, picklist API value, or <code>*__c</code></div>
-          <div class="sr">Move it to Technical Implementation.</div>
-        </div>
-        <div class="stop">
-          <div class="sl">Writing story content before Phase 1 and Phase 2 questions are answered</div>
-          <div class="sr">Ask via <code>AskQuestion</code> first.</div>
-        </div>
-        <div class="stop">
-          <div class="sl">Naming an OmniScript, Data Mapper, IP, FlexCard, Screen Flow, Apex class, LWC, or object that has not been verified</div>
-          <div class="sr">Verify it, or mark it <em>proposed</em>.</div>
-        </div>
-        <div class="stop">
-          <div class="sl">Defaulting to OmniScript without checking Dynamic Actions, Action Launcher, Screen Flow, or Field Sets</div>
-          <div class="sr">Apply the RULE 7a decision guide.</div>
-        </div>
-        <div class="stop">
-          <div class="sl">Writing "DataRaptor" in new story prose</div>
-          <div class="sr">Use "Omnistudio Data Mapper" — DataRaptor is the legacy name.</div>
-        </div>
-        <div class="stop">
-          <div class="sl">Keeping Veeva terminology in the story body during a migration</div>
-          <div class="sr">Translate to LSC-native; the original stays in the source header.</div>
-        </div>
-        <div class="stop">
-          <div class="sl">An AC is a prose paragraph instead of three GWT lines</div>
-          <div class="sr">Reformat to Pattern A.</div>
-        </div>
-        <div class="stop">
-          <div class="sl">An AC says "records are created/updated" with no Pattern E block, or a Pattern E block abbreviates with "etc."</div>
-          <div class="sr">Enumerate every object and every field written.</div>
-        </div>
-        <div class="stop">
-          <div class="sl">About to present a story missing Technical Implementation, Definition of Done, or Estimated Effort</div>
-          <div class="sr">It is incomplete.</div>
-        </div>
-        <div class="stop">
-          <div class="sl">About to hand a product owner a prototype that does not label the build technology behind each screen</div>
-          <div class="sr">Ground the mockup or do not ship it — answering "OOTB or custom?" <em>is</em> the point of the prototype.</div>
-        </div>
-        <div class="stop">
-          <div class="sl">About to hand-roll SLDS-flavoured CSS instead of using the SLDS 2 + Cosmos primer</div>
-          <div class="sr">Use the primer. Hand-rolled CSS is not compliant.</div>
+        <div class="two-col-card">
+          <h3>Scenario B — Medical Science Liaison</h3>
+          <p>"MSLs need a better way to log and route medical questions from HCPs."</p>
+          <div class="badges">
+            <span class="badge os">OmniScript</span>
+            <span class="badge os">FlexCard</span>
+            <span class="badge apex">Apex</span>
+          </div>
+          <p style="margin-top:12px">Branching capture across Inquiry, Inquiry Question, and Answer, plus routing. OmniStudio earns its place here — and the reasoning is on the page.</p>
         </div>
       </div>
     </div>
 
-    <div class="sec">
-      <div class="sec-kicker">Common mistakes</div>
-      <h2 class="sec-title">The rationalisations, and the rebuttal to each</h2>
-      <p class="sec-desc">The skill ships a table of the excuses that precede a contract violation. It is aimed at the agent, but it is just as useful pointed at a review conversation — <strong>every one of these is an argument you will eventually have with a teammate.</strong></p>
-      <table class="rt">
-        <thead><tr><th style="width:42%">The excuse</th><th>The reality</th></tr></thead>
-        <tbody>
-          <tr>
-            <td>"The HCP is the user, so 'As an HCP' is fine."</td>
-            <td>HCP, HCO, KOL, and DOL are the <strong>subjects</strong> of the work. The persona is the Salesforce login user — Field Sales Rep, MSL, KAM. Use an HCP persona only for a genuine HCP-facing portal story. <span class="chip rule">RULE 12</span></td>
-          </tr>
-          <tr>
-            <td>"This story is small — 'the user' is a fine persona."</td>
-            <td>The persona contract is a hard blocker. Every "As a…" needs a concrete LSC business role, regardless of story size. <span class="chip rule">RULE 12</span></td>
-          </tr>
-          <tr>
-            <td>"One Apex class or field API name inside the AC is harmless context."</td>
-            <td>The business-language contract is a hard blocker. Move it to Technical Implementation — that is what the section is for. <span class="chip rule">RULE 13</span></td>
-          </tr>
-          <tr>
-            <td>"LSC objects are standard — I'm sure of the field name."</td>
-            <td>Verify standard objects and fields through <code>salesforce-docs</code>. Where the LSC package is not deployed, mark components <em>proposed</em> rather than asserting them. <span class="chip rule">RULE 3 · 3a</span></td>
-          </tr>
-          <tr>
-            <td>"The Veeva term maps obviously — I'll keep the Veeva wording."</td>
-            <td>Migration mode must translate to LSC-native terminology. The Veeva term survives only in a mapping note, never in the story body. <span class="chip rule">STEP 0</span></td>
-          </tr>
-          <tr>
-            <td>"The prompt is detailed enough — I'll skip clarifying questions."</td>
-            <td>Question-first is non-negotiable. A detailed-looking prompt is exactly the case the 5-question floor exists for. <span class="chip rule">RULE 2</span></td>
-          </tr>
-          <tr>
-            <td>"Given/When/Then is verbose — I'll write prose ACs."</td>
-            <td>Pattern A requires three explicit lines with a single <em>When</em>. Prose is not executable by QA. <span class="chip rule">RULE 11</span></td>
-          </tr>
-          <tr>
-            <td>"The ACs describe it — I'll drop the Technical Implementation section."</td>
-            <td>Every story carries it, after the ACs. <span class="chip rule">RULE 14</span></td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="ex-block">
+      <div class="ex-kicker">Division of labour</div>
+      <h2 class="ex-title">What the agent handles, and what stays yours</h2>
+      <p class="ex-desc">The skill drafts. It does not decide. Everything in the right-hand column is a judgment call it will ask about rather than assume.</p>
+      <div class="decision-grid" style="margin-top:16px">
+        <div class="decision-col can">
+          <div class="decision-label">The agent handles</div>
+          <ul>
+            <li>Detecting the workflow mode from your phrasing</li>
+            <li>Loading the right sub-domain object model and nothing else</li>
+            <li>Verifying component and object names, or marking them <em>proposed</em></li>
+            <li>Scanning <code>requirements/</code> for stories that overlap or conflict</li>
+            <li>Choosing the declarative-first build technology and stating why</li>
+            <li>Enumerating every field on every write</li>
+          </ul>
+        </div>
+        <div class="decision-col approval">
+          <div class="decision-label">You still decide</div>
+          <ul>
+            <li>Commercial, Medical, or Market Access — and net-new versus Veeva migration</li>
+            <li>The persona and the business outcome</li>
+            <li>Regulatory scope: sample accountability, consent, Open Payments</li>
+            <li>Which markets, product families, and account types are in scope</li>
+            <li>Whether the estimate is credible — the sizing is a starting point</li>
+            <li>Whether a <em>proposed</em> object name is the real one</li>
+          </ul>
+        </div>
+      </div>
     </div>
 
-    <div class="sec">
-      <div class="sec-kicker">Pre-flight</div>
-      <h2 class="sec-title">Check it before you send it</h2>
-      <p class="sec-desc">Two checklists, because the two audiences fail differently. A product owner is misled by an ungrounded prototype; a developer is blocked by a missing field spec. <strong>These are yours to sign, not the agent's.</strong></p>
+    <div class="ex-block">
+      <div class="ex-kicker">Before you send it</div>
+      <h2 class="ex-title">Two quick checks, because the two audiences fail differently</h2>
+      <p class="ex-desc">A product owner is misled by an ungrounded prototype. A developer is blocked by a missing field spec. <strong>You sign the artifact, not the agent</strong> — these are the things worth a second look.</p>
 
       <div class="cl-wrap">
         <div class="cl-head">
@@ -1333,16 +974,15 @@ cp -R lsc-delivery-architect/.cursor /path/to/your-project/
             <h4>Before you walk it with a product owner</h4>
             <p class="cl-sub">Solution Plan and grounded prototype</p>
           </div>
-          <div class="cl-meter"><span class="cl-txt">0 / 7</span><span class="cl-bar"><span></span></span></div>
+          <div class="cl-meter"><span class="cl-txt">0 / 6</span><span class="cl-bar"><span></span></span></div>
         </div>
         <div class="cl-list">
           <div class="cl-item"><input type="checkbox" id="po1" /><label for="po1">The <strong>build-technology banner</strong> names the chosen stack, at the top of the prototype.</label></div>
-          <div class="cl-item"><input type="checkbox" id="po2" /><label for="po2">Every interactive element carries a <strong>component badge</strong>, and the footer legend matches the plan's component inventory.</label></div>
+          <div class="cl-item"><input type="checkbox" id="po2" /><label for="po2">Every interactive element carries a <strong>component badge</strong>, and the footer legend matches the plan.</label></div>
           <div class="cl-item"><input type="checkbox" id="po3" /><label for="po3">The <strong>rejected alternative</strong> is stated with a reason you would personally defend in refinement.</label></div>
           <div class="cl-item"><input type="checkbox" id="po4" /><label for="po4">Effort sizing is present and labelled <strong>AI-estimated — validate with team</strong>.</label></div>
-          <div class="cl-item"><input type="checkbox" id="po5" /><label for="po5">Objects that could not be confirmed are marked <strong><em>(proposed)</em></strong> rather than asserted.</label></div>
-          <div class="cl-item"><input type="checkbox" id="po6" /><label for="po6">At least one <strong>edge or empty state</strong> is clickable — not only the happy path.</label></div>
-          <div class="cl-item"><input type="checkbox" id="po7" /><label for="po7">All data is <strong>fictional</strong>. No real HCP names, NPIs, or account data.</label></div>
+          <div class="cl-item"><input type="checkbox" id="po5" /><label for="po5">At least one <strong>edge or empty state</strong> is clickable — not only the happy path.</label></div>
+          <div class="cl-item"><input type="checkbox" id="po6" /><label for="po6">All data is <strong>fictional</strong>. No real HCP names or account data.</label></div>
         </div>
       </div>
 
@@ -1352,48 +992,468 @@ cp -R lsc-delivery-architect/.cursor /path/to/your-project/
             <h4>Before you hand it to a developer</h4>
             <p class="cl-sub">Implementation-ready story or epic</p>
           </div>
-          <div class="cl-meter"><span class="cl-txt">0 / 8</span><span class="cl-bar"><span></span></span></div>
+          <div class="cl-meter"><span class="cl-txt">0 / 6</span><span class="cl-bar"><span></span></span></div>
         </div>
         <div class="cl-list">
           <div class="cl-item"><input type="checkbox" id="dv1" /><label for="dv1">The persona is a <strong>concrete LSC role</strong>, and the HCP is the subject of the work rather than the login.</label></div>
-          <div class="cl-item"><input type="checkbox" id="dv2" /><label for="dv2">Every behavioural AC is <strong>Given / When / Then with a single <em>When</em></strong>.</label></div>
-          <div class="cl-item"><input type="checkbox" id="dv3" /><label for="dv3">No Apex class, IP step, SOQL, or API field name appears <strong>inside</strong> any AC.</label></div>
-          <div class="cl-item"><input type="checkbox" id="dv4" /><label for="dv4">Every write has a <strong>Pattern E table</strong> — every field, exact values, no "etc."</label></div>
-          <div class="cl-item"><input type="checkbox" id="dv5" /><label for="dv5">The <strong>Technical Implementation</strong> table maps each component to the AC numbers it implements.</label></div>
-          <div class="cl-item"><input type="checkbox" id="dv6" /><label for="dv6">The <strong>Definition of Done</strong> covers the happy path, the edge case, FLS if fields changed, and the <strong>≥85% Apex coverage</strong> gate if Apex changed.</label></div>
-          <div class="cl-item"><input type="checkbox" id="dv7" /><label for="dv7">Compliance scope is confirmed by you — <strong>sample accountability, consent, Open Payments</strong>, licensure as applicable.</label></div>
-          <div class="cl-item"><input type="checkbox" id="dv8" /><label for="dv8"><code>requirements/</code> was scanned and no <strong>overlapping or conflicting</strong> story exists.</label></div>
+          <div class="cl-item"><input type="checkbox" id="dv2" /><label for="dv2">No Apex class, flow name, or API field name appears <strong>inside</strong> an acceptance criterion.</label></div>
+          <div class="cl-item"><input type="checkbox" id="dv3" /><label for="dv3">Every write has a <strong>field table</strong> — every field, exact values, no "etc."</label></div>
+          <div class="cl-item"><input type="checkbox" id="dv4" /><label for="dv4">The <strong>Technical Implementation</strong> table maps components to the criteria they implement.</label></div>
+          <div class="cl-item"><input type="checkbox" id="dv5" /><label for="dv5">Compliance scope is confirmed by you — <strong>sample accountability, consent, Open Payments</strong>, licensure as applicable.</label></div>
+          <div class="cl-item"><input type="checkbox" id="dv6" /><label for="dv6"><code>requirements/</code> was scanned and no <strong>overlapping</strong> story exists.</label></div>
         </div>
       </div>
     </div>
 
-    <div class="sec">
-      <div class="sec-kicker">Keep it current</div>
-      <h2 class="sec-title">Two prompts on a cadence</h2>
-      <p class="sec-desc">The object catalog drifts with every release, and a reference edit can silently break a blocker. Both are cheap to check now and expensive to discover in a sprint.</p>
-      <div class="grid2">
-        <div class="card">
-          <h4>Per release — catalog drift</h4>
+    <div class="payoff">
+      <p>The product owner walks the screen, then signs the shape. Given/When/Then becomes a promotion of that agreement, not a substitute for it.</p>
+    </div>
+
+    <div class="tab-nav">
+      <button data-goto="how">← How It Works</button>
+      <div class="spacer"></div>
+      <button class="next" data-goto="run">Run It Yourself →</button>
+    </div>
+  </section>
+
+  <!-- ============================================================ RUN IT YOURSELF -->
+  <section id="run" class="panel">
+    <span class="time-chip">~15 min to your first artifact</span>
+    <div class="xlabel">Run It Yourself</div>
+    <h1 class="xhead">Install once, then work in plain language.</h1>
+    <p class="xsub">Five steps, each with a prompt you can copy. Run the checkpoint after each one — <strong>the value is real before you reach the end.</strong> Installing and running a single Plan + Prototype is enough to change the next product-owner conversation.</p>
+
+    <div class="divider-sm"></div>
+
+    <div class="ex-block">
+      <div class="ex-kicker">Start from what you have</div>
+      <h2 class="ex-title">Not sure which mode you want? Open the row that matches your intake.</h2>
+      <p class="ex-desc">You never pick a template — the skill reads your phrasing. The only thing you have to get right is <strong>saying where you want it to stop.</strong> If you do not say "no stories yet," you will get stories.</p>
+
+      <div class="router">
+        <div class="rcard">
+          <button class="rcard-btn" type="button" aria-expanded="false">
+            <span class="rcard-icon" aria-hidden="true">◇</span>
+            <span class="rcard-txt">
+              <span class="rq">A vague ask from a stakeholder. Nothing written down yet.</span>
+              <span class="rm">Goes to <b>Plan + Prototype</b> — a plan and a mockup, no acceptance criteria</span>
+            </span>
+            <span class="rcard-chev" aria-hidden="true">›</span>
+          </button>
+          <div class="rcard-body">
+            <p>The mode built for product-owner conversations. You get a Solution Plan with the build-technology decision, and a clickable prototype where every control is badged.</p>
+            <div class="cbox prompt">
+              <div class="cbox-bar"><span class="cbox-kind">Prompt</span><button class="copy-btn" type="button">Copy</button></div>
+<pre>Plan and prototype a compliant sample drop on a visit for field sales reps — no stories yet.</pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="rcard">
+          <button class="rcard-btn" type="button" aria-expanded="false">
+            <span class="rcard-icon" aria-hidden="true">▤</span>
+            <span class="rcard-txt">
+              <span class="rq">A scope document with several capabilities in it.</span>
+              <span class="rm">Goes to <b>Epic Breakdown</b> — you approve the split before anything is written</span>
+            </span>
+            <span class="rcard-chev" aria-hidden="true">›</span>
+          </button>
+          <div class="rcard-body">
+            <p>It proposes a decomposition and waits. Worth reviewing that split against your sprint shape — ten stories generated off a bad split costs more to unpick than to re-plan.</p>
+            <div class="cbox prompt">
+              <div class="cbox-bar"><span class="cbox-kind">Prompt</span><button class="copy-btn" type="button">Copy</button></div>
+<pre>Break this scope section into user stories. Propose the decomposition first and wait for my approval.</pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="rcard">
+          <button class="rcard-btn" type="button" aria-expanded="false">
+            <span class="rcard-icon" aria-hidden="true">✎</span>
+            <span class="rcard-txt">
+              <span class="rq">One capability that is already understood and agreed.</span>
+              <span class="rm">Goes to <b>New Feature</b> — the full question flow, then a complete story</span>
+            </span>
+            <span class="rcard-chev" aria-hidden="true">›</span>
+          </button>
+          <div class="rcard-body">
+            <p>Expect the longest question flow of any mode. If it starts writing before it asks, the contract is not being applied.</p>
+            <div class="cbox prompt">
+              <div class="cbox-bar"><span class="cbox-kind">Prompt</span><button class="copy-btn" type="button">Copy</button></div>
+<pre>Write a user story for capturing an HCP signature on a sample disbursement, including the inventory decrement.</pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="rcard">
+          <button class="rcard-btn" type="button" aria-expanded="false">
+            <span class="rcard-icon" aria-hidden="true">⇄</span>
+            <span class="rcard-txt">
+              <span class="rq">A Veeva CRM requirement to bring across.</span>
+              <span class="rm">Goes to <b>Veeva → LSC</b> — translated, with the original kept in a source header</span>
+            </span>
+            <span class="rcard-chev" aria-hidden="true">›</span>
+          </button>
+          <div class="rcard-body">
+            <p>Call becomes <strong>Visit</strong>, Sample Lot becomes <strong>Production Batch Item</strong>, Action Bar becomes <strong>Action Launcher</strong>. Anything with no clean equivalent should come back as a question, not a quiet guess.</p>
+            <div class="cbox prompt">
+              <div class="cbox-bar"><span class="cbox-kind">Prompt</span><button class="copy-btn" type="button">Copy</button></div>
+<pre>Migrate this Veeva requirement to Salesforce LSC, keeping the original in a source header: "As a Field Rep, I need a Sample Inventory screen to view my on-hand sample lots and initiate sample orders, so I can manage inventory and stay PDMA compliant."</pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="rcard">
+          <button class="rcard-btn" type="button" aria-expanded="false">
+            <span class="rcard-icon" aria-hidden="true">⟳</span>
+            <span class="rcard-txt">
+              <span class="rq">An existing component that needs to change.</span>
+              <span class="rm">Goes to <b>Refactor</b> — anchored on a named component, with impact analysis</span>
+            </span>
+            <span class="rcard-chev" aria-hidden="true">›</span>
+          </button>
+          <div class="rcard-body">
+            <p>Name the component precisely. A vague "the visit thing" gets you a <em>proposed</em> label instead of a real dependency map.</p>
+            <div class="cbox prompt">
+              <div class="cbox-bar"><span class="cbox-kind">Prompt</span><button class="copy-btn" type="button">Copy</button></div>
+<pre>Change the existing sample disbursement Screen Flow so the quantity field is blocked above on-hand. Name every component you would touch and flag the regression risk.</pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="rcard">
+          <button class="rcard-btn" type="button" aria-expanded="false">
+            <span class="rcard-icon" aria-hidden="true">⚠</span>
+            <span class="rcard-txt">
+              <span class="rq">A defect ticket.</span>
+              <span class="rm">Goes to <b>Bug Fix</b> — the vertical questions are skipped entirely</span>
+            </span>
+            <span class="rcard-chev" aria-hidden="true">›</span>
+          </button>
+          <div class="rcard-body">
+            <p>Give it both halves. "It is broken" produces a worse story than current-versus-expected behaviour stated plainly.</p>
+            <div class="cbox prompt">
+              <div class="cbox-bar"><span class="cbox-kind">Prompt</span><button class="copy-btn" type="button">Copy</button></div>
+<pre>Defect: a sample drop currently saves even when the quantity exceeds the on-hand balance for the lot. Expected: it should block and show the remaining count. Write the bug-fix story.</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bigstep">
+      <div class="bigstep-head">
+        <div class="bigstep-n">1</div>
+        <div>
+          <h3>Install the skill into your project</h3>
+          <p>The pack lives under <code>.cursor/</code>, which Cursor auto-loads. Copy both the rule and the skill — the rule is what makes it always-on.</p>
+        </div>
+      </div>
+      <div class="bigstep-body">
+        <div class="cbox term">
+          <div class="cbox-bar"><span class="cbox-kind">Terminal</span><button class="copy-btn" type="button">Copy</button></div>
+<pre>git clone https://github.com/p-kothapalli/lsc-delivery-architect.git
+cp -R lsc-delivery-architect/.cursor /path/to/your-project/</pre>
+        </div>
+        <p style="margin-top:16px">Want it in every workspace instead of one project? Copy <code>.cursor/skills/lsc-delivery-architect</code> into <code>~/.cursor/skills/</code> and the <code>.mdc</code> rule into <code>~/.cursor/rules/</code>. Confirm the exact user path under <strong>Cursor → Settings → Rules &amp; Skills</strong>.</p>
+
+        <div class="callout">
+          <div class="co-label">Read this before you conclude it does not work</div>
+          <p><strong>Reload the Cursor window.</strong> A skill added while Cursor is running is not always picked up until the window reloads. This is by far the most common reason people report that "nothing happened."</p>
+          <p>If it still answers generically, check that <code>use-lsc-delivery-architect.mdc</code> actually landed in <code>.cursor/rules/</code>. Copying only the <code>skills/</code> folder gives you a skill nothing routes to.</p>
+        </div>
+
+        <div class="checkpoint">
+          <div class="cp-label">Checkpoint — confirm it is loaded before you rely on it</div>
           <div class="cbox prompt">
             <div class="cbox-bar"><span class="cbox-kind">Prompt</span><button class="copy-btn" type="button">Copy</button></div>
+<pre>Plan and prototype a test capability — no stories yet.</pre>
+          </div>
+          <p style="margin-top:12px"><strong>What good looks like:</strong> it announces Plan + Prototype mode, confirms explicitly that no stories will be written, and asks Phase 1 and Phase 2 questions only — as a structured multiple-choice picker, not a wall of prose. If it starts writing acceptance criteria, the contract is not being applied.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bigstep">
+      <div class="bigstep-head">
+        <div class="bigstep-n">2</div>
+        <div>
+          <h3>Get a plan and a prototype before writing any stories</h3>
+          <p>This is the mode built for product-owner conversations. Name the capability and say explicitly that stories come later.</p>
+        </div>
+      </div>
+      <div class="bigstep-body">
+        <div class="cbox prompt">
+          <div class="cbox-bar"><span class="cbox-kind">Prompt</span><button class="copy-btn" type="button">Copy</button></div>
+<pre>Plan and prototype a compliant sample drop on a visit for field sales reps — no stories yet.</pre>
+        </div>
+        <p style="margin-top:16px">You get two files: a Solution Plan carrying the build-technology decision and component inventory, and a clickable prototype where every element is badged with the component that will implement it.</p>
+        <ul>
+          <li><strong>Answer the clarifying questions properly.</strong> Sub-domain, persona, and regulatory scope change which objects get named — a vague answer here produces a vague plan.</li>
+          <li><strong>Open the prototype and click through it with the product owner in the room.</strong> That walkthrough is the deliverable, not the file.</li>
+          <li><strong>Check the legend footer against the plan's effort sizing</strong> before anyone commits a number.</li>
+          <li><strong>Challenge the rejected alternative.</strong> If you disagree with why OmniScript was ruled out, say so — the rationale is written down precisely so it can be argued with.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="bigstep">
+      <div class="bigstep-head">
+        <div class="bigstep-n">3</div>
+        <div>
+          <h3>Promote the approved plan into stories</h3>
+          <p>Once the product owner has agreed to the shape, the plan becomes the input — so the stories inherit the build decision instead of re-opening it.</p>
+        </div>
+      </div>
+      <div class="bigstep-body">
+        <div class="cbox prompt">
+          <div class="cbox-bar"><span class="cbox-kind">Prompt</span><button class="copy-btn" type="button">Copy</button></div>
+<pre>Promote that plan to full user stories.</pre>
+        </div>
+        <p style="margin-top:16px">Every story arrives with a concrete persona, business-language criteria, a per-field record spec on each write, a Technical Implementation table, a Definition of Done, and effort sizing.</p>
+        <div class="checkpoint">
+          <div class="cp-label">Checkpoint — read one AC out loud</div>
+          <p>If a Given/When/Then line contains an Apex class name, an OmniScript step number, or a <code>*__c</code> API name, the blocker failed. Ask it to move that detail to Technical Implementation and rewrite the criterion in business language.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bigstep">
+      <div class="bigstep-head">
+        <div class="bigstep-n">4</div>
+        <div>
+          <h3>Bring across a legacy Veeva requirement</h3>
+          <p>Paste the Veeva requirement verbatim. It translates the mechanics, keeps the business intent, and records the original in a source header rather than the story body.</p>
+        </div>
+      </div>
+      <div class="bigstep-body">
+        <div class="cbox prompt">
+          <div class="cbox-bar"><span class="cbox-kind">Prompt</span><button class="copy-btn" type="button">Copy</button></div>
+<pre>Migrate this Veeva story to Salesforce LSC: "As a Field Rep, I need a Sample Inventory screen to view my on-hand sample lots and initiate sample orders, so I can manage inventory and stay PDMA compliant."</pre>
+        </div>
+        <ul>
+          <li>Call becomes <strong>Visit</strong> · Sample Lot becomes <strong>Production Batch Item</strong> · Action Bar becomes <strong>Action Launcher</strong></li>
+          <li>The persona is re-anchored to a real login role — the HCP is the subject of the work, never the user</li>
+          <li>Anything with no clean LSC equivalent is raised as a clarification, not quietly guessed</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="bigstep">
+      <div class="bigstep-head">
+        <div class="bigstep-n">5</div>
+        <div>
+          <h3>Stress-test the routing end to end</h3>
+          <p>Give it one task from each mode <em>without naming the mode</em>, and see which contract it reaches for. This is the test that tells you the rule file is really being applied.</p>
+        </div>
+      </div>
+      <div class="bigstep-body">
+        <div class="cbox prompt">
+          <div class="cbox-bar"><span class="cbox-kind">Prompt</span><button class="copy-btn" type="button">Copy</button></div>
+<pre>Validate my LSC Delivery Architect setup. Confirm the skill and rule are loaded, list which references you can read, and tell me which workflow mode you would route each of these to: a Concur expense enhancement, a defect in medical inquiry intake, and a scope document with eight capabilities.</pre>
+        </div>
+        <ul>
+          <li><strong>Concur enhancement</strong> — should reach for <code>concur-integration.md</code></li>
+          <li><strong>Defect</strong> — should route to Bug Fix and skip the vertical questions entirely</li>
+          <li><strong>Scope document</strong> — should route to Epic Breakdown and propose a decomposition <em>before</em> generating anything</li>
+        </ul>
+        <div class="checkpoint">
+          <div class="cp-label">What good looks like</div>
+          <p>It names the mode it detected <strong>and why</strong>. If it cannot explain its own routing, the rule file is not being applied — reload the window and confirm the <code>.mdc</code> landed in <code>.cursor/rules/</code>.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="ex-block" style="margin-top:44px">
+      <div class="ex-kicker">If the output looks wrong</div>
+      <h2 class="ex-title">Fix it with a prompt, not by hand</h2>
+      <p class="ex-desc">Editing a bad artifact yourself hides the failure, and you will hit it again next sprint. Naming the problem back to the agent repairs it <strong>and</strong> tells you whether the contract is loaded at all. If several of these fire at once, check the install rather than the output.</p>
+      <table class="modes">
+        <thead><tr><th style="width:34%">What you are seeing</th><th>What to say</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>It wrote acceptance criteria after you said "no stories yet"</td>
+            <td>Re-run in Plan + Prototype mode. Produce only the Solution Plan and the prototype — no acceptance criteria.</td>
+          </tr>
+          <tr>
+            <td>The persona came back as "the user"</td>
+            <td>The persona is not a concrete LSC business role. Re-anchor it and rewrite the story header.</td>
+          </tr>
+          <tr>
+            <td>An acceptance criterion is full of technical names</td>
+            <td>Move every technical name into Technical Implementation, and restate the criterion in language a QA analyst can execute.</td>
+          </tr>
+          <tr>
+            <td>A "records are updated" outcome has no field table</td>
+            <td>That outcome writes records but has no field spec. Enumerate every object and every field with its exact value. No "etc."</td>
+          </tr>
+          <tr>
+            <td>It picked OmniScript for a short, simple form</td>
+            <td>Walk the declarative-first ladder explicitly. Show me why Dynamic Actions, Action Launcher, Field Sets, and Screen Flow were each insufficient first.</td>
+          </tr>
+          <tr>
+            <td>The prototype looks like a generic web app</td>
+            <td>Every element needs the Salesforce component that will implement it, plus the build-technology banner and the footer legend. Re-issue it grounded.</td>
+          </tr>
+          <tr>
+            <td>It answers generically and never names a mode</td>
+            <td>Which skill and rule are you applying, and which mode did you detect? — then reload the window if it cannot say.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="two-col-card single-card">
+      <span class="warm-icon" aria-hidden="true">1</span>
+      <p><strong>Start with one step.</strong> You do not need all five before it earns its place. Install it, run a single Plan + Prototype, and take the mockup into your next refinement session.</p>
+    </div>
+
+    <div class="tab-nav">
+      <button data-goto="see">← See It Work</button>
+      <div class="spacer"></div>
+      <button class="next" data-goto="adopt">Adopt &amp; Maintain →</button>
+    </div>
+  </section>
+
+  <!-- ============================================================ ADOPT & MAINTAIN -->
+  <section id="adopt" class="panel">
+    <span class="time-chip">~3 min read</span>
+    <div class="xlabel">Adopt &amp; Maintain</div>
+    <h1 class="xhead">One architect builds it. Every engagement benefits.</h1>
+    <p class="xsub">The pack is published once and installed everywhere, instead of each architect deriving the same LSC standard independently. The same mechanism a team already uses for shared libraries.</p>
+
+    <div class="divider-sm"></div>
+
+    <div class="payoff">
+      <p>If you have seen one architect's delivery process, you have seen one architect's delivery process. When the persona contract, the object catalog, and the build-technology guide live in a shared repository, consistency stops depending on who staffed the engagement.</p>
+    </div>
+
+    <div class="ex-block" style="margin-top:44px">
+      <div class="ex-kicker">The pattern</div>
+      <h2 class="ex-title">Publish once, install everywhere</h2>
+      <p class="ex-desc">One owner maintains the pack; everyone else pulls it down. Two decisions gate this, and neither is technical.</p>
+      <div class="two-col">
+        <div class="two-col-card">
+          <h3>Who owns it</h3>
+          <p>One person maintains the skill for the competency — typically the delivery lead or a senior architect they nominate. The version history and the evaluation rubric live with that owner.</p>
+        </div>
+        <div class="two-col-card">
+          <h3>Where it lives</h3>
+          <p>A shared repository, so it can be installed and updated rather than hand-copied. Ownership and location are the only real blockers — the build itself is one session.</p>
+        </div>
+      </div>
+
+      <div class="mini-header">Publishing, in three steps</div>
+      <div class="steps-grid">
+        <div class="step-mini">
+          <div class="step-badge">1</div>
+          <h4>Create the shared repository</h4>
+          <p>Copy the finished <code>skills/lsc-delivery-architect/</code> folder and the trigger rule into a repo your competency owns. Include the evaluations — they are how the next maintainer knows a change was safe.</p>
+        </div>
+        <div class="step-mini">
+          <div class="step-badge">2</div>
+          <h4>Confirm the install works</h4>
+          <p>Test it yourself in a fresh project, reload Cursor, and run the step 5 validation prompt. Verify the routing before you tell anyone it is ready.</p>
+        </div>
+        <div class="step-mini">
+          <div class="step-badge">3</div>
+          <h4>Share the one-line command</h4>
+          <p>Clone, copy, reload, run the validation prompt. That is the whole onboarding ask — no per-person setup session.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="ex-block">
+      <div class="ex-kicker">Working practices</div>
+      <h2 class="ex-title">Keep the skill generic and the engagement specifics local</h2>
+      <div class="two-col">
+        <div class="two-col-card">
+          <h3>Do</h3>
+          <p>Keep engagement specifics — stakeholders, org constraints, which release you are targeting — in the project. Let the skill stay generic. Point at the skill; do not restate it.</p>
+        </div>
+        <div class="two-col-card avoid-card">
+          <h3>Avoid</h3>
+          <p>Do not fork the skill for one client. If a gap shows up, fix the shared reference so every future engagement benefits. Keep client names out of <code>skills/</code> entirely.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="ex-block">
+      <div class="ex-kicker">Keep it healthy</div>
+      <h2 class="ex-title">Two maintenance prompts, on a cadence</h2>
+      <p class="ex-desc">The object catalog drifts with every release, and a reference edit can silently break a blocker. Both are cheap to check and expensive to discover late.</p>
+
+      <div class="mini-header" style="margin-top:24px">Per release — object catalog check</div>
+      <div class="cbox prompt">
+        <div class="cbox-bar"><span class="cbox-kind">Prompt</span><button class="copy-btn" type="button">Copy</button></div>
 <pre>Review the LSC standard-object catalog reference against the current API version. What objects or fields have been added, renamed, or deprecated since Summer '26 / v67.0?</pre>
-          </div>
-        </div>
-        <div class="card">
-          <h4>Quarterly — did a blocker break?</h4>
-          <div class="cbox prompt">
-            <div class="cbox-bar"><span class="cbox-kind">Prompt</span><button class="copy-btn" type="button">Copy</button></div>
-<pre>Run each scenario in evaluations/ against this skill and score the output on every expected_behavior item. Report which blockers failed.</pre>
-          </div>
-        </div>
       </div>
-      <p class="footnote">The evaluations are the source of truth, not the documentation. Extend them <strong>before</strong> you extend a reference — otherwise you have no way to tell whether the edit helped.</p>
+
+      <div class="mini-header">Quarterly — run the evaluations</div>
+      <div class="cbox prompt">
+        <div class="cbox-bar"><span class="cbox-kind">Prompt</span><button class="copy-btn" type="button">Copy</button></div>
+<pre>Run each scenario in evaluations/ against this skill and score the output on every expected_behavior item. Report which blockers failed.</pre>
+      </div>
+      <p class="footnote">The evaluations are the source of truth for whether the skill still works. Extend them <em>before</em> you extend the documentation.</p>
     </div>
 
-    <p class="footnote" style="margin-top:36px;padding-top:20px;border-top:1px solid var(--line)">
-      Skill v1.9 · successor to the LSC User Story Solution Architect ·
-      <a href="https://github.com/p-kothapalli/lsc-delivery-architect" style="color:var(--accent);font-weight:600;text-decoration:none">github.com/p-kothapalli/lsc-delivery-architect</a>
-    </p>
+    <div class="ex-block">
+      <div class="ex-kicker">Optional grounding</div>
+      <h2 class="ex-title">Two indexes make verification stronger. Neither is required.</h2>
+      <table class="modes">
+        <thead>
+          <tr><th style="width:22%">Index</th><th style="width:39%">What it verifies</th><th>If it is missing</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>code-review-graph</code></td>
+            <td>Custom components — callers, dependents, and the tests that cover them.</td>
+            <td>Falls back to file search; unverifiable names are marked <em>(proposed)</em>.</td>
+          </tr>
+          <tr>
+            <td><code>salesforce-docs</code></td>
+            <td>Standard LSC objects, fields, and features, with citations.</td>
+            <td>Falls back to the curated catalog reference and flags what it could not confirm.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="footnote">The skill is explicit about what it could not verify — which is the behaviour you want when the alternative is a confident guess.</p>
+    </div>
+
+    <div class="ex-block">
+      <div class="ex-kicker">Why this holds up</div>
+      <h2 class="ex-title">Visible on-screen. Honest about cost. Still the architect's call.</h2>
+      <div class="value-grid">
+        <div class="value-card">
+          <h4>Prototype before stories</h4>
+          <p>The product owner walks the screen, then signs the shape. Given/When/Then is a promotion of that plan, not a substitute for one.</p>
+        </div>
+        <div class="value-card">
+          <h4>Grounded, or not shipped</h4>
+          <p>Every control is labelled with the Salesforce component that will implement it. An unlabelled generic mockup is treated as a defect.</p>
+        </div>
+        <div class="value-card">
+          <h4>Declarative-first, documented</h4>
+          <p>The chosen stack and the rejected alternative are both in the plan. OmniStudio is one option — never the silent default.</p>
+        </div>
+        <div class="value-card">
+          <h4>Judgment stays with the team</h4>
+          <p>The skill drafts. The architect confirms the persona, the compliance scope, and the build-technology call.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="payoff">
+      <p>Decide who owns it, install the pack, and run your next product-owner conversation off a grounded prototype.</p>
+    </div>
+
+    <p class="closing-line">Skill v1.9 · successor to the LSC User Story Solution Architect · <a href="https://github.com/p-kothapalli/lsc-delivery-architect" style="color:var(--accent);font-weight:600;text-decoration:none">github.com/p-kothapalli/lsc-delivery-architect</a></p>
+
+    <div class="tab-nav">
+      <button data-goto="run">← Run It Yourself</button>
+      <div class="spacer"></div>
+      <button class="next" data-goto="why">Back to the start ↻</button>
+    </div>
   </section>
 
 </main>
@@ -1405,7 +1465,6 @@ cp -R lsc-delivery-architect/.cursor /path/to/your-project/
 <div class="kbd-hint">← → tabs · F fullscreen</div>
 
 <script>
-  /* ---------- tabs ---------- */
   const buttons = Array.from(document.querySelectorAll('.tabs button'));
   const panels = Array.from(document.querySelectorAll('.panel'));
   const order = buttons.map(b => b.dataset.tab);
@@ -1417,7 +1476,10 @@ cp -R lsc-delivery-architect/.cursor /path/to/your-project/
   }
   buttons.forEach(btn => btn.addEventListener('click', () => activate(btn.dataset.tab)));
 
-  /* ---------- intake router accordion ---------- */
+  document.querySelectorAll('.tab-nav button[data-goto]').forEach(btn => {
+    btn.addEventListener('click', () => activate(btn.dataset.goto));
+  });
+
   document.querySelectorAll('.rcard-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const card = btn.closest('.rcard');
@@ -1426,7 +1488,19 @@ cp -R lsc-delivery-architect/.cursor /path/to/your-project/
     });
   });
 
-  /* ---------- copy buttons ---------- */
+  document.querySelectorAll('.cl-wrap').forEach(wrap => {
+    const boxes = Array.from(wrap.querySelectorAll('input[type=checkbox]'));
+    const txt = wrap.querySelector('.cl-txt');
+    const bar = wrap.querySelector('.cl-bar span');
+    function sync() {
+      const done = boxes.filter(b => b.checked).length;
+      txt.textContent = done + ' / ' + boxes.length;
+      bar.style.width = (done / boxes.length * 100) + '%';
+    }
+    boxes.forEach(b => b.addEventListener('change', sync));
+    sync();
+  });
+
   document.querySelectorAll('.copy-btn').forEach(btn => {
     btn.addEventListener('click', async (e) => {
       e.stopPropagation();
@@ -1449,53 +1523,8 @@ cp -R lsc-delivery-architect/.cursor /path/to/your-project/
     });
   });
 
-  /* ---------- reference table filter ---------- */
-  const filterInput = document.getElementById('refFilter');
-  const filterCount = document.getElementById('filterCount');
-  const refGroups = Array.from(document.querySelectorAll('.ref-group'));
-  const totalRows = refGroups.reduce((n, g) => n + g.querySelectorAll('tbody tr').length, 0);
-
-  function runFilter() {
-    const q = filterInput.value.trim().toLowerCase();
-    let shown = 0;
-    refGroups.forEach(group => {
-      let groupShown = 0;
-      group.querySelectorAll('tbody tr').forEach(row => {
-        const hit = !q || row.innerText.toLowerCase().includes(q);
-        row.classList.toggle('hidden', !hit);
-        if (hit) groupShown++;
-      });
-      group.classList.toggle('hidden', q !== '' && groupShown === 0);
-      shown += groupShown;
-    });
-    if (!q) {
-      filterCount.innerHTML = totalRows + ' reference rows across 5 tables.';
-    } else if (shown === 0) {
-      filterCount.innerHTML = 'No rows match <b>' + q.replace(/</g,'&lt;') + '</b>.';
-    } else {
-      filterCount.innerHTML = '<b>' + shown + '</b> of ' + totalRows + ' rows match.';
-    }
-  }
-  filterInput.addEventListener('input', runFilter);
-  runFilter();
-
-  /* ---------- pre-flight checklists ---------- */
-  document.querySelectorAll('.cl-wrap').forEach(wrap => {
-    const boxes = Array.from(wrap.querySelectorAll('input[type=checkbox]'));
-    const txt = wrap.querySelector('.cl-txt');
-    const bar = wrap.querySelector('.cl-bar span');
-    function sync() {
-      const done = boxes.filter(b => b.checked).length;
-      txt.textContent = done + ' / ' + boxes.length;
-      bar.style.width = (done / boxes.length * 100) + '%';
-    }
-    boxes.forEach(b => b.addEventListener('change', sync));
-    sync();
-  });
-
-  /* ---------- keyboard ---------- */
   document.addEventListener('keydown', (e) => {
-    if (e.target.matches('input, textarea, select')) return;
+    if (e.target.matches('input, textarea')) return;
     const i = order.indexOf(document.querySelector('.tabs button.active').dataset.tab);
     if (e.key === 'ArrowRight' || e.key === 'PageDown') {
       e.preventDefault();
@@ -1509,7 +1538,7 @@ cp -R lsc-delivery-architect/.cursor /path/to/your-project/
     }
   });
 
-  if (!document.querySelector('.panel.active')) activate('route');
+  if (!document.querySelector('.panel.active')) activate('why');
 </script>
 
 </body>

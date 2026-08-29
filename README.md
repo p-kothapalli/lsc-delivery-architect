@@ -12,22 +12,22 @@ skill. Same STEP 0–6 workflow and hard blockers; the identity was expanded to
 match what the skill actually delivers today — **a Solution Plan, a grounded
 prototype, or an implementation-ready user story, on demand and independently.**
 
-**Working reference (GitHub Pages):**
+**Architect's guide (GitHub Pages):**
 [p-kothapalli.github.io/lsc-delivery-architect](https://p-kothapalli.github.io/lsc-delivery-architect/)
-— a desk reference for solution architects, indexed by task rather than read
-front-to-back:
+— five tabs: Why It Exists · How It Works · See It Work · Run It Yourself ·
+Adopt & Maintain. Start at **Run It Yourself** if you just want to install it and
+get a prototype in front of a product owner — every prompt on that tab is
+copyable, and each step has a checkpoint that tells you whether the skill
+actually loaded.
 
-| Tab | The question it answers |
-|---|---|
-| **Route Your Ask** | "I have *this* on my desk — which mode, and what do I paste?" |
-| **Inside the Skill** | "What is actually baked in?" — the STEP 0–6 pipeline, the mode × phase skip matrix, all 17 critical rules *with their stated rationale*, the STEP 3 resolution order, and the 10-check STEP 5 validator loop |
-| **Artifact Contract** | "What am I signing when I send this out?" — AC Patterns A–E, the persona cheatsheet, effort bands in hours, the DoD gates |
-| **Build Decisions** | "Is this build-technology verdict defensible?" — the RULE 7a ladder plus a requirement-shape → verdict table |
-| **LSC Lookups** | Filterable Veeva→LSC translation, compliance drivers, and the Commercial / Medical / Market Access object maps |
-| **Repair & Review** | Symptom → cause → repair prompt for eight blocker failures, the 13 STOP tripwires verbatim, the rationalisation rebuttal table, plus pre-flight checklists for product owners and developers |
-
-Start at **Route Your Ask** to install it and get a prototype in front of a
-product owner. Come back to **Repair & Review** when output misses a blocker.
+Deliberately an overview, not a manual. It teaches the *shape* of the contract —
+the trigger rule, the six modes, the question flow, the hard blockers, the
+declarative-first ladder — and leaves the object model, the full rule set, and
+the reference tables where they belong, in `references/`. Three things on it are
+hands-on: an **intake router** that maps what is on your desk to the mode STEP 0
+will detect, **pre-flight checklists** for the product-owner and developer
+handoffs, and a **repair table** that fixes bad output with a prompt instead of
+by hand.
 
 ---
 
@@ -256,7 +256,7 @@ to file search + curated references and clearly marks unverifiable names as
   rules/
     use-lsc-delivery-architect.mdc   # Trigger rule
 README.md
-index.html                # GitHub Pages working reference (task-indexed)
+index.html                # GitHub Pages architect's guide (Why → Adopt)
 ```
 
 ---
