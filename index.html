@@ -30,18 +30,18 @@
   .topbar{
     position:sticky; top:0; z-index:50;
     display:flex; align-items:center; justify-content:space-between; gap:20px;
-    padding:18px 40px 14px;
+    padding:16px 28px 12px;
     background:rgba(255,255,255,.94);
     backdrop-filter: blur(10px);
     border-bottom:1px solid var(--line);
   }
-  .brand{display:flex;align-items:center;gap:12px;min-width:250px}
-  .brand img{display:block;width:112px;height:auto;object-fit:contain}
+  .brand{display:flex;align-items:center;gap:11px;flex:0 0 auto}
+  .brand img{display:block;width:96px;height:auto;object-fit:contain}
   .brand-copy{display:flex;flex-direction:column;line-height:1.15}
-  .brand-copy .title{font-size:12px;text-transform:uppercase;letter-spacing:.16em;font-weight:700;color:#344054}
-  .brand-copy .sub{margin-top:3px;font-size:12px;color:var(--muted);letter-spacing:.04em}
+  .brand-copy .title{font-size:11.5px;text-transform:uppercase;letter-spacing:.14em;font-weight:700;color:#344054;white-space:nowrap}
+  .brand-copy .sub{margin-top:3px;font-size:11.5px;color:var(--muted);letter-spacing:.03em;white-space:nowrap}
 
-  .tabs{display:flex;gap:24px;align-items:center;color:#475467;font-size:13.5px;flex-wrap:wrap}
+  .tabs{display:flex;gap:17px;align-items:center;color:#475467;font-size:12.5px;flex-wrap:wrap;justify-content:flex-end}
   .tabs button{
     appearance:none;border:none;background:none;padding:0 0 10px;cursor:pointer;
     color:inherit;font:inherit;font-weight:600;letter-spacing:.02em;
@@ -321,7 +321,7 @@
     <img alt="Salesforce" src="https://upload.wikimedia.org/wikipedia/commons/f/f9/Salesforce.com_logo.svg" />
     <div class="brand-copy">
       <div class="title">Life Sciences Cloud</div>
-      <div class="sub">Delivery Architect · Working reference</div>
+      <div class="sub">Delivery Architect · Reference</div>
     </div>
   </div>
   <nav class="tabs" aria-label="Reference sections">
