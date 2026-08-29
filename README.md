@@ -20,10 +20,11 @@ front-to-back:
 | Tab | The question it answers |
 |---|---|
 | **Route Your Ask** | "I have *this* on my desk — which mode, and what do I paste?" |
+| **Inside the Skill** | "What is actually baked in?" — the STEP 0–6 pipeline, the mode × phase skip matrix, all 17 critical rules *with their stated rationale*, the STEP 3 resolution order, and the 10-check STEP 5 validator loop |
 | **Artifact Contract** | "What am I signing when I send this out?" — AC Patterns A–E, the persona cheatsheet, effort bands in hours, the DoD gates |
 | **Build Decisions** | "Is this build-technology verdict defensible?" — the RULE 7a ladder plus a requirement-shape → verdict table |
 | **LSC Lookups** | Filterable Veeva→LSC translation, compliance drivers, and the Commercial / Medical / Market Access object maps |
-| **Repair & Review** | Symptom → cause → repair prompt for eight blocker failures, plus pre-flight checklists for product owners and developers |
+| **Repair & Review** | Symptom → cause → repair prompt for eight blocker failures, the 13 STOP tripwires verbatim, the rationalisation rebuttal table, plus pre-flight checklists for product owners and developers |
 
 Start at **Route Your Ask** to install it and get a prototype in front of a
 product owner. Come back to **Repair & Review** when output misses a blocker.

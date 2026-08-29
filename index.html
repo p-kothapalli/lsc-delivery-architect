@@ -256,6 +256,46 @@
   .proto-btn.primary{background:#0176d3;color:#fff;border-color:#0176d3}
   .el-badge{display:inline-block;margin-left:6px;font-size:9.5px;font-weight:700;letter-spacing:.04em;padding:1px 6px;border-radius:3px;vertical-align:middle}
 
+  /* ---------- chips ---------- */
+  .chip{
+    display:inline-block;font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    padding:2px 7px;border-radius:4px;border:1px solid;white-space:nowrap;vertical-align:middle;
+  }
+  .chip.blocker{color:#b02a44;border-color:#f7cdd6;background:#fdeef1}
+  .chip.ground{color:#00947a;border-color:#b7f0dd;background:#eafff8}
+  .chip.rule{color:#475467;border-color:var(--line);background:#f4f6fa;text-transform:none;letter-spacing:.02em;font-size:10px}
+
+  /* ---------- pipeline ---------- */
+  .pipe{display:grid;gap:0;margin-top:16px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--panel)}
+  .pipe-row{display:grid;grid-template-columns:74px 1fr 226px;gap:16px;padding:15px 18px;border-bottom:1px solid var(--line);align-items:start}
+  .pipe-row:last-child{border-bottom:0}
+  .pipe-row:hover{background:#fafcff}
+  .pipe-n{font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);padding-top:2px}
+  .pipe-main h4{margin:0 0 5px;font-size:14px;font-weight:650;color:#1d2939}
+  .pipe-main p{margin:0;font-size:13px;line-height:1.6;color:#5f6b7f}
+  .pipe-main p code{font-size:11.5px;background:#eef2f7;padding:1px 5px;border-radius:4px;color:#475467}
+  .pipe-side{font-size:12px;line-height:1.6;color:#98a2b3}
+  .pipe-side b{display:block;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#b9c0cc;margin-bottom:3px}
+  .pipe-side code{font-size:11px;background:#f4f6fa;padding:1px 5px;border-radius:4px;color:#667085}
+
+  /* ---------- matrix cells ---------- */
+  .rt td.yes{color:#047857;font-weight:700;text-align:center}
+  .rt td.no{color:#c9ced8;font-weight:700;text-align:center}
+  .rt td.part{color:#b45309;font-weight:700;text-align:center;font-size:11.5px}
+
+  /* ---------- stop list ---------- */
+  .stops{margin-top:16px;display:grid;gap:8px}
+  .stop{
+    display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start;
+    border:1px solid var(--line);border-left:3px solid var(--red);border-radius:0 10px 10px 0;
+    background:var(--panel);padding:13px 16px;
+  }
+  .stop .sl{font-size:13px;line-height:1.6;color:#3d4757}
+  .stop .sr{font-size:13px;line-height:1.6;color:#5f6b7f}
+  .stop .sr::before{content:"STOP ";font-size:9.5px;font-weight:700;letter-spacing:.1em;color:var(--red)}
+  .stop code{font-size:11.5px;background:#eef2f7;padding:1px 5px;border-radius:4px;color:#475467}
+  .stop strong{color:#1d2939;font-weight:650}
+
   .kbd-hint{position:fixed;bottom:16px;right:20px;font-size:11.5px;color:#98a2b3;letter-spacing:.03em;z-index:20}
 
   @media (max-width: 900px){
@@ -268,6 +308,9 @@
     .kbd-hint{display:none}
     .rt{font-size:12.5px}
     .rt th,.rt td{padding:8px 10px}
+    .pipe-row{grid-template-columns:1fr;gap:8px}
+    .pipe-side{border-top:1px solid var(--line);padding-top:8px}
+    .stop{grid-template-columns:1fr;gap:8px}
   }
 </style>
 </head>
@@ -283,6 +326,7 @@
   </div>
   <nav class="tabs" aria-label="Reference sections">
     <button class="active" data-tab="route">Route Your Ask</button>
+    <button data-tab="internals">Inside the Skill</button>
     <button data-tab="contract">Artifact Contract</button>
     <button data-tab="build">Build Decisions</button>
     <button data-tab="lookup">LSC Lookups</button>
@@ -490,6 +534,241 @@ cp -R lsc-delivery-architect/.cursor /path/to/your-project/
 └── post-generation-offers.md       <span class="muted-line">← STEP 6 offers, incl. §6.7 prototype</span></pre>
       </div>
       <p class="footnote">Three evaluation scenarios sit alongside them in <code>evaluations/</code> — Veeva migration, sample drop, and field creation — each with a pass/fail rubric. They are the source of truth for whether a reference edit broke a blocker.</p>
+    </div>
+  </section>
+
+  <!-- ============================================================ INSIDE THE SKILL -->
+  <section id="internals" class="panel">
+    <div class="xlabel">Inside the Skill</div>
+    <h1 class="xhead">Seventeen rules, a seven-step pipeline, and a validator that runs before you see anything.</h1>
+    <p class="xsub">Every rule in the skill carries its own stated rationale — the <em>because</em> clause is written into the rule, not left implied. That is what makes the behaviour predictable enough to argue with. This tab is the whole mechanism, unabridged.</p>
+
+    <div class="divider-sm"></div>
+
+    <div class="sec">
+      <div class="sec-kicker">STEP 0–6</div>
+      <h2 class="sec-title">The pipeline every request goes through</h2>
+      <p class="sec-desc">Steps are not optional, but the <strong>mode decides which ones do real work.</strong> STEP 3 is where grounding happens and STEP 5 is where the skill checks its own output — both run whether or not you asked for them.</p>
+      <div class="pipe">
+        <div class="pipe-row">
+          <div class="pipe-n">STEP 0</div>
+          <div class="pipe-main">
+            <h4>Workflow detection</h4>
+            <p>Maps your phrasing to one of six modes, which then determines the question phases and the output contract. Ambiguous input defaults to <strong>New Feature</strong> and asks rather than guessing.</p>
+          </div>
+          <div class="pipe-side"><b>Nuance</b>Natural language always works; the prompt templates are optional accelerators, not required syntax.</div>
+        </div>
+        <div class="pipe-row">
+          <div class="pipe-n">STEP 1</div>
+          <div class="pipe-main">
+            <h4>Sub-domain selection</h4>
+            <p>Commercial, Medical, Market Access, Cross-domain / Platform, or Custom. <strong>Five options, not three</strong> — the cross-domain option exists for shared Account, Consent, and Data Cloud work that belongs to no single vertical.</p>
+          </div>
+          <div class="pipe-side"><b>Why first</b>Each sub-domain names different objects and personas. Wrong sub-domain produces a story that is unbuildable, not merely inaccurate.</div>
+        </div>
+        <div class="pipe-row">
+          <div class="pipe-n">STEP 2</div>
+          <div class="pipe-main">
+            <h4>Clarifying questions — question-first</h4>
+            <p>Four phases, <strong>minimum 5 and maximum 16 questions</strong>, delivered through the <code>AskQuestion</code> tool as a structured picker rather than prose.</p>
+          </div>
+          <div class="pipe-side"><b>Nuance</b>The floor of 5 matters as much as the ceiling of 16 — it is what stops a detailed-looking prompt from bypassing discovery.</div>
+        </div>
+        <div class="pipe-row">
+          <div class="pipe-n">STEP 3</div>
+          <div class="pipe-main">
+            <h4>Codebase &amp; docs analysis — graph-first</h4>
+            <p>Custom components resolve through <code>code-review-graph</code>; standard LSC objects through <code>salesforce-docs</code>. Grep and Glob are the <em>fallback</em>, not the first move.</p>
+          </div>
+          <div class="pipe-side"><b>Ordering</b>Mandated by a separate workspace rule, <code>code-review-graph-first.mdc</code> — not by this skill alone.</div>
+        </div>
+        <div class="pipe-row">
+          <div class="pipe-n">STEP 4</div>
+          <div class="pipe-main">
+            <h4>Generate</h4>
+            <p>Produces the artifact in the canonical section order from <code>output-template.md</code>. In Plan + Prototype mode this step produces a Solution Plan and prototype instead of a story.</p>
+          </div>
+          <div class="pipe-side"><b>Nuance</b>Section order is fixed on purpose so developers and QA find ACs, effort, and impact in the same place every time.</div>
+        </div>
+        <div class="pipe-row">
+          <div class="pipe-n">STEP 5</div>
+          <div class="pipe-main">
+            <h4>Review &amp; iterate — the validator loop</h4>
+            <p>Ten checks run against the draft, and failures are fixed <strong>before</strong> the artifact is presented to you. Four of the ten are hard blockers that stop presentation outright.</p>
+          </div>
+          <div class="pipe-side"><b>Implication</b>If a blocker reaches your screen, the loop did not run — which usually means the skill is not actually loaded.</div>
+        </div>
+        <div class="pipe-row">
+          <div class="pipe-n">STEP 6</div>
+          <div class="pipe-main">
+            <h4>Post-generation offers</h4>
+            <p>Seven optional next steps, offered <strong>only where the underlying MCP server or CLI is actually connected</strong> — it verifies availability first rather than offering something that will fail.</p>
+          </div>
+          <div class="pipe-side"><b>Nuance</b>§6.7, the grounded product-owner prototype, lives here — which is why you can request it after a story, not only before one.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-kicker">Mode behaviour</div>
+      <h2 class="sec-title">Which phases each mode actually runs</h2>
+      <p class="sec-desc">This is the nuance most people miss: modes do not just change the output, <strong>they change how much you get asked.</strong> If a bug fix is putting you through vertical discovery questions, STEP 0 mis-routed.</p>
+      <table class="rt compact">
+        <thead>
+          <tr>
+            <th style="width:20%">Mode</th>
+            <th style="width:11%">STEP 1<br />sub-domain</th>
+            <th style="width:10%">Phase 1<br />context</th>
+            <th style="width:10%">Phase 2<br />business</th>
+            <th style="width:10%">Phase 3<br />technical</th>
+            <th style="width:10%">Phase 4<br />acceptance</th>
+            <th>Story blockers</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>New Feature</strong></td>
+            <td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td>
+            <td>All apply. The full contract.</td>
+          </tr>
+          <tr>
+            <td><strong>Plan + Prototype</strong></td>
+            <td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">—</td><td class="no">—</td>
+            <td><span class="chip blocker">Story blockers skipped</span> <span class="chip ground">Grounding still applies</span></td>
+          </tr>
+          <tr>
+            <td><strong>Refactor</strong></td>
+            <td class="no">—</td><td class="part">part</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td>
+            <td>All apply. Starts at Phase 2 against a named component.</td>
+          </tr>
+          <tr>
+            <td><strong>Bug Fix</strong></td>
+            <td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="yes">✓</td><td class="yes">✓</td>
+            <td>All apply. Asks for the defect reference instead.</td>
+          </tr>
+          <tr>
+            <td><strong>Epic Breakdown</strong></td>
+            <td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td>
+            <td>All apply, per story. Decomposition approved first; <strong>max 10 stories</strong> per epic.</td>
+          </tr>
+          <tr>
+            <td><strong>Veeva → LSC</strong></td>
+            <td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td>
+            <td>All apply, plus mandatory terminology translation.</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="note">
+        <div class="co-label">The distinction worth internalising</div>
+        <p>Plan + Prototype drops the <strong>story</strong> blockers — Pattern A, Pattern E, Technical Implementation, Definition of Done — because its deliverable is a plan. It does <em>not</em> drop the <strong>grounding</strong> blockers: the build-technology decision must still be stated, every prototype element must still be labelled, and no component name may be invented. A "lighter" mode is not a licence to guess.</p>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-kicker">Critical rules</div>
+      <h2 class="sec-title">Every rule states why it exists</h2>
+      <p class="sec-desc">Seventeen rules including the two sub-rules. The <em>because</em> clause is part of the rule text, which means you can challenge a rule on its own stated grounds — and it is why the skill can explain its behaviour when asked.</p>
+      <table class="rt compact">
+        <thead><tr><th style="width:7%">Rule</th><th style="width:37%">What it mandates</th><th>Stated rationale</th></tr></thead>
+        <tbody>
+          <tr><td><strong>1</strong></td><td>Confirm the sub-domain, and whether this is a Veeva migration, first</td><td>Each sub-domain names different objects and personas — the wrong one produces an unbuildable story</td></tr>
+          <tr><td><strong>2</strong></td><td>Ask clarifying questions before generating — 5 to 16, via <code>AskQuestion</code> <span class="chip blocker">blocker</span></td><td>A story built on assumptions forces the follow-up meeting the skill exists to eliminate</td></tr>
+          <tr><td><strong>3</strong></td><td>Never invent component, object, or field names — verify custom via <code>code-review-graph</code>, standard via <code>salesforce-docs</code></td><td>Grep is slower and returns no structural context: no callers, dependents, or covering tests</td></tr>
+          <tr><td><strong>3a</strong></td><td>Mark unverifiable components <em>proposed / to-be-created</em> in the Clarification Questions table</td><td>LSC metadata may not exist in the target org, so most stories are greenfield — asserting existence is the error that survives to a sprint commitment</td></tr>
+          <tr><td><strong>4</strong></td><td>Follow the canonical output format and section order</td><td>Developers and QA find ACs, effort, and impact in the same place every time</td></tr>
+          <tr><td><strong>5</strong></td><td>Include a Clarification Questions table for anything undetermined</td><td>Surfacing an unknown beats silently guessing at it</td></tr>
+          <tr><td><strong>6</strong></td><td>Scan <code>requirements/</code> for overlapping or conflicting stories</td><td>Duplicate or contradictory stories cause conflicting builds</td></tr>
+          <tr><td><strong>7</strong></td><td>Use LSC naming conventions</td><td>Off-convention names break component resolution and obscure whether something is new or existing</td></tr>
+          <tr><td><strong>7a</strong></td><td>Declarative-first build technology; OmniStudio is additive, not the default. Confirm the <strong>runtime</strong> for any OmniStudio work</td><td>LSC is a standard-platform product — OmniStudio is supported but additive, so the lowest-complexity fit wins</td></tr>
+          <tr><td><strong>8</strong></td><td>Include an Estimated Effort section with component-level sizing</td><td>Sprint planning depends on it</td></tr>
+          <tr><td><strong>9</strong></td><td>Detect the workflow mode and adapt the question flow</td><td>Asking Phase 1 vertical questions on a bug fix wastes the architect's time</td></tr>
+          <tr><td><strong>10</strong></td><td>Offer the QTA test bridge after generating ACs, where configured</td><td>ACs convert to automated tests most cheaply while they are still fresh</td></tr>
+          <tr><td><strong>11</strong></td><td>Given / When / Then for every behavioural AC — three explicit lines, no prose <span class="chip blocker">blocker</span></td><td>Pattern A is executable by QA as written; prose ACs are not</td></tr>
+          <tr><td><strong>12</strong></td><td>Concrete LSC business-role persona. HCP / HCO / KOL / DOL are subjects, not the login <span class="chip blocker">blocker</span></td><td>The persona is the Salesforce user — you cannot build a permission set for "a user"</td></tr>
+          <tr><td><strong>13</strong></td><td>ACs in business language. No Apex, IP steps, SOQL, picklist API values, <code>*__c</code>, or <code>Limits.*</code> inside a GWT <span class="chip blocker">blocker</span></td><td>Technical detail belongs in Technical Implementation. Patterns B and C are the stated exception</td></tr>
+          <tr><td><strong>14</strong></td><td>Every story carries <code>## Technical Implementation (high-level)</code> after the ACs <span class="chip blocker">blocker</span></td><td>A concise component table — explicitly <em>not</em> a re-spec of the acceptance criteria</td></tr>
+          <tr><td><strong>15</strong></td><td>Pattern E on every created or updated record — every object, every field, exact value, parents before children. Never "etc." <span class="chip blocker">blocker</span></td><td>A Pattern A line says "the drop is recorded"; it does not tell a developer <code>Status = Submitted</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="sec">
+      <div class="sec-kicker">STEP 3 · resolution order</div>
+      <h2 class="sec-title">What it reaches for, in what order</h2>
+      <p class="sec-desc">Worth knowing precisely, because it tells you what an answer is grounded in. If a server is unavailable the skill says so briefly and falls back — <strong>silent degradation is not the designed behaviour.</strong></p>
+      <table class="rt compact">
+        <thead><tr><th style="width:38%">Goal</th><th style="width:34%">Uses first</th><th>Fallback</th></tr></thead>
+        <tbody>
+          <tr><td>Confirm a <strong>custom</strong> component exists</td><td><code>code-review-graph: semantic_search_nodes</code></td><td>Glob / Grep</td></tr>
+          <tr><td>Trace who calls an IP, Data Mapper, or Apex class</td><td><code>query_graph</code> — <code>callers_of</code> / <code>callees_of</code></td><td>Grep + Read</td></tr>
+          <tr><td>Populate the Impact Analysis table</td><td><code>get_impact_radius</code> / <code>get_affected_flows</code></td><td>Manual Grep tracing</td></tr>
+          <tr><td>Find tests covering a component</td><td><code>query_graph</code> — <code>tests_for</code></td><td>Glob the test directories</td></tr>
+          <tr><td>Verify a <strong>standard LSC</strong> object, field, or feature</td><td><code>salesforce-docs: salesforce_docs_search</code></td><td>Curated catalog reference</td></tr>
+          <tr><td>Find related existing stories</td><td>Grep <code>requirements/*.md</code></td><td><em>none — this one has no fallback</em></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="sec">
+      <div class="sec-kicker">STEP 5 · validator loop</div>
+      <h2 class="sec-title">The ten checks it runs on itself</h2>
+      <p class="sec-desc">This runs after generation and before presentation. <strong>Checks 2, 3, 4, and 5 are hard blockers</strong> — the skill will not present an artifact that violates the persona, AC-format, business-language, or Technical-Implementation contract. The other six are quality checks it fixes silently.</p>
+      <table class="rt compact">
+        <thead><tr><th style="width:5%">#</th><th style="width:26%">Check</th><th>What it is actually asserting</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Completeness</td><td>All required sections present: Header, Story, Why it matters, ACs, Technical Implementation, Definition of Done, Estimated Effort</td></tr>
+          <tr><td>2</td><td>Persona contract <span class="chip blocker">blocker</span></td><td>A concrete LSC role; HCP/HCO used only as subject unless it is a genuine portal story; <strong>the same role appears in "As a / I want / So that"</strong></td></tr>
+          <tr><td>3</td><td>AC format contract <span class="chip blocker">blocker</span></td><td>Every AC uses Pattern A–E; Pattern A has three explicit lines and a single <em>When</em>; every records-written outcome carries Pattern E with no "etc."</td></tr>
+          <tr><td>4</td><td>Business-language contract <span class="chip blocker">blocker</span></td><td>No Apex class, IP version or step, custom-field API name, SOQL, picklist API value, or <code>Limits.*</code> inside any Pattern-A line</td></tr>
+          <tr><td>5</td><td>Technical Implementation contract <span class="chip blocker">blocker</span></td><td>Present after the AC block, concise, and cross-references the AC numbers it implements</td></tr>
+          <tr><td>6</td><td>Accuracy</td><td>Custom components verified via the graph, standard objects via docs — or explicitly flagged <em>proposed</em></td></tr>
+          <tr><td>7</td><td>Naming</td><td>New component names follow LSC conventions</td></tr>
+          <tr><td>8</td><td>Cross-references</td><td>No conflict with existing stories in <code>requirements/</code></td></tr>
+          <tr><td>9</td><td>Actionability</td><td>Can a developer start building <em>without follow-up questions?</em></td></tr>
+          <tr><td>10</td><td>Effort sanity</td><td>Estimates match the complexity of each change</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="sec">
+      <div class="sec-kicker">STEP 6 · offers</div>
+      <h2 class="sec-title">Seven optional next steps, gated on availability</h2>
+      <p class="sec-desc">Each is offered only when its server or CLI is connected. Knowing the list matters because <strong>several of these are things architects otherwise do by hand</strong> after the story is written.</p>
+      <table class="rt compact">
+        <thead><tr><th style="width:8%">§</th><th style="width:32%">Offer</th><th>Depends on</th></tr></thead>
+        <tbody>
+          <tr><td>6.1</td><td>QTA test prompts — converts ACs to automated tests</td><td><code>qta-core</code></td></tr>
+          <tr><td>6.2</td><td>Diagram generation</td><td><code>udd-whiteboard</code> / <code>figma</code> / <code>diagram-beautifier</code> — Mermaid fallback</td></tr>
+          <tr><td>6.3</td><td>GUS work item creation</td><td><code>gus_server</code>, or the <code>sf data</code> CLI</td></tr>
+          <tr><td>6.4</td><td>Salesforce Docs verification pass</td><td><code>salesforce-docs</code></td></tr>
+          <tr><td>6.5</td><td>Knowledge base — Life Sciences Librarian</td><td><code>notebooklm</code></td></tr>
+          <tr><td>6.6</td><td>Story dependency check</td><td>Scans <code>requirements/</code> — always available</td></tr>
+          <tr><td>6.7</td><td><strong>Product-owner HTML prototype</strong>, grounded in a build-technology decision</td><td>None — always available</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="sec">
+      <div class="sec-kicker">Naming &amp; styling nuances</div>
+      <h2 class="sec-title">Three specifics that are easy to get wrong</h2>
+      <div class="grid3">
+        <div class="card">
+          <span class="ptag">Terminology</span>
+          <h4>It is Omnistudio Data Mapper</h4>
+          <p><strong>"DataRaptor" is the legacy name.</strong> Writing it in new story prose is an explicit stop condition. The skill will correct it — and so should you in review.</p>
+        </div>
+        <div class="card">
+          <span class="ptag">Runtime</span>
+          <h4>Standard, not managed-package</h4>
+          <p>New OmniStudio work defaults to the <strong>Standard runtime</strong> — native objects, Salesforce CLI deployable, Agentforce-ready. The managed-package Vlocity runtime is maintenance-mode. A verdict that omits the runtime is incomplete.</p>
+        </div>
+        <div class="card">
+          <span class="ptag">Prototype CSS</span>
+          <h4>The primer is mandatory</h4>
+          <p>Hand-rolled SLDS-flavoured CSS is <strong>non-compliant</strong>. Every prototype opens with the primer's <code>:root</code> variable block, uses its utility classes and blueprint recipes, applies the <code>.lsc-badge</code> overlay, and records a self-check score in a header comment.</p>
+        </div>
+      </div>
+      <p class="footnote">The badge classes on a compliant prototype are literal: <code>.lsc-badge.ootb</code>, <code>.config</code>, <code>.flow</code>, <code>.lwc</code>, <code>.os</code>, <code>.apex</code>, <code>.ext</code>. If you are reviewing a prototype and the badges are ad-hoc spans, it was not built against the primer.</p>
     </div>
   </section>
 
@@ -938,6 +1217,109 @@ cp -R lsc-delivery-architect/.cursor /path/to/your-project/
         <div class="cbox-bar"><span class="cbox-kind">Prompt · unjustified build tech</span><button class="copy-btn" type="button">Copy</button></div>
 <pre>Walk the RULE 7a declarative-first ladder explicitly for this requirement. Show me why Dynamic Actions, Action Launcher, Field Sets, and Screen Flow were each insufficient before you reached for anything custom, and state the rejected alternative in the plan.</pre>
       </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-kicker">Red flags · the STOP list</div>
+      <h2 class="sec-title">The tripwires the skill sets on itself</h2>
+      <p class="sec-desc">These are written into <code>SKILL.md</code> as explicit "about to do X → STOP" conditions. They are worth knowing verbatim, because <strong>they double as your review checklist</strong> — anything on this list that reaches your screen is a blocker that got past the validator.</p>
+      <div class="stops">
+        <div class="stop">
+          <div class="sl">About to write "As a user", "business user", or "system"</div>
+          <div class="sr">Use the concrete LSC role.</div>
+        </div>
+        <div class="stop">
+          <div class="sl">About to write "As an HCP / HCO" for an <strong>internal</strong> feature</div>
+          <div class="sr">The persona is the field or medical user. The HCP is the subject.</div>
+        </div>
+        <div class="stop">
+          <div class="sl">A Given/When/Then/And line contains an Apex class, IP version or step, SOQL, picklist API value, or <code>*__c</code></div>
+          <div class="sr">Move it to Technical Implementation.</div>
+        </div>
+        <div class="stop">
+          <div class="sl">Writing story content before Phase 1 and Phase 2 questions are answered</div>
+          <div class="sr">Ask via <code>AskQuestion</code> first.</div>
+        </div>
+        <div class="stop">
+          <div class="sl">Naming an OmniScript, Data Mapper, IP, FlexCard, Screen Flow, Apex class, LWC, or object that has not been verified</div>
+          <div class="sr">Verify it, or mark it <em>proposed</em>.</div>
+        </div>
+        <div class="stop">
+          <div class="sl">Defaulting to OmniScript without checking Dynamic Actions, Action Launcher, Screen Flow, or Field Sets</div>
+          <div class="sr">Apply the RULE 7a decision guide.</div>
+        </div>
+        <div class="stop">
+          <div class="sl">Writing "DataRaptor" in new story prose</div>
+          <div class="sr">Use "Omnistudio Data Mapper" — DataRaptor is the legacy name.</div>
+        </div>
+        <div class="stop">
+          <div class="sl">Keeping Veeva terminology in the story body during a migration</div>
+          <div class="sr">Translate to LSC-native; the original stays in the source header.</div>
+        </div>
+        <div class="stop">
+          <div class="sl">An AC is a prose paragraph instead of three GWT lines</div>
+          <div class="sr">Reformat to Pattern A.</div>
+        </div>
+        <div class="stop">
+          <div class="sl">An AC says "records are created/updated" with no Pattern E block, or a Pattern E block abbreviates with "etc."</div>
+          <div class="sr">Enumerate every object and every field written.</div>
+        </div>
+        <div class="stop">
+          <div class="sl">About to present a story missing Technical Implementation, Definition of Done, or Estimated Effort</div>
+          <div class="sr">It is incomplete.</div>
+        </div>
+        <div class="stop">
+          <div class="sl">About to hand a product owner a prototype that does not label the build technology behind each screen</div>
+          <div class="sr">Ground the mockup or do not ship it — answering "OOTB or custom?" <em>is</em> the point of the prototype.</div>
+        </div>
+        <div class="stop">
+          <div class="sl">About to hand-roll SLDS-flavoured CSS instead of using the SLDS 2 + Cosmos primer</div>
+          <div class="sr">Use the primer. Hand-rolled CSS is not compliant.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-kicker">Common mistakes</div>
+      <h2 class="sec-title">The rationalisations, and the rebuttal to each</h2>
+      <p class="sec-desc">The skill ships a table of the excuses that precede a contract violation. It is aimed at the agent, but it is just as useful pointed at a review conversation — <strong>every one of these is an argument you will eventually have with a teammate.</strong></p>
+      <table class="rt">
+        <thead><tr><th style="width:42%">The excuse</th><th>The reality</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>"The HCP is the user, so 'As an HCP' is fine."</td>
+            <td>HCP, HCO, KOL, and DOL are the <strong>subjects</strong> of the work. The persona is the Salesforce login user — Field Sales Rep, MSL, KAM. Use an HCP persona only for a genuine HCP-facing portal story. <span class="chip rule">RULE 12</span></td>
+          </tr>
+          <tr>
+            <td>"This story is small — 'the user' is a fine persona."</td>
+            <td>The persona contract is a hard blocker. Every "As a…" needs a concrete LSC business role, regardless of story size. <span class="chip rule">RULE 12</span></td>
+          </tr>
+          <tr>
+            <td>"One Apex class or field API name inside the AC is harmless context."</td>
+            <td>The business-language contract is a hard blocker. Move it to Technical Implementation — that is what the section is for. <span class="chip rule">RULE 13</span></td>
+          </tr>
+          <tr>
+            <td>"LSC objects are standard — I'm sure of the field name."</td>
+            <td>Verify standard objects and fields through <code>salesforce-docs</code>. Where the LSC package is not deployed, mark components <em>proposed</em> rather than asserting them. <span class="chip rule">RULE 3 · 3a</span></td>
+          </tr>
+          <tr>
+            <td>"The Veeva term maps obviously — I'll keep the Veeva wording."</td>
+            <td>Migration mode must translate to LSC-native terminology. The Veeva term survives only in a mapping note, never in the story body. <span class="chip rule">STEP 0</span></td>
+          </tr>
+          <tr>
+            <td>"The prompt is detailed enough — I'll skip clarifying questions."</td>
+            <td>Question-first is non-negotiable. A detailed-looking prompt is exactly the case the 5-question floor exists for. <span class="chip rule">RULE 2</span></td>
+          </tr>
+          <tr>
+            <td>"Given/When/Then is verbose — I'll write prose ACs."</td>
+            <td>Pattern A requires three explicit lines with a single <em>When</em>. Prose is not executable by QA. <span class="chip rule">RULE 11</span></td>
+          </tr>
+          <tr>
+            <td>"The ACs describe it — I'll drop the Technical Implementation section."</td>
+            <td>Every story carries it, after the ACs. <span class="chip rule">RULE 14</span></td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
     <div class="sec">
