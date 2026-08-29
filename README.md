@@ -12,9 +12,13 @@ skill. Same STEP 0–6 workflow and hard blockers; the identity was expanded to
 match what the skill actually delivers today — **a Solution Plan, a grounded
 prototype, or an implementation-ready user story, on demand and independently.**
 
-**Walkthrough (GitHub Pages):**
+**Architect's guide (GitHub Pages):**
 [p-kothapalli.github.io/lsc-delivery-architect](https://p-kothapalli.github.io/lsc-delivery-architect/)
-— four tabs: The Challenge · The Transformation · How It Works · The Proof.
+— five tabs: Why It Exists · How It Works · See It Work · Run It Yourself ·
+Adopt & Maintain. Start at **Run It Yourself** if you just want to install it and
+get a prototype in front of a product owner — every prompt on that tab is
+copyable, and each step has a checkpoint that tells you whether the skill
+actually loaded.
 
 ---
 
@@ -243,7 +247,7 @@ to file search + curated references and clearly marks unverifiable names as
   rules/
     use-lsc-delivery-architect.mdc   # Trigger rule
 README.md
-index.html                # GitHub Pages walkthrough (Challenge → Proof)
+index.html                # GitHub Pages architect's guide (Why → Adopt)
 ```
 
 ---

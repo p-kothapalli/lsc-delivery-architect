@@ -28,7 +28,7 @@ globs:
   - "force-app/**/flexCards/**"
 ---
 
-# LSC Delivery Architect (v1.8)
+# LSC Delivery Architect (v1.9)
 
 > _Sibling of the PNM `user-story-architect` skill. Same authoring contract and
 > STEP 0–6 workflow; the vertical, persona cheatsheet, object model, and the
