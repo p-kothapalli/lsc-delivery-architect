@@ -12,13 +12,21 @@ skill. Same STEP 0–6 workflow and hard blockers; the identity was expanded to
 match what the skill actually delivers today — **a Solution Plan, a grounded
 prototype, or an implementation-ready user story, on demand and independently.**
 
-**Architect's guide (GitHub Pages):**
+**Working reference (GitHub Pages):**
 [p-kothapalli.github.io/lsc-delivery-architect](https://p-kothapalli.github.io/lsc-delivery-architect/)
-— five tabs: Why It Exists · How It Works · See It Work · Run It Yourself ·
-Adopt & Maintain. Start at **Run It Yourself** if you just want to install it and
-get a prototype in front of a product owner — every prompt on that tab is
-copyable, and each step has a checkpoint that tells you whether the skill
-actually loaded.
+— a desk reference for solution architects, indexed by task rather than read
+front-to-back:
+
+| Tab | The question it answers |
+|---|---|
+| **Route Your Ask** | "I have *this* on my desk — which mode, and what do I paste?" |
+| **Artifact Contract** | "What am I signing when I send this out?" — AC Patterns A–E, the persona cheatsheet, effort bands in hours, the DoD gates |
+| **Build Decisions** | "Is this build-technology verdict defensible?" — the RULE 7a ladder plus a requirement-shape → verdict table |
+| **LSC Lookups** | Filterable Veeva→LSC translation, compliance drivers, and the Commercial / Medical / Market Access object maps |
+| **Repair & Review** | Symptom → cause → repair prompt for eight blocker failures, plus pre-flight checklists for product owners and developers |
+
+Start at **Route Your Ask** to install it and get a prototype in front of a
+product owner. Come back to **Repair & Review** when output misses a blocker.
 
 ---
 
@@ -247,7 +255,7 @@ to file search + curated references and clearly marks unverifiable names as
   rules/
     use-lsc-delivery-architect.mdc   # Trigger rule
 README.md
-index.html                # GitHub Pages architect's guide (Why → Adopt)
+index.html                # GitHub Pages working reference (task-indexed)
 ```
 
 ---
