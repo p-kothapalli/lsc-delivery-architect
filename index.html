@@ -476,7 +476,7 @@
 
     <div class="two-col-card single-card">
       <span class="warm-icon" aria-hidden="true">✦</span>
-      <p>The agent already knows the LSC personas, the ~350 standard objects, the Veeva translation, and the Concur expense model — so <strong>no architect starts from a blank page</strong>, and no one carries the standard alone. The time goes to the judgment calls only an architect can make.</p>
+      <p>The agent already knows the LSC personas, 377 catalogued standard objects, the Veeva translation, and the Concur expense model — so <strong>no architect starts from a blank page</strong>, and no one carries the standard alone. The time goes to the judgment calls only an architect can make.</p>
     </div>
 
     <div class="mini-header">Three artifacts — take any one, any combination, or all three</div>
@@ -536,13 +536,13 @@
           <div class="step-badge">3</div>
           <h4>Knowledge pack</h4>
           <span class="fname">references/*.md</span>
-          <p>Eleven references: the LSC object catalog, the AC pattern library, the Veeva map, the Concur model, the SLDS 2 primer, and the build-tech decision guide.</p>
+          <p>Twelve references: the LSC object catalog, the AC pattern library, the Veeva map, the Concur model, the SLDS 2 primer, the iPad/offline model, and the build-tech decision guide.</p>
         </div>
         <div class="step-mini">
           <div class="step-badge">4</div>
           <h4>Evaluations</h4>
           <span class="fname">evaluations/*.json</span>
-          <p>Scenarios with pass/fail rubrics. The source of truth for whether the skill still behaves after you change a reference.</p>
+          <p>Scenarios with pass/fail rubrics — three today, all covering story authoring. They are the regression check for that path after you change a reference; Plan + Prototype is not yet covered.</p>
         </div>
       </div>
     </div>
@@ -550,7 +550,7 @@
     <div class="ex-block">
       <div class="ex-kicker">The structure behind the standard</div>
       <h2 class="ex-title">How it is organized on disk</h2>
-      <p class="ex-desc">This is the exact pack in the repository. The agent never loads all eleven references at once — <code>SKILL.md</code> pulls only what the detected mode requires, which is why a bug-fix request does not drag ~350 objects into the context window.</p>
+      <p class="ex-desc">This is the exact pack in the repository. The agent never loads all twelve references at once — <code>SKILL.md</code> pulls only what the detected mode requires, which is why a bug-fix request does not drag 377 objects into the context window.</p>
       <div class="tree">
 <pre>.cursor/
 ├── rules/
@@ -562,7 +562,8 @@
     │   ├── output-template.md             <span class="muted-line">← Story template + effort sizing</span>
     │   ├── ac-pattern-library.md          <span class="muted-line">← Persona contract + AC Patterns A–E</span>
     │   ├── story-examples.md              <span class="muted-line">← Worked reference stories</span>
-    │   ├── <span class="hl">lsc-standard-objects-catalog.md</span>  <span class="muted-line">← ~350 LSC objects, Summer '26 / API v67.0</span>
+    │   ├── <span class="hl">lsc-mobile-ipad.md</span>             <span class="muted-line">← iPad app · offline · Device Sync · metadata cache</span>
+    │   ├── <span class="hl">lsc-standard-objects-catalog.md</span>  <span class="muted-line">← 377 LSC objects, Summer '26 / v67.0 snapshot</span>
     │   ├── lsc-object-model.md            <span class="muted-line">← Commercial · Medical · Market Access</span>
     │   ├── lsc-components.md              <span class="muted-line">← RULE 7a declarative-first decision guide</span>
     │   ├── concur-integration.md          <span class="muted-line">← SAP Concur ⇄ LSC expense sync</span>
@@ -661,9 +662,10 @@
         <div class="decision-col approval">
           <div class="decision-label">Will not invent</div>
           <ul>
-            <li>Custom components are verified through the <code>code-review-graph</code> index before they are named.</li>
-            <li>Standard LSC objects and fields are verified through <code>salesforce-docs</code> — ~350 objects, Summer '26 / API v67.0.</li>
+            <li>Custom components are verified before they are named — through the <code>code-review-graph</code> index where it is connected, and by searching the codebase directly where it is not.</li>
+            <li>Standard LSC objects and fields are checked against <code>salesforce-docs</code>, or against the official Salesforce documentation when it is unavailable. The bundled catalog is a dated snapshot — 377 objects, Summer '26 / API v67.0 — so its silence is never evidence that a platform feature does not exist.</li>
             <li>Anything unverifiable is written as <em>(proposed)</em> rather than asserted. A confidently wrong object name is the one error that survives all the way to a sprint commitment.</li>
+            <li>A missing verification tool is never read as a finding. "The index could not confirm it" does not become "so we will build it" — an out-of-the-box-versus-custom call that cannot be verified is raised as a blocking question instead.</li>
             <li>OmniScript is never the silent default. Dynamic Actions, Action Launcher, Screen Flow, and Field Sets are checked first.</li>
           </ul>
         </div>
@@ -1394,7 +1396,7 @@ cp -R lsc-delivery-architect/.cursor /path/to/your-project/</pre>
         <div class="cbox-bar"><span class="cbox-kind">Prompt</span><button class="copy-btn" type="button">Copy</button></div>
 <pre>Run each scenario in evaluations/ against this skill and score the output on every expected_behavior item. Report which blockers failed.</pre>
       </div>
-      <p class="footnote">The evaluations are the source of truth for whether the skill still works. Extend them <em>before</em> you extend the documentation.</p>
+      <p class="footnote">The three shipped scenarios — Veeva migration, sample drop, field creation — exercise story authoring only. Treat a green run as evidence about that path, not about the whole skill: Plan + Prototype, the grounded-prototype blockers, and surface selection have no scenario yet, so changes there still need a manual walkthrough. Extend the evaluations <em>before</em> you extend the documentation.</p>
     </div>
 
     <div class="ex-block">
@@ -1413,7 +1415,7 @@ cp -R lsc-delivery-architect/.cursor /path/to/your-project/</pre>
           <tr>
             <td><code>salesforce-docs</code></td>
             <td>Standard LSC objects, fields, and features, with citations.</td>
-            <td>Falls back to the curated catalog reference and flags what it could not confirm.</td>
+            <td>Falls back to the official <code>help.salesforce.com</code> and <code>developer.salesforce.com</code> pages, and flags what it could not confirm. Not to the bundled catalog as an authority — that is a dated snapshot.</td>
           </tr>
         </tbody>
       </table>
