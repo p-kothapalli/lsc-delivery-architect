@@ -22,6 +22,7 @@ Migration Progress:
 - [ ] M3: Re-align the persona to a concrete LSC role (HCP/HCO are subjects, not the login user)
 - [ ] M4: Rewrite ACs in Gherkin (Pattern A) + Pattern E for record writes, in LSC terms
 - [ ] M5: Flag any Veeva concept with no clean LSC equivalent in Clarification Questions
+- [ ] M6: Set the **Surface** (Veeva field users are iPad-native — default to iPad offline) and run the offline-parity checklist below; add Pattern F ACs
 ```
 
 Rules:
@@ -29,7 +30,12 @@ Rules:
 1. **Transform the core story** — convert the Veeva "As a… I need…" into a
    standard Agile user story focused on business value in the LSC ecosystem.
 2. **Modernize acceptance criteria** — Gherkin (Given/When/Then), Pattern A;
-   pair every record write with Pattern E.
+   pair every record write with Pattern E, and every offline capability with
+   Pattern F.
+2a. **Preserve the surface.** A Veeva capability the rep performed on an iPad
+   migrates to the **LSC Mobile iPad app**, not to Lightning web. Moving a field
+   task to the desktop is a business change requiring explicit agreement — not a
+   silent simplification.
 3. **LSC technical alignment** — use LSC-native terminology (Location, Product
    Item, Production Batch, Action Launcher, Visit, Sample Transaction). The story
    body must NOT retain Veeva wording — keep the original Veeva term only in the
@@ -65,7 +71,10 @@ Rules:
 | KOL / Stakeholder Navigator | **KOL/DOL management on Account + Assessment** | Scoring/tiering |
 | Consent capture | **Consent / Communication Subscription** | |
 | Veeva Vault (content/docs) | **Salesforce Files / DAM / external Vault integration** | May stay in Vault via integration |
-| Zvod / offline sync | **Salesforce mobile offline / Field Service offline** | Verify offline capability |
+| Veeva CRM iPad app | **Life Sciences Cloud Mobile (iPad app)** | LSC ships its own offline-enabled iPad app — not Salesforce Mobile, not Field Service. See `lsc-mobile-ipad.md` |
+| Zvod / offline sync | **LSC Device Sync** (`DeviceSyncTransaction` / `…Record` / `…Log`, `DeviceSyncSummary`) + **mobile metadata cache** | **Corrected mapping** — earlier guidance pointed at *Field Service offline*, which is the wrong platform. LSC has its own offline pipeline |
+| Veeva data priming / VMOCs | **Object metadata cache config** (type, SOQL Filter Condition, Web-to-Mobile Sync) | This is how data reaches the device; profile-scoped |
+| Device/user registration | **`LifeScienceMobileApp`** (master-detail to `UserDevice`) | Tracks app version, metadata version, last sync, force-full-sync |
 | MyInsights | **CRM Analytics / Dashboards / LWC** | |
 | Action Bar / quick actions | **Action Launcher** | Guided actions |
 | Call Expenses / Concur (expense mgmt) | **Visit Expenses + Expense Report + Concur Expense Sync** | Bidirectional MuleSoft sync — see `concur-integration.md` |
@@ -80,7 +89,8 @@ Rules:
 ## Concepts with no clean 1:1 mapping (always flag in Clarification Questions)
 
 - **Offline-first behavior** — Veeva is heavily offline; confirm the LSC/mobile
-  offline strategy for the story's actions.
+  offline strategy for the story's actions. **This is the highest-risk area of
+  any Veeva migration** — see the offline-parity checklist below.
 - **Veeva Vault content lifecycle** — approval/withdrawal of content may remain
   in Vault; clarify whether content is migrated or integrated.
 - **Veeva-specific config objects** (e.g. proprietary data-change-request,
@@ -88,6 +98,39 @@ Rules:
 - **Custom Veeva VOD packages / Zvod records** — no direct equivalent; redesign.
 
 Never silently drop a Veeva concept — either map it or raise it as a question.
+
+---
+
+## Offline parity checklist (run on every migration story)
+
+**Veeva field users are iPad-native.** A migrated capability that lands on
+Lightning web only is a UAT failure, not a scope reduction — the rep will never
+open a browser to do it. Apply RULE 16 and work through this before calling a
+migration story complete.
+
+- [ ] **Surface declared.** The story header names the target surface, and for a
+      Veeva field capability that is **iPad (online + offline)** unless the
+      business has explicitly agreed to move the task to a desk.
+- [ ] **Offline parity assessed.** For each action the Veeva version supported
+      offline, state whether LSC supports it offline, and if not, what the
+      business does instead. Never let a silent downgrade through.
+- [ ] **Priming mapped.** Whatever Veeva primed to the device has an equivalent
+      **object metadata cache configuration** with a SOQL Filter Condition that
+      bounds the download.
+- [ ] **Pattern F written.** At least one offline/sync AC covering on-device,
+      after-sync, and on-failure behaviour.
+- [ ] **Validation feasibility checked.** Any Veeva rule that ran locally (sample
+      limits, licence eligibility) must either be primed to the device or be
+      declared as degrading offline.
+- [ ] **Build technology re-checked for mobile.** A technology chosen for the web
+      migration may not run in the LSC Mobile app. Prefer Screen Flow / Apex /
+      LWC; verify before proposing OmniStudio.
+- [ ] **Metadata cache regeneration** included in Technical Implementation, for
+      every affected profile.
+
+> Offline is the LSC product's headline differentiator against Veeva
+> ("Offline-enabled iPad App"). A migration that loses offline coverage loses the
+> business case. Full detail: `references/lsc-mobile-ipad.md`.
 
 ---
 

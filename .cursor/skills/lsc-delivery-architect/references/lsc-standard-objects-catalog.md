@@ -1,13 +1,20 @@
-# LSC Standard Object Catalog — Complete (Summer '26 / API v67.0)
+# LSC Standard Object Catalog — Summer '26 snapshot (API v67.0)
 
-**Authoritative, verified list of every Life Sciences Cloud standard object.**
+> ⚠️ **This is a dated snapshot, not current ground truth.** Captured at Summer
+> '26 / API v67.0; **Winter '27 / API v68.0 is now "Latest"**, so objects and
+> features added since are missing here. **Absence from this file is NOT evidence
+> that an object or platform capability does not exist** (RULE 3) — and never
+> conclude "there's no OOTB way to do this" from it. Confirm at source before any
+> OOTB-vs-custom decision.
+
+**Verified list of Life Sciences Cloud standard objects as at API v67.0.**
 Fetched verbatim from the official
 [Life Sciences Cloud Developer Guide → Standard Objects](https://developer.salesforce.com/docs/atlas.en-us.life_sciences_dev_guide.meta/life_sciences_dev_guide/life_sciences_sforce_api_objects.htm)
 (Summer '26, **API version 67.0** — the "Latest" release at capture time).
 
 > **How to use this file.** `lsc-object-model.md` is the *curated, business-term*
-> starting point for writing stories. **This file is the complete, ground-truth
-> object catalog** — use it to (a) confirm an LSC object actually exists and get
+> starting point for writing stories. **This file is the broadest object index
+> available offline** — use it to (a) confirm an LSC object actually exists and get
 > its exact API name, and (b) find the right object for a capability. Object
 > availability is version-gated; the **"Since"** column is the API version an
 > object was introduced (blank = pre-v61 / long-standing). **Field-level detail
@@ -587,5 +594,6 @@ workspace, mark any unverifiable object/field as *proposed*.
 | Release | Summer '26 |
 | API version | 67.0 (labelled "Latest" at capture) |
 | Captured | 2026-07-30 |
-| Object count | ~350 standard objects |
+| **Superseded by** | **Winter '27 / API v68.0 is now "Latest"** (confirmed 2026-09-10) — objects added since are absent from this file |
+| Object count | 377 object entries in this file |
 | Caveat | Field lists are not in the guide — verify via `describe`/WSDL/schema viewer. |

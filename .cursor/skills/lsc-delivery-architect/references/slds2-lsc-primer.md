@@ -686,6 +686,17 @@ component that will implement it, per §6.7 hard-blocker #2.
 .lsc-badge.apex   { color: #ba0517; border-color: rgba(186,5,23,0.35);   background: rgba(186,5,23,0.10); }
 .lsc-badge.ext    { color: #514f4d; border-color: var(--slds-g-color-border-2); background: var(--slds-g-color-surface-3); }
 
+/* OmniStudio / platform sub-types used by the Solution Plan inventory
+   (plan-prototype-mode.md) — without these they render unstyled */
+.lsc-badge.fc     { color: #9050e9; border-color: rgba(144,80,233,0.35); background: rgba(144,80,233,0.10); } /* FlexCard */
+.lsc-badge.ip     { color: #0b827c; border-color: rgba(11,130,124,0.35); background: rgba(11,130,124,0.10); } /* Integration Procedure */
+.lsc-badge.al     { color: #1b5297; border-color: rgba(27,82,151,0.35);  background: rgba(27,82,151,0.10); } /* Action Launcher */
+
+/* Surface badges (§11) — which device this element lives on */
+.lsc-badge.ipad    { color: #032d60; border-color: rgba(3,45,96,0.35);    background: rgba(3,45,96,0.10); }
+.lsc-badge.web     { color: #5c5c5c; border-color: var(--slds-g-color-border-2); background: var(--slds-g-color-surface-2); }
+.lsc-badge.offline { color: #8c4b02; border-color: rgba(140,75,2,0.35);   background: rgba(140,75,2,0.10); }
+
 /* Build-tech banner at the top of every LSC prototype */
 .lsc-build-banner {
   background: var(--slds-g-color-accent-container-1); color: var(--slds-g-color-on-accent-1);
@@ -707,6 +718,31 @@ component that will implement it, per §6.7 hard-blocker #2.
 | `OS`     | OmniScript step | Branching guided intake (Medical Inquiry) |
 | `Apex`   | Apex trigger, invocable, controller | Atomic multi-object writes, callouts |
 | `Ext`    | External integration (MuleSoft · Concur · Data Cloud · e-signature vendor) | Concur expense sync, DAM content pull, Data Cloud feed |
+| `FC`     | FlexCard | A card surfacing summary/related data where the Solution Plan inventory names a FlexCard rather than generic `Config` |
+| `IP`     | Integration Procedure | Server-side orchestration behind a step (note: does **not** execute offline) |
+| `AL`     | Action Launcher | An action list entry point on a record page |
+
+> `FC`, `IP`, and `AL` are the sub-type badges used by the Solution Plan
+> component inventory (`plan-prototype-mode.md`). Use `OS` for OmniScript steps
+> and `Config` where the distinction doesn't matter. Every badge listed on this
+> page has a matching class in §8 — never invent one that doesn't.
+
+**Surface badges (§11).** Where a story's Surface is *Both*, or where an element
+behaves differently by device, add a second badge naming the surface:
+
+| Badge | Meaning | When to apply |
+|-------|---------|---------------|
+| `iPad`    | Renders in the LSC Mobile iPad app | Any element on an iPad-surface screen |
+| `Web`     | Lightning web only | Web-only actions (e.g. delete expense report, multi-attachment) |
+| `Offline` | Works with no connectivity; outcome is deferred until sync | Offline capture, local validation, queued write |
+
+```html
+<button class="slds-button slds-button_brand">
+  Record sample drop
+  <span class="lsc-badge flow">Flow · guided capture</span>
+  <span class="lsc-badge offline">Offline</span>
+</button>
+```
 
 ### How to apply a badge
 
@@ -868,7 +904,9 @@ runs a lightweight self-check against this primer before saving the
 prototype. Every prototype file must open with a header comment recording the
 score (score-only rule, per the STEP 6.7 gate-behavior decision).
 
-### The 10-point self-check
+### The 12-point self-check
+
+(10 universal checks + 2 surface checks that apply only to iPad-surface stories.)
 
 Before saving `<Capability>_Prototype.html`, verify:
 
@@ -884,6 +922,11 @@ Before saving `<Capability>_Prototype.html`, verify:
 | 8 | Every interactive element has an LSC badge | Buttons, inputs, cards, action bars carry `.lsc-badge` per §8 |
 | 9 | Build-tech banner present | `.lsc-build-banner` opens the prototype below the global header |
 | 10 | No dark-mode overrides | Prototype is light-mode only; no `prefers-color-scheme` blocks |
+| 11 | **Surface rendered correctly** | If the story's Surface includes iPad, the prototype is wrapped in the §11 `.lsc-ipad-frame` with 44px touch targets — not a bare desktop page. Web-only stories skip this check. |
+| 12 | **Offline state shown** | If Offline is required, an offline screen exists with the offline banner and a pending-sync pill, and no server error is shown to the rep |
+
+Checks 11 and 12 apply only when the story's Surface includes iPad; score them
+`n/a` for a web-only story and note it.
 
 ### Score
 
@@ -892,8 +935,20 @@ Write the score as a comment at the very top of the file:
 ```html
 <!--
   LSC Prototype self-check (SLDS 2 + Cosmos primer §10)
-  passed: 10 / 10
-  notes:  none
+  surface: iPad (online + offline)
+  passed:  12 / 12
+  notes:   none
+-->
+```
+
+For a web-only story:
+
+```html
+<!--
+  LSC Prototype self-check (SLDS 2 + Cosmos primer §10)
+  surface: Lightning web
+  passed:  10 / 10  (checks 11–12 n/a — web-only surface)
+  notes:   none
 -->
 ```
 
@@ -903,7 +958,143 @@ useful review artifact. Matches the score-only rule from §6.7.
 
 ---
 
-## 11. What deliberately isn't here
+## 11. iPad frame — rendering a mobile-surface prototype
+
+**When the story's Surface includes iPad, the prototype MUST render inside an
+iPad frame, not as a desktop browser page** (§6.7 hard-blocker #10). Showing a
+Field Sales Rep's offline workflow as a 1440px desktop page misrepresents the
+build to the product owner — the same category of error the grounding contract
+exists to prevent.
+
+### Device dimensions
+
+| Orientation | Viewport | Use for |
+|---|---|---|
+| **Landscape** (default) | **1180 × 820** | Most LSC rep workflows — visits, sample drops, CLM |
+| **Portrait** | **820 × 1180** | Forms, signature capture, list-heavy screens |
+
+Render at these logical sizes. Include both when the story has a signature or
+form step, since reps commonly rotate for signing.
+
+### The frame
+
+```css
+/* iPad device frame — wraps the whole prototype when Surface includes iPad */
+.lsc-ipad-frame {
+  width: 1180px; height: 820px;                 /* landscape; swap for portrait */
+  margin: var(--slds-g-spacing-6) auto;
+  background: #0b0b0b;
+  border-radius: 28px;
+  padding: 14px;
+  box-shadow: var(--slds-g-shadow-3, 0 12px 32px rgba(0,0,0,0.28));
+}
+.lsc-ipad-screen {
+  width: 100%; height: 100%;
+  background: var(--slds-g-color-surface-2);
+  border-radius: 16px;
+  overflow: auto;
+  position: relative;
+}
+.lsc-ipad-frame.portrait { width: 820px; height: 1180px; }
+
+/* iPad status bar — sells the device context in one line */
+.lsc-ipad-statusbar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: var(--slds-g-spacing-1) var(--slds-g-spacing-4);
+  background: var(--slds-g-color-surface-1);
+  border-bottom: 1px solid var(--slds-g-color-border-1);
+  font-size: 11px; font-weight: var(--slds-g-font-weight-7);
+  color: var(--slds-g-color-on-surface-2);
+}
+
+/* Touch targets — 44px minimum on the mobile surface (Apple HIG) */
+.lsc-ipad-screen .slds-button,
+.lsc-ipad-screen .slds-input,
+.lsc-ipad-screen .slds-select,
+.lsc-ipad-screen [role="button"] {
+  min-height: 44px;
+  padding-inline: var(--slds-g-spacing-4);
+}
+.lsc-ipad-screen .slds-button_icon { min-width: 44px; min-height: 44px; }
+
+/* Offline banner — the app is working without connectivity */
+.lsc-offline-banner {
+  display: flex; align-items: center; gap: var(--slds-g-spacing-2);
+  padding: var(--slds-g-spacing-2) var(--slds-g-spacing-4);
+  background: rgba(140,75,2,0.10);
+  border-bottom: 1px solid rgba(140,75,2,0.35);
+  color: #8c4b02;
+  font-size: var(--slds-g-font-scale-neg-1, 12px);
+  font-weight: var(--slds-g-font-weight-7);
+}
+
+/* Sync-status pill — pending work waiting to reach the org */
+.lsc-sync-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 2px 10px; border-radius: 999px;
+  font-size: 11px; font-weight: var(--slds-g-font-weight-7);
+}
+.lsc-sync-pill.pending { color: #8c4b02; background: rgba(140,75,2,0.12); }
+.lsc-sync-pill.synced  { color: #2e844a; background: rgba(46,132,74,0.12); }
+.lsc-sync-pill.failed  { color: #ba0517; background: rgba(186,5,23,0.12); }
+```
+
+### The shell
+
+```html
+<div class="lsc-ipad-frame">
+  <div class="lsc-ipad-screen">
+
+    <div class="lsc-ipad-statusbar">
+      <span>Life Sciences Cloud Mobile</span>
+      <span>
+        <span class="lsc-sync-pill pending">3 pending sync</span>
+        9:41 AM
+      </span>
+    </div>
+
+    <!-- Shown only in the offline state -->
+    <div class="lsc-offline-banner">
+      <span aria-hidden="true">&#9679;</span>
+      Working offline — 3 items will sync when you reconnect
+      <span class="lsc-badge offline">Offline</span>
+    </div>
+
+    <div class="lsc-build-banner">
+      <div class="lsc-build-title">Build technology · Screen Flow + LWC signature pad + Apex (iPad, offline)</div>
+      <div class="lsc-build-rejected">Rejected: OmniScript — mobile support unverified for the LSC Mobile app.</div>
+    </div>
+
+    <!-- SLDS 2 chrome and blueprint recipes from §5 go here -->
+
+  </div>
+</div>
+```
+
+### Rules for iPad-surface prototypes
+
+1. **Frame it.** No bare desktop page when Surface includes iPad.
+2. **Show the offline state.** An offline story must include an offline screen —
+   the banner, the pending-sync pill, and at least one queued item. This is the
+   visual counterpart of the Pattern F AC.
+3. **Respect 44px touch targets.** Desktop-sized buttons in an iPad frame
+   misrepresent usability.
+4. **Drop desktop-only chrome.** No `.slds-global-header` nav bar in the iPad
+   frame; the app has its own navigation. Keep page header, path, tabs, cards.
+5. **Simplify the grid.** Prefer `slds-size_1-of-1` and `slds-size_1-of-2` inside
+   the frame; three- and four-column desktop layouts don't hold at 1180px with
+   44px targets.
+6. **Surface = Both means two frames.** Render the iPad frame *and* the desktop
+   view, and badge the elements that differ (`iPad` / `Web`). Do not render one
+   and claim it covers both — the per-surface behaviour matrix in
+   `references/lsc-mobile-ipad.md` exists precisely because they diverge.
+7. **Never show the rep a sync error.** An offline screen may show a *pending*
+   or *failed-and-queued-for-admin* pill; it must not show a server error
+   dialog. That mirrors the Pattern F hard rule.
+
+---
+
+## 12. What deliberately isn't here
 
 - **Full a11y conformance.** WCAG 2.2 AA gates require the `a11y_expert`
   reviewer. This primer gives a11y basics (assistive text on icons, focus
@@ -922,7 +1113,7 @@ out of scope for the primer — escalate to installing the full
 
 ---
 
-## 12. Provenance & update policy
+## 13. Provenance & update policy
 
 - **Source of truth (external):**
   `github.com/salesforce-ux-emu/design-intelligence/packages/skills/applying-slds`

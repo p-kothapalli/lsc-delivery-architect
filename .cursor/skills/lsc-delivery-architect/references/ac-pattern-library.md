@@ -10,7 +10,8 @@ and links here.
 - Persona rule (concrete LSC business role) + LSC Persona Cheatsheet + the HCP/HCO trap
 - Given / When / Then contract (Pattern A rules + right/wrong examples)
 - AC Pattern Library: Pattern A (behavioural), B (field/object/metadata),
-  C (permission set / FLS), D (field update rules), E (record & field specification)
+  C (permission set / FLS), D (field update rules), E (record & field specification),
+  F (offline / sync behaviour)
 - "When in doubt" pattern-selection guide
 
 ---
@@ -43,18 +44,24 @@ is *about*.
 Detected on first run by scanning `requirements/` and `permissionsets/` for role
 labels. Canonical starter list (LSC):
 
-| Sub-domain / Context | Persona to use |
-|---|---|
-| Field sales visits, calls, sample drops | **Field Sales Representative** |
-| Sample inventory / lot reconciliation / accountability | **Sample Accountability Manager** (or Field Sales Rep for on-hand) |
-| Key account planning & strategy | **Key Account Manager (KAM)** |
-| Medical affairs, scientific engagement, KOL/DOL | **Medical Science Liaison (MSL)** |
-| Medical information requests | **Medical Information Specialist** |
-| Territory design, alignment, cycle plans | **Commercial Operations Analyst** (or Sales Operations Manager) |
-| Payer / formulary / contracts | **Market Access Manager** |
-| Content / approved email / CLM | **Marketing Operations Specialist** |
-| Compliance oversight (Sunshine Act, PDMA, consent) | **Compliance Specialist** |
-| First-line field management | **District Sales Manager** |
+The **Primary surface** column drives RULE 16 — it is the default Surface for a
+story with that persona, unless the user says otherwise. See
+`references/lsc-mobile-ipad.md`.
+
+| Sub-domain / Context | Persona to use | Primary surface |
+|---|---|---|
+| Field sales visits, calls, sample drops | **Field Sales Representative** | **iPad (offline)** |
+| Sample inventory / lot reconciliation / accountability | **Sample Accountability Manager** (or Field Sales Rep for on-hand) | iPad (rep) / web (manager) |
+| Key account planning & strategy | **Key Account Manager (KAM)** | **iPad**, some web |
+| Medical affairs, scientific engagement, KOL/DOL | **Medical Science Liaison (MSL)** | **iPad (offline)** |
+| Medical information requests | **Medical Information Specialist** | Lightning web |
+| Territory design, alignment, cycle plans | **Commercial Operations Analyst** (or Sales Operations Manager) | Lightning web |
+| Payer / formulary / contracts | **Market Access Manager** | Lightning web |
+| Content / approved email / CLM | **Marketing Operations Specialist** | Web (authoring) → iPad (delivery) |
+| Compliance oversight (Sunshine Act, PDMA, consent) | **Compliance Specialist** | Lightning web |
+| First-line field management | **District Sales Manager** | **iPad**, some web |
+| Managed events / field events | **Event Organizer** | **iPad + web** (Offline Mobile is primary) |
+| LSC setup, Admin Console, Concur settings | **LSC Admin** | Lightning web |
 
 If the user names a persona that isn't in the cheatsheet, accept it verbatim and
 add it to the story header. Prefer the workspace's established term over a casual
@@ -86,6 +93,13 @@ Hard rules:
 - Edge cases get their own AC (Given = the edge state; Then = the
   rejection / fallback / log entry).
 - If you write more than ~6 lines under a single Then, split the AC.
+- **Qualify the surface in the Given whenever behaviour differs by surface**
+  (RULE 16). Write "Given a Field Sales Representative **working offline in the
+  LSC Mobile app on iPad**…" rather than leaving the device implicit. If the
+  behaviour is identical on iPad and web, no qualifier is needed — but if it
+  differs, an unqualified AC is untestable because QA can't tell which surface
+  to test. Where several behaviours diverge, use the per-surface behaviour
+  matrix in `references/lsc-mobile-ipad.md` instead of repeating ACs.
 
 **Example — wrong (prose with technical jargon):**
 
@@ -113,7 +127,7 @@ the story's Technical Implementation (high-level) section.
 
 ## AC Pattern Library
 
-Every AC uses ONE of five patterns. Pick the pattern that matches what the AC is
+Every AC uses ONE of six patterns. Pick the pattern that matches what the AC is
 asserting; don't force a GWT shape on a metadata-spec AC.
 
 ### Pattern A — Behavioural AC (Given / When / Then) — DEFAULT
@@ -263,11 +277,85 @@ Hard rules for Pattern E:
 - A "Create a Note / Call Report" instruction is a record write — spec it as its
   own object block.
 
+### Pattern F — Offline / Sync Behaviour — MANDATORY when Surface includes offline iPad
+
+Use for: any story whose **Surface** is *iPad (online + offline)* or *Both* with
+offline required. Offline changes what "Then" means, because the outcome is
+**deferred** — the rep's action succeeds on the device and the server write
+happens later, possibly failing after the rep has walked away.
+
+**Why mandatory:** a Pattern A AC that says *"Then the sample transaction is
+recorded"* is ambiguous offline. Recorded **where** — on the device, or in
+Salesforce? A rep who captured a signature in a basement office needs the device
+to accept the work; the org needs the record to exist after sync; and the admin
+needs a diagnosable failure if it doesn't. One Pattern A AC cannot carry all
+three.
+
+**Structure — three explicit phases:**
+
+```
+**AC-N — <Action> works offline and syncs on reconnect**
+
+**Given** a <persona> is working **offline in the LSC Mobile app on iPad**,
+**And** <the data the action depends on> has been primed to the device,
+**When** they <single business action>,
+**Then** ON DEVICE: <what the rep immediately sees — the action is accepted,
+  the record appears in their local list, the running balance updates>,
+**And** AFTER SYNC: <what exists in Salesforce once connectivity returns —
+  which records, in which order>,
+**And** ON SYNC FAILURE: <the transaction is marked failed for admin review;
+  the rep is NOT shown a sync error>.
+```
+
+Hard rules for Pattern F:
+
+- **Never show the rep a server-side or sync error.** They have no connectivity.
+  Sync failures go to `DeviceSyncTransaction.Status = Failed` plus a
+  `DeviceSyncTransactionLog` entry for admin monitoring. This mirrors the
+  established Concur rule (integration errors are not end-user errors).
+- **State what is primed.** If the Given depends on data being available
+  offline, that data must be in the metadata cache. Name it, and cross-reference
+  the cache configuration in Technical Implementation.
+- **State validation feasibility.** A rule requiring a live query (real-time
+  central inventory, an external licence lookup) **cannot** run offline. Say
+  whether the data is primed or the rule degrades — don't leave it implied.
+- **State ordering for dependent writes.** Where one offline record depends on
+  another (visit → sample drop → signature), say the required order and what
+  happens if the parent transaction fails. The platform carries this via
+  `DependentOfflineIdentifiers` and `Sequence`; the AC states the business
+  expectation.
+- **Pair with Pattern E.** Offline still creates records. The Pattern E block
+  specifies the fields; Pattern F specifies *when* they come into existence and
+  what happens if they don't.
+- **Cover conflict.** Give conflicting web-vs-offline edits on the same record
+  their own AC, and say which side wins.
+- **Timestamps are device-side.** `OfflineTimestamp` / `OfflineCreatedDate`
+  record when the action *happened*, not when it synced. If the business cares
+  about the actual interaction time (compliance, Sunshine Act reporting), say so.
+
+**Worked example:**
+
+```
+**AC-4 — Sample drop captured offline syncs on reconnect**
+
+**Given** a Field Sales Representative is working offline in the LSC Mobile app on iPad,
+**And** their on-hand sample lots and the HCP's sampling eligibility were primed to the device at last sync,
+**When** they record a sample drop with the HCP's signature during a visit,
+**Then** ON DEVICE: the drop is accepted, the signature is stored with it, and their on-hand balance for that lot is reduced immediately,
+**And** AFTER SYNC: the visit, the sample transaction, and the signature exist in Salesforce, written in that order, timestamped to when the drop actually occurred rather than when it synced,
+**And** ON SYNC FAILURE: the transaction is flagged for administrator review with a diagnostic log entry, and the Field Sales Representative is shown no sync error.
+```
+
+Full offline authoring rules, the Device Sync object model, and the metadata
+cache contract are in `references/lsc-mobile-ipad.md`.
+
 ### When in doubt
 
 - A field, object, metadata type, or perm set is being **created or changed** (its *definition*) → Pattern B or C (structured bullets).
 - The persona observes **behaviour** of the system → Pattern A (GWT).
 - A computation has **many conditional branches** feeding a single outcome → Pattern D (rules block).
 - A Save / Submit / batch / trigger **creates or updates record data** and you need the exact per-field recipe → Pattern E. **Always pair Pattern E with the Pattern A AC that describes the same action in business language.**
+- The action happens **on the iPad with no connectivity**, so the outcome is deferred → Pattern F. **Always pair Pattern F with the Pattern E block that specifies the fields being written.**
 
-See `references/story-examples.md` for worked exemplars (Patterns A–E).
+See `references/story-examples.md` for worked exemplars (Patterns A–E). Pattern F
+carries its worked example inline above.

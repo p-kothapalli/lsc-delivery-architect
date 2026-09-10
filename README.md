@@ -115,8 +115,9 @@ Every generated story follows one contract:
 
 ## What it knows (LSC knowledge pack)
 
-- **Complete LSC standard-object catalog** — ~350 objects (Summer '26,
-  API v67.0) grouped by functional domain, in
+- **LSC standard-object catalog** — 377 objects grouped by functional domain, as a
+  dated **Summer '26 / API v67.0 snapshot** (v68.0 is now Latest, so absence from
+  the catalog is never evidence a platform feature doesn't exist), in
   [`references/lsc-standard-objects-catalog.md`](.cursor/skills/lsc-delivery-architect/references/lsc-standard-objects-catalog.md).
 - **LSC object model** — Visits/Calls, Sample Management, Product Item &
   Production Batch inventory, Territory & MC Cycle Plans, Action Launcher,
@@ -241,17 +242,18 @@ to file search + curated references and clearly marks unverifiable names as
   skills/lsc-delivery-architect/
     SKILL.md                  # the skill (navigational overview, STEP 0–6)
     references/
-      ac-pattern-library.md          # Persona contract + AC Patterns A–E
+      ac-pattern-library.md          # Persona contract + AC Patterns A–F
       output-template.md             # Full story template + effort sizing
       plan-prototype-mode.md         # Plan + Prototype (no stories) contract
       post-generation-offers.md      # STEP 6 detail — including §6.7 prototype
+      lsc-mobile-ipad.md             # iPad app, offline, Device Sync, metadata cache
       lsc-object-model.md            # Curated LSC data model + acronyms
-      lsc-standard-objects-catalog.md# All ~350 LSC standard objects (v67.0)
+      lsc-standard-objects-catalog.md# 377 LSC standard objects (v67.0 snapshot)
       lsc-components.md              # Build-tech decision guide + runtime call-out
       concur-integration.md          # SAP Concur ⇄ LSC expense integration
       veeva-to-lsc-mapping.md        # Veeva → LSC terminology + migration workflow
-      slds2-lsc-primer.md            # SLDS 2 token / design-system primer
-      story-examples.md              # Worked exemplars (Patterns A–E)
+      slds2-lsc-primer.md            # SLDS 2 primer + badge overlay + iPad frames
+      story-examples.md              # Worked exemplars (Patterns A–E; F pending)
     evaluations/                     # Eval scenarios + rubric
   rules/
     use-lsc-delivery-architect.mdc   # Trigger rule

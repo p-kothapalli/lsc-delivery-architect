@@ -52,8 +52,8 @@ for now with stories to follow?"*
 | STEP | Behavior in this mode |
 |------|----------------------|
 | **0** | Detect this mode; announce it and confirm ("**Plan + Prototype mode — no stories will be written yet. OK?**"). |
-| **1** | Full sub-domain selection (Commercial / Medical / Market Access / Cross-domain). Same as the story-first modes. |
-| **2** | Ask **Phase 1 + Phase 2** clarifying questions only (context + business requirements). **Skip Phase 3–4** — they're calibrated for AC-level detail this mode doesn't produce. Cap at 6 questions. |
+| **1** | Full sub-domain selection (Commercial / Medical / Market Access / Cross-domain) **and surface confirmation** (RULE 16 — iPad app / Lightning web / both). Same as the story-first modes. |
+| **2** | Ask **Phase 1 + Phase 2** clarifying questions only (context + business requirements), **including Q8a/Q8b on surface and offline** — they constrain the build-tech decision this mode exists to make. **Skip Phase 3–4** — they're calibrated for AC-level detail this mode doesn't produce. Cap at 6 questions. |
 | **3** | **Full component verification.** Custom via `code-review-graph`; standard LSC via `salesforce-docs`. Cannot ground a prototype without this. |
 | **4** | **Skip** story generation. Produce the **Solution Plan** artifact (template below) instead. |
 | **5** | Run the review checklist — but only the items marked "retained" in the rules matrix below. |
@@ -82,7 +82,8 @@ for now with stories to follow?"*
 | **RULE 13 — Business-language ACs** | **NOT APPLIED** | No ACs. |
 | **RULE 14 — `## Technical Implementation (high-level)` section** | **NOT APPLIED** | Component inventory replaces it; the two overlap. |
 | **RULE 15 — Pattern E per-field record spec on every write** | **NOT APPLIED** | Pattern E is a story-level contract; not required for a plan. Prototype forms may show representative fields, labelled as *illustrative, to be fully spec'd at story time*. |
-| **§6.7 grounded HTML prototype hard-blockers (all 9)** | **YES — hard blocker** | Every item, including the SLDS 2 + Cosmos primer (`references/slds2-lsc-primer.md`), build-tech banner + per-element component labels. In this mode §6.7 is not optional; a prototype without them is worse than no prototype. |
+| **RULE 16 — Declare Surface + Offline; iPad default for field personas** | **YES — hard blocker** | The Solution Plan names the Surface, and the prototype must render in it (§6.7 blocker #10). A PO reviewing a rep workflow needs to see the **iPad**, not a desktop page. Pattern F is not produced here (no ACs), but the offline *state* still appears in the prototype. |
+| **§6.7 grounded HTML prototype hard-blockers (10, two substituted)** | **YES — hard blocker** | Every item, including the SLDS 2 + Cosmos primer (`references/slds2-lsc-primer.md`), build-tech banner, per-element component labels, and the **§11 iPad frame** when Surface includes iPad. In this mode §6.7 is not optional; a prototype without them is worse than no prototype. **Two blockers are restated because this mode produces no story:** blocker 3 ("match the story's ACs") becomes **"match every interaction, happy path, and named exception documented in the Solution Plan"**; blocker 4 ("match the story's Pattern E field spec") becomes **"show representative fields labelled *Illustrative — full Pattern E deferred to story authoring*"**. The other eight apply verbatim. |
 
 **Read this literally:** you may generate a plan without ACs, without a Pattern
 E field spec, and without a Technical Implementation table — but you may
@@ -103,8 +104,12 @@ Companion prototype: `requirements/<Capability>_Prototype.html`
 Market Access Analyst, Event Organizer>
 **Related HCP/HCO/KOL/DOL subject(s):** <who the work is about (not the login persona)>
 **Priority:** P0 | P1 | P2
+**Surface:** <iPad (online + offline) | iPad (online only) | Lightning web | Both
+— RULE 16; default to iPad for field personas>
+**Offline:** <Required | Not required | N-A>
 **Build Technology (decision):** <one-line summary — e.g. "OOTB Lightning
-record page + Dynamic Actions + one Screen Flow + one small LWC">
+record page + Dynamic Actions + one Screen Flow + one small LWC". Must render on
+the declared Surface>
 **Rejected alternative(s):** <e.g. "OmniScript — overkill for a single-screen action">
 **Prototype:** [<Capability>_Prototype.html](./<Capability>_Prototype.html)
 **Mode:** Plan + Prototype (no stories yet)
@@ -132,6 +137,20 @@ which outcome. Business language. No API names.>
 | 5 | <External Data Cloud lot feed> | Ext | Config | S | Existing DC ingestion pattern |
 
 **Badges** — one of: `OOTB`, `Config`, `Flow`, `LWC`, `Apex`, `OS`, `FC`, `IP`, `AL`, `Ext`.
+**Surface badges** — add `iPad`, `Web`, or `Offline` to any row whose behaviour
+differs by device.
+
+## Mobile enablement (include when Surface includes iPad)
+
+| Item | Needed? | Note |
+|---|---|---|
+| Object metadata cache configuration | Yes / No | Which objects, and the SOQL filter that bounds the device download |
+| `Web-to-Mobile Sync` | Yes / No | Objects whose web-side edits must reach the device |
+| Metadata cache regeneration | Yes / No | Which **profiles** — the cache is profile-scoped |
+| Offline priming | Yes / No | What data must be on the device for offline validation to work |
+
+Omit this section entirely for a Lightning-web-only plan. See
+`references/lsc-mobile-ipad.md`.
 
 ## Rough effort roll-up
 
@@ -199,7 +218,10 @@ When the user says **"promote to stories"** (or equivalent):
    logical component group).
 3. Re-open Phase 3+4 clarifying questions (technical discovery + acceptance)
    that were skipped in Plan + Prototype mode.
-4. Now RULE 11, 13, 14, 15 apply — story-first hard blockers reactivate.
+4. Now RULE 11, 13, 14, 15 apply — story-first hard blockers reactivate. RULE 16
+   was already applied here, so carry the plan's Surface and Offline values
+   straight onto each story header, and add **Pattern F** ACs plus the mobile
+   Definition-of-Done items wherever Surface includes offline iPad.
 5. Cross-reference each story to the Solution Plan file.
 
 ---
@@ -212,6 +234,8 @@ When the user says **"promote to stories"** (or equivalent):
 | Producing a prototype without a Salesforce component label on every element | STOP — §6.7 hard blockers are the whole point of this mode. |
 | Skipping the build-technology decision because "we don't know yet" | STOP — say what the leading candidate is and list the rejected alternative. That's the decision the PO wants. |
 | Inventing a component name because it's a plan, not a story | STOP — RULE 3 still applies. Mark unverifiable components as *proposed*. |
+| Rendering a desktop prototype for a field persona's workflow | STOP — RULE 16. Field personas work on the offline iPad app. Use the primer's §11 iPad frame. |
+| Leaving Surface blank because "we'll decide at story time" | STOP — surface constrains the build-technology decision this mode exists to deliver. Name the leading surface, same as the build-tech verdict. |
 | Producing a full Estimated Effort table with per-component sub-tasks | Not needed here — the Component inventory row's effort column is sufficient. Save the detailed table for story-time. |
 | Forgetting the "Promote to Stories" offer | Every plan run ends with it — that's how this mode connects back to the story-first flow. |
 
@@ -227,5 +251,8 @@ When the user says **"promote to stories"** (or equivalent):
   self-check)
 - `references/output-template.md` (story-first template — used when this mode
   is promoted to Epic Breakdown)
-- `references/ac-pattern-library.md` (Patterns A–E — activated only after
+- `references/ac-pattern-library.md` (Patterns A–F — activated only after
   promotion)
+- `references/lsc-mobile-ipad.md` (**surface decision, offline model, metadata
+  cache** — RULE 16 applies in this mode; consult before fixing the build-tech
+  verdict, since a technology that doesn't run on the iPad isn't a candidate)

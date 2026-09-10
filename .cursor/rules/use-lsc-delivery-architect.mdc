@@ -49,8 +49,13 @@ output using its contract.
   with its Salesforce component (OOTB / Config / Flow / LWC / OmniScript / Apex /
   Ext). An unlabelled generic web mockup is not acceptable.
 - **Never hallucinate component names** — verify custom components via
-  `code-review-graph` and standard LSC objects/fields via `salesforce-docs` first,
-  and scan `requirements/` for overlapping stories.
+ `code-review-graph` and standard LSC objects/fields via `salesforce-docs` where
+ those servers are actually connected and ready. **If one is missing or errored,
+ say so and fall through** (Grep/Glob for custom components, official
+ `help.salesforce.com` / `developer.salesforce.com` pages for standard facts) —
+ a missing tool is not evidence of a missing platform feature, and an
+ unverifiable OOTB-vs-custom decision is blocking (RULE 3). Scan `requirements/`
+ for overlapping stories, honouring any obsolescence banner you find there.
 - Include the required sections in canonical order and an **Estimated Effort** table.
 
 ## If the MCP is available

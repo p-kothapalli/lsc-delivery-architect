@@ -9,7 +9,8 @@ for verification. This workspace (IBXQA) is a PNM org, so LSC objects are often
 
 > **Need the complete object list?** This file is a *curated business-term*
 > starting point. For the **full, verified catalog of every LSC standard object**
-> (~350 objects, Summer '26 / API v67.0, grouped by functional domain with exact
+> (377 objects, Summer '26 / API v67.0 **snapshot** — v68.0 is now Latest, so
+> absence from it proves nothing — grouped by functional domain with exact
 > API names and version availability), see
 > **`references/lsc-standard-objects-catalog.md`**. Use that file to confirm an
 > object exists and get its exact API name; use this file for the business-term
@@ -23,6 +24,7 @@ for verification. This workspace (IBXQA) is a PNM org, so LSC objects are often
 - Medical (MSL) object model
 - Market Access object model
 - Cross-domain / platform objects
+- Mobile / Device Sync (offline iPad)
 
 ---
 
@@ -123,6 +125,31 @@ Asset Management), **Open Payments / Sunshine Act** (spend transparency).
 | **Data Cloud (DC)** entities | Unified profile, segmentation, activation |
 | **Territory Management / Alignment** | Ownership & rollups |
 | **Content / DAM / Approved Documents** | Approved content for engagement (CLM/Engage) |
+
+---
+
+## Mobile / Device Sync (offline iPad)
+
+LSC ships a dedicated **offline-enabled iPad app** that is the primary surface
+for every field persona. These objects carry the offline pipeline and the mobile
+metadata cache. All are available in **API v65.0 and later**.
+
+| Object (business term) | Purpose |
+|---|---|
+| **`DeviceSyncTransaction`** | A set of related data items to sync from a device — the unit of offline work. Carries `Status`, `OfflineTimestamp`, dependency ordering |
+| **`DeviceSyncTransactionRecord`** | A single data item to sync (`ObjectName`, `OperationType` = insert/update/delete, `FieldValues`) |
+| **`DeviceSyncTransactionLog`** | Diagnostic log for a sync transaction — where sync failures are investigated |
+| **`DeviceSyncSummary`** | Per-sync telemetry: download/upload counts and durations, network, signal, `SyncStatus`, `SyncTrigger` |
+| **`LifeScienceMobileApp`** | Device registration (master-detail to `UserDevice`); app + metadata version, last sync, force-full-sync |
+| **`LifeSciMobileMetadataRecord`** | The generated, **profile-scoped** metadata cache the app reads instead of live org metadata |
+
+> **Authoring impact.** A schema change deployed without regenerating the
+> metadata cache is **invisible on the device**. Any story targeting the iPad
+> surface needs cache configuration + regeneration in Technical Implementation
+> and verification in Definition of done (RULE 16). Field-level detail, the
+> surface decision matrix, and the offline AC rules are in
+> **`references/lsc-mobile-ipad.md`**; the full object list is in
+> `references/lsc-standard-objects-catalog.md` under *Device Sync / Mobile*.
 
 ---
 

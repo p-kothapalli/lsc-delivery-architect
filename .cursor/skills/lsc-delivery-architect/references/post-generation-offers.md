@@ -6,9 +6,14 @@ the MCP tooling and only offer what is usable. If a server is present but needs
 auth, mention that it can be authenticated first.
 
 > **MCP tool names are fully qualified** as `server:tool` (e.g.,
-> `code-review-graph:query_graph`). In this workspace the underlying server ID
-> may be prefixed (e.g., `project-0-IBXQA-code-review-graph`); use the tooling to
-> resolve the exact ID before calling.
+> `code-review-graph:query_graph`). **The names used here are logical aliases** —
+> resolve each to its live namespace ID before calling (`salesforce-docs` →
+> `user-salesforce-docs`, `figma` → `plugin-figma-figma`, and so on; see the
+> resolved-ID table in `SKILL.md`). Two caveats observed 2026-09-10:
+> `code-review-graph` is **not registered** in this workspace, and
+> `salesforce-docs` has been in an **error** state since 2026-08-06. Do not offer
+> a step whose server you have not confirmed usable, and never let an
+> unreachable verifier become an implicit "the platform can't do this" (RULE 3).
 
 ## Contents
 
@@ -138,12 +143,13 @@ generic web mockup.
 It will label each screen with the Salesforce component that will build it
 (OOTB Lightning record page + Dynamic Actions, Screen Flow, LWC,
 OmniScript + FlexCard) so you can see whether we can ship this with OOTB
-or need LWC/Flow work."
+or need LWC/Flow work — rendered in the surface your users actually work
+on (the LSC Mobile iPad app, Lightning web, or both)."
 ```
 
 ### Why this offering exists (Product Owner point of view)
 
-Product Owners repeatedly ask two questions the acceptance criteria alone
+Product Owners repeatedly ask three questions the acceptance criteria alone
 cannot answer:
 
 1. **"What will this actually look like on-screen?"** — they need a clickable
@@ -151,6 +157,9 @@ cannot answer:
 2. **"Can we build this with OOTB Lightning, or do we need LWC / Screen Flow /
    OmniStudio?"** — they need to know the *cost shape* of the story before
    sizing it.
+3. **"What will my reps see on their iPad?"** — for LSC field personas the iPad
+   app is the only surface they use, so a desktop mockup answers the wrong
+   question (RULE 16).
 
 A generic HTML mockup answers (1) and misleads on (2). A Salesforce-**grounded**
 prototype answers both — every visible element is annotated with the platform
@@ -168,14 +177,21 @@ A prototype produced by this skill MUST:
    rationale and the rejected alternative.
 2. **Label every interactive element** with the Salesforce component that will
    implement it, using the primer's **`.lsc-badge`** vocabulary (§8):
-   `OOTB` / `Config` / `Flow` / `LWC` / `OS` / `Apex` / `Ext`.
+   `OOTB` / `Config` / `Flow` / `LWC` / `OS` / `Apex` / `Ext`, plus the
+   sub-type badges `FC` (FlexCard) / `IP` (Integration Procedure) /
+   `AL` (Action Launcher) where the Solution Plan inventory distinguishes them.
+   All ten have styles in the primer — use no badge that does not.
 3. **Match the story's ACs** — every happy-path AC in the story must be
    reachable in the click-through; the edge-case AC(s) should be linked from a
    secondary state (error banner, empty state, offline state).
+   *In **Plan + Prototype** mode there is no story: match every interaction,
+   happy path, and named exception documented in the Solution Plan instead.*
 4. **Match the story's Pattern E field spec (RULE 15)** — forms that create or
    update records must show every field listed in the Pattern E table, using
    the same labels/values, with the record's target object annotated
    (e.g., "creates `HealthcareVisit` + `VisitedParty` (Pattern E §1–§2)").
+   *In **Plan + Prototype** mode there is no Pattern E spec: show representative
+   fields labelled "Illustrative — full Pattern E deferred to story authoring".*
 5. **Be a single self-contained `.html` file** — inline CSS + inline SVG icon
    sprite, no external fonts/JS/CDN dependencies. Portable so the PO can
    email it or open it from their desktop.
@@ -191,9 +207,11 @@ A prototype produced by this skill MUST:
      sprite.
    - Applies component styles from the primer's §7.
    - Applies the LSC build-tech badge overlay from the primer's §8.
-   - Passes the primer's §10 **10-point self-check** and records the score
-     as an HTML comment at the top of the file (score-only rule — never
-     block save, always record).
+   - Applies the primer's **§11 iPad frame** when the story's Surface includes
+     iPad (device chrome, 44px touch targets, offline banner, sync pill).
+   - Passes the primer's §10 **12-point self-check** and records the score
+     and the surface as an HTML comment at the top of the file (score-only
+     rule — never block save, always record).
 
    **Do not** hand-invent SLDS class names. **Do not** ship generic
    Bootstrap/Material chrome. **Do not** import SLDS from a CDN — self-contained
@@ -210,6 +228,44 @@ A prototype produced by this skill MUST:
    is the single source of truth for SLDS 2 + Cosmos in this workspace; a
    prototype that redefines `--slds-g-*` values or overrides `.slds-*` classes
    is not compliant.
+10. **Render in the story's target SURFACE** (RULE 16). If the story's Surface
+    includes **iPad**, the prototype MUST be wrapped in the primer's **§11 iPad
+    frame** — device chrome at 1180×820 landscape (or 820×1180 portrait), 44px
+    minimum touch targets, no desktop global-header nav — and MUST include an
+    **offline state** (offline banner + pending-sync pill) when Offline is
+    required. If Surface is **Both**, render **both** frames and badge the
+    elements that differ using the `iPad` / `Web` / `Offline` surface badges.
+
+    **Why this is a blocker.** Handing a product owner a 1440px desktop browser
+    mockup of a workflow their reps will only ever perform on an offline iPad is
+    the same category of error as an unlabelled generic web mockup: it answers
+    "what will it look like?" wrongly and invites sign-off on a build shape that
+    doesn't exist. LSC field personas work in the
+    [Life Sciences Cloud Mobile iPad app](https://apps.apple.com/us/app/life-sciences-cloud-mobile/id6499238627);
+    the prototype must show that. See `references/lsc-mobile-ipad.md`.
+
+    **If the story declares no `Surface`** — a story authored before v1.10, or
+    one supplied from outside this skill — do **not** infer the surface and do
+    **not** fall back to a desktop render. Ask before building:
+
+    ```
+    "This story doesn't declare a Surface, so before I build the prototype:
+    which surface do your <persona> work on — the LSC Mobile iPad app
+    (offline-capable), Lightning web, or both? For LSC field personas the
+    iPad app is usually the only surface they use, so I'd default to iPad
+    unless you tell me otherwise."
+    ```
+
+    Offer iPad as the recommended option whenever the story's persona is a
+    field persona. Then **write the answer back into the story's `Surface` and
+    `Offline` header fields** before producing the prototype, so the story and
+    the prototype agree and the next reader inherits the decision. If the
+    answer turns out to be iPad, the story is also missing its Pattern F AC,
+    metadata-cache task, and mobile Definition-of-Done items — flag that
+    (STEP 5 checklist item 11) rather than papering over it in the prototype.
+
+    The persona→surface map in `references/lsc-mobile-ipad.md` tells you which
+    option to *recommend*; it is not a licence to skip the question.
 
 ### Structure
 
@@ -217,7 +273,10 @@ A minimum LSC prototype has:
 
 | Region | Primer recipe | Salesforce grounding |
 |--------|---------------|----------------------|
-| **Global header strip** | §5.12 (`.slds-global-header`) | App name, running-user context |
+| **Device frame** *(iPad surface only)* | §11 (`.lsc-ipad-frame`) | Wraps everything below; landscape default, portrait for signature/form steps |
+| **Status bar + sync pill** *(iPad surface only)* | §11 (`.lsc-ipad-statusbar`, `.lsc-sync-pill`) | App context and pending offline work |
+| **Offline banner** *(when Offline required)* | §11 (`.lsc-offline-banner`) | Mirrors the Pattern F AC's on-device state |
+| **Global header strip** *(web surface only)* | §5.12 (`.slds-global-header`) | App name, running-user context. **Omit inside the iPad frame** — the app has its own nav |
 | **Build-technology banner** | §8 (`.lsc-build-banner`) | Chosen tech + rationale + rejected alternative from the story |
 | **Page header** | §5.1 (`.slds-page-header`) | The record page top — labelled `OOTB` when standard |
 | **Path** (record process stages) | §5.2 (`.slds-path`) | Standard `OOTB · Path` |
@@ -239,6 +298,15 @@ Use the primer's `.lsc-badge` vocabulary (§8) on every interactive element:
 | `OS`     | OmniScript step |
 | `Apex`   | Apex trigger, invocable, controller |
 | `Ext`    | External integration — MuleSoft · Concur · Data Cloud · e-signature |
+
+Plus the **surface badges** (primer §8/§11), used whenever Surface is *Both* or
+an element behaves differently by device:
+
+| Badge | Meaning |
+|-------|---------|
+| `iPad`    | Renders in the LSC Mobile iPad app |
+| `Web`     | Lightning web only (e.g. delete expense report, multi-attachment) |
+| `Offline` | Works with no connectivity; the outcome is deferred until sync |
 
 Every badge carries a one-line caption explaining the "why" (e.g.
 `<span class="lsc-badge flow">Flow · licence check</span>`).
@@ -269,6 +337,7 @@ When the user accepts this offer, produce the file, then say:
 
 ```
 Prototype saved to requirements/<StoryName>_Prototype.html
+Surface: <e.g. iPad (online + offline) — rendered in an iPad frame>.
 Build technology: <e.g. OOTB Lightning record page + Dynamic Actions + one
 Screen Flow>. Rejected alternative: <e.g. OmniScript — overkill for a
 single-screen action>.

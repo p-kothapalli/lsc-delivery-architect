@@ -19,7 +19,9 @@ verify **standard LSC** features via `salesforce-docs`.
 ## Contents
 
 - Build-technology decision guide (read first)
+- Surface constrains the decision (iPad vs web)
 - Component types
+- Mobile enablement: the metadata cache step
 - OmniStudio runtime: Standard vs Managed Package
 - OmniScript element types (common in LSC flows)
 - Action Launcher (LSC guided actions)
@@ -30,20 +32,22 @@ verify **standard LSC** features via `salesforce-docs`.
 
 ## Build-technology decision guide (read first)
 
-Pick the **lowest-complexity technology that meets the requirement**. LSC is a
+Pick the **lowest-complexity technology that meets the requirement** — **that
+also runs on the story's declared Surface** (RULE 16). LSC is a
 standard-platform product first; OmniStudio is additive.
 
-| The requirement is… | Prefer | Notes |
-|---|---|---|
-| A field-status-driven action/button on a record (Visit, Account) | **Dynamic Actions** + **Action Launcher** | Standard, no code. Action Launcher lists Flows, OmniScripts, and Quick Actions. |
-| A short guided form / quick capture | **Screen Flow** | Declarative, native, Agentforce/mobile friendly. |
-| A complex, branching, multi-step **guided interaction** (offline field capture, signature, matrices) | **OmniScript** | Where OmniStudio earns its place; extend with custom LWC only for edge cases. |
-| Rich, config-driven **data display** / launch tiles | **FlexCard** *or* custom **LWC** | LWC if you need full control; FlexCard for declarative config. |
-| Reusable **server-side orchestration** (chain reads/writes, callouts, decisioning) | **Integration Procedure** | The reusable service layer for OmniScripts/FlexCards/LWCs. |
-| Read / reshape / write Salesforce data **declaratively** | **Omnistudio Data Mapper** | Formerly DataRaptor. Prefer Turbo Extract for single-object reads. |
-| Eligibility / routing / tiering lookup tables | **Decision Matrix** (Business Rules Engine) | BRE requires OmniStudio. |
-| Custom business logic, bulk jobs, integrations, complex validation | **Apex** | Triggers, services, selectors, batchable/queueable. |
-| Page layout, tabs, related lists, list views | **Lightning App Builder** + managed-package LWCs (e.g. *Related List — Life Sciences*, *Multi-Object Record*) | Standard config; reuse the LSC package components. |
+| The requirement is… | Prefer | Mobile (iPad app) | Notes |
+|---|---|---|---|
+| A field-status-driven action/button on a record (Visit, Account) | **Dynamic Actions** + **Action Launcher** | **Yes — device-aware** | Standard, no code. Dynamic Actions can vary by **device**; toggle at Admin Console → Mobile → Application Settings. |
+| A short guided form / quick capture | **Screen Flow** | **Yes — preferred on mobile** | Declarative, native. Flows are named in the LSC Mobile extension model. |
+| A complex, branching, multi-step **guided interaction** (signature, matrices) | **OmniScript** *(web)* / **Screen Flow + LWC** *(iPad)* | ⚠️ **Verify** | See the surface note below — do **not** assume OmniScript runs in the LSC Mobile app. |
+| Rich, config-driven **data display** / launch tiles | **FlexCard** *or* custom **LWC** | LWC yes (see naming); FlexCard ⚠️ verify | LWC if you need full control; FlexCard for declarative config. |
+| Reusable **server-side orchestration** (chain reads/writes, callouts, decisioning) | **Integration Procedure** | Online only | Server-side — unavailable offline by definition. |
+| Read / reshape / write Salesforce data **declaratively** | **Omnistudio Data Mapper** | Online only | Formerly DataRaptor. Prefer Turbo Extract for single-object reads. |
+| Eligibility / routing / tiering lookup tables | **Decision Matrix** (Business Rules Engine) | Online only | BRE requires OmniStudio. Offline eligibility must be primed to the device instead. |
+| Custom business logic, bulk jobs, integrations, complex validation | **Apex** | **Yes (server-side, on sync)** | Apex is named in the LSC Mobile extension model. Runs when the device syncs, not while offline. |
+| Page layout, tabs, related lists, list views | **Lightning App Builder** + managed-package LWCs (e.g. *Related List — Life Sciences*, *Multi-Object Record*) | Yes — **requires metadata cache regeneration** | Standard config; reuse the LSC package components. |
+| Data must be **available with no connectivity** | **Object metadata cache config** (+ SOQL filter, Web-to-Mobile Sync) | **Required** | Not a UI technology — the priming layer everything offline depends on. See below. |
 
 Rule of thumb: **declarative-first (Flow / Dynamic Actions / Action Launcher /
 Field Sets) → OmniStudio for genuinely guided or orchestrated needs → Apex/LWC
@@ -52,21 +56,75 @@ Technical Implementation section.
 
 ---
 
+## Surface constrains the decision (iPad vs web)
+
+**Read this before choosing a technology for any field-persona story.** LSC ships
+a dedicated **offline-enabled iPad app** that is the primary surface for Field
+Sales Reps, MSLs, KAMs, DSMs, and Event Organizers. A technology that does not
+render there is not a candidate, no matter how well it fits the requirement.
+Full detail in `references/lsc-mobile-ipad.md`.
+
+**Prefer on mobile:** Screen Flow, Apex, LWC, Dynamic Actions, standard record
+pages. Salesforce's own positioning for the app is *"Native on the Salesforce
+Platform — **Flows, Apex, and open APIs** for limitless extension."*
+
+> ⚠️ **Correction to earlier guidance (was v1.5–v1.9).** This guide previously
+> routed *"offline field capture, signature"* straight to **OmniScript**. That is
+> not safe as a default: OmniStudio is supported **in LSC**, but Salesforce's
+> LSC Mobile material does not name OmniScript as a mobile extension path.
+> **Verify mobile support before proposing OmniStudio for an iPad-targeted
+> story**, and record the verification in the Clarification Questions table.
+> For offline guided capture on iPad, start from **Screen Flow + LWC + Apex**.
+
+**Server-side technologies (IP, Data Mapper, Decision Matrix, Apex) do not run
+while the device is offline.** They execute when the transaction syncs. Any
+validation the rep must see *at the moment of capture* has to be local, which
+means the data it depends on must be primed into the metadata cache. If it
+can't be primed, the rule degrades offline — say so explicitly in the AC rather
+than implying real-time behaviour.
+
+---
+
 ## Component types
 
-| Component | What It Is | When to Use | Runtime |
-|-----------|-----------|-------------|---------|
-| **OmniScript** | Multi-step guided UI flow (OmniStudio) | Complex/branching guided visit/sample flows, offline capture, signature | Client-side (LWC) |
-| **FlexCard** | Config-driven data-display component (OmniStudio) | Record display, dashboards, inventory tiles, embed in OmniScript | Client-side (LWC) |
-| **Integration Procedure (IP)** | Server-side orchestration (OmniStudio) | Chain Data Mappers, Apex, callouts, matrices; reusable service layer | Server-side |
-| **Omnistudio Data Mapper** | Declarative read/transform/write (OmniStudio; **formerly DataRaptor**) | Fetch/reshape/save data without code. **Types: Turbo Extract, Extract, Load, Transform** | Server-side |
-| **Decision Matrix** | Lookup/rule table (Business Rules Engine — requires OmniStudio) | Eligibility, routing, tiering | Server-side |
-| **Screen Flow** | Standard guided screens | Short guided forms, quick capture; Action-Launcher target | Client-side |
-| **Action Launcher** | Guided-action launcher on a record | Launch Flows/OmniScripts/Quick Actions from Visit, Account, etc. | Client-side |
-| **Dynamic Actions** | Status/criteria-driven actions on a Lightning record page | Show only the actions relevant to record status/device | Client-side |
-| **LWC** | Lightning Web Component | Custom UI (dashboards, timelines); reuse LSC package LWCs where possible | Client-side |
-| **Apex** | Business logic (service / selector / trigger / batch) | Inventory reconciliation, eligibility, callouts, bulk jobs | Server-side |
-| **Field Set** | Admin-configurable field grouping | Related-list / list-view column config in LSC package components | Config |
+| Component | What It Is | When to Use | Runtime | iPad app |
+|-----------|-----------|-------------|---------|---------|
+| **OmniScript** | Multi-step guided UI flow (OmniStudio) | Complex/branching guided visit/sample flows, signature | Client-side (LWC) | ⚠️ **Verify** |
+| **FlexCard** | Config-driven data-display component (OmniStudio) | Record display, dashboards, inventory tiles, embed in OmniScript | Client-side (LWC) | ⚠️ Verify |
+| **Integration Procedure (IP)** | Server-side orchestration (OmniStudio) | Chain Data Mappers, Apex, callouts, matrices; reusable service layer | Server-side | Online only |
+| **Omnistudio Data Mapper** | Declarative read/transform/write (OmniStudio; **formerly DataRaptor**) | Fetch/reshape/save data without code. **Types: Turbo Extract, Extract, Load, Transform** | Server-side | Online only |
+| **Decision Matrix** | Lookup/rule table (Business Rules Engine — requires OmniStudio) | Eligibility, routing, tiering | Server-side | Online only |
+| **Screen Flow** | Standard guided screens | Short guided forms, quick capture; Action-Launcher target | Client-side | **Yes — preferred** |
+| **Action Launcher** | Guided-action launcher on a record | Launch Flows/OmniScripts/Quick Actions from Visit, Account, etc. | Client-side | Yes |
+| **Dynamic Actions** | Status/criteria-driven actions on a Lightning record page | Show only the actions relevant to record status/device | Client-side | **Yes — device-aware** |
+| **LWC** | Lightning Web Component | Custom UI (dashboards, timelines); reuse LSC package LWCs where possible | Client-side | **Yes** (mobile-ready; see naming) |
+| **Apex** | Business logic (service / selector / trigger / batch) | Inventory reconciliation, eligibility, callouts, bulk jobs | Server-side | **Yes**, on sync |
+| **Field Set** | Admin-configurable field grouping | Related-list / list-view column config in LSC package components | Config | Yes — needs cache regen |
+| **Object metadata cache config** | Per-object mobile priming rule (type, SOQL filter, Web-to-Mobile Sync, attachment method) | Making any object visible / editable / offline-available on the iPad | Config | **Required for mobile** |
+
+---
+
+## Mobile enablement: the metadata cache step
+
+**Every iPad-targeted story that touches schema needs this, and it is the single
+most commonly missed deliverable.** The LSC Mobile app does not read org metadata
+live — it works from a generated, **profile-scoped** cache.
+
+Per [Mobile App Configuration for Visit Management](https://help.salesforce.com/s/articleView?id=ind.lsc_visit_management_db_schema_metadata_cache.htm&type=5):
+
+1. Create an **object metadata cache configuration** for each object the app must
+   see (type is typically `Data`).
+2. Select **Web-to-Mobile Sync** where web-side edits must reach the device.
+3. Set a **SOQL Filter Condition** to bound what downloads to the device.
+4. Set the **attachment download method** where relevant (e.g. `Cache` on `Visit`
+   when a related list is configured).
+5. **Generate the metadata cache** — Salesforce flags this as *Important*;
+   without it, schema changes never reach the app.
+
+> A new field deployed without a cache regeneration is **invisible on the
+> device**: the deploy succeeds, the web UI shows the field, and the rep never
+> sees it. Put the cache rows in Technical Implementation and the verification in
+> Definition of done. Full detail: `references/lsc-mobile-ipad.md`.
 
 > **Data Mapper types.** **Turbo Extract** — fastest single-object read (default
 > for simple reads); **Extract** — multi-object read; **Load** — create/update/
@@ -150,6 +208,7 @@ component.
 | Parent IP | `LSC_[Name]Parent` | `LSC_SampleDropParent` |
 | FlexCard | `lsc[ComponentName]` | `lscSampleInventoryCard` |
 | LWC | `lsc[ComponentName]` | `lscInventoryTimeline` |
+| LWC — **inline on a mobile record page** | `lscMobileInline_[ComponentName]` ⚠️ *(to verify)* | `lscMobileInline_CompetitorInsights` |
 | Screen Flow | `LSC_[Name]` | `LSC_LogMedicalInquiry` |
 | Apex service | `LSC_[Name]Service` | `LSC_SampleAccountabilityService` |
 | Apex selector | `LSC_[Object]Selector` | `LSC_ProductItemSelector` |
@@ -161,6 +220,14 @@ component.
 > The legacy `LSCDRExtract…` / `LSCDRUpdate…` ("DR" = DataRaptor) pattern still
 > works — APIs keep the `dataraptor` token — but prefer the `LSCDM…` (Data
 > Mapper) form for new components.
+
+> ⚠️ **`lscMobileInline_` is unverified.** A custom LWC reportedly needs this
+> API-name prefix to render **inline on a record page inside the LSC Mobile
+> app**. The available sourcing is Agentforce Life Sciences Consultant
+> (ALS-Con-201) certification material that cites Salesforce Help rather than
+> Help itself, and the `salesforce-docs` MCP was unavailable when this was
+> written. **Confirm against Salesforce Help before relying on it**, and mark it
+> *(to verify)* in any story that proposes an inline mobile LWC.
 
 Prefer **standard LSC objects/fields** over new custom ones; only introduce
 `LSC_*` custom metadata/fields when the standard model cannot carry the
@@ -178,3 +245,6 @@ Verified against Salesforce Help / Trailhead (Aug 2026):
 - OmniStudio Summer '24 release notes — *DataRaptor is now Omnistudio Data Mapper*.
 - [Add Actions with Dynamic Actions (LSC Visit Management)](https://help.salesforce.com/s/articleView?id=ind.lsc_visit_management_add_actions_with_dynamic_actions.htm) — Dynamic Actions on the Visit record page.
 - [Create and Activate Service Process Definitions](https://help.salesforce.com/s/articleView?id=ind.spd_create_service_process_definitions.htm) — OmniScript/Flow + Apex preprocessor via Service Process Studio.
+- [Mobile App Configuration for Visit Management](https://help.salesforce.com/s/articleView?id=ind.lsc_visit_management_db_schema_metadata_cache.htm&type=5) — object metadata cache, Web-to-Mobile Sync, SOQL Filter Condition, cache generation.
+- [Life Sciences Cloud Mobile (App Store)](https://apps.apple.com/us/app/life-sciences-cloud-mobile/id6499238627) — the iPad app; "Native on the Salesforce Platform — Flows, Apex, and open APIs for limitless extension".
+- `references/lsc-mobile-ipad.md` — surface decision, Device Sync object model, offline authoring rules.
