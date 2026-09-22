@@ -168,6 +168,21 @@ def check_payload(skill_dir: pathlib.Path, rep: Report) -> dict:
         if not unstyled:
             rep.ok("P06", f"{len(styled)} badge styles cover every authorised badge")
 
+    # --- internal servers must never read as prerequisites ---
+    # Installers hit exactly this: the skill names code-review-graph and
+    # salesforce-docs so often that a fresh reader concludes they are required,
+    # goes looking for packages that do not exist, and is told to ask the
+    # author. The disclaimer has to be present, not merely implied.
+    INTERNAL = ("code-review-graph", "salesforce-docs")
+    DISCLAIMER = r"not publicly (?:distributed|available)|no MCP prerequisites|nothing needs to be installed"
+    if any(s in skill_text for s in INTERNAL):
+        if re.search(DISCLAIMER, skill_text, re.I):
+            rep.ok("P08", "internal servers are explicitly marked as not required")
+        else:
+            rep.add(FAIL, "P08", "SKILL.md names internal-only MCP servers without stating they are not "
+                                 "publicly available and not required — a fresh installer will read them "
+                                 "as prerequisites and go looking for packages that do not exist")
+
     # --- decaying verification claims ---
     today = dt.date.today()
     dated = 0
@@ -246,6 +261,17 @@ def check_docs(docs: pathlib.Path, facts: dict, rep: Report) -> None:
     for pattern, why in STALE_PHRASES:
         if re.search(pattern, html, re.I):
             rep.add(WARN, "D05", f"stale phrasing: {why}", docs.name)
+
+    readme = docs.parent / "README.md"
+    if readme.is_file():
+        body = read(readme)
+        if any(s in body for s in ("code-review-graph", "salesforce-docs")) and not re.search(
+                r"not publicly (?:distributed|available)|no MCP prerequisites|nothing you need to install", body, re.I):
+            rep.add(FAIL, "D06", "README names internal-only MCP servers without saying they are neither "
+                                 "public nor required — this is what sends installers hunting for packages "
+                                 "that do not exist", "README.md")
+        else:
+            rep.ok("D06", "README states the skill has no MCP prerequisites")
 
 
 # --------------------------------------------------------------- artifacts ----

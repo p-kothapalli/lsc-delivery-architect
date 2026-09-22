@@ -1401,7 +1401,8 @@ cp -R lsc-delivery-architect/.cursor /path/to/your-project/</pre>
 
     <div class="ex-block">
       <div class="ex-kicker">Optional grounding</div>
-      <h2 class="ex-title">Two indexes make verification stronger. Neither is required.</h2>
+      <h2 class="ex-title">Two indexes make verification stronger. Neither is required — and neither is public.</h2>
+      <p class="ex-desc"><strong>There is nothing to install.</strong> Both indexes below are internal to the author's environment: there is no npm package and no repository, so do not go looking for one, and do not ask for the server definitions. Neither has been available while this skill was built — <code>code-review-graph</code> has never been registered and <code>salesforce-docs</code> has been erroring since 6 August 2026 — so every artifact you have seen here was produced on the fallback column. If you want stronger grounding than documentation, configure the official public <a href="https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_mcp_server.htm">Salesforce DX MCP Server</a> (<code>npx -y @salesforce/mcp@latest</code>) and point it at an org where LSC is deployed.</p>
       <table class="modes">
         <thead>
           <tr><th style="width:22%">Index</th><th style="width:39%">What it verifies</th><th>If it is missing</th></tr>

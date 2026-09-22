@@ -83,9 +83,10 @@ The prototype is what separates this skill from a generic HTML mockup. It
    a generic web app.
 7. **Include a Build-Technology legend footer** — component inventory with
    effort sizes mirroring the Solution Plan / story.
-8. **Never invent component or field names** — custom components verified via
-   `code-review-graph`, standard LSC objects/fields via `salesforce-docs`;
-   unverifiable names marked `(proposed)`.
+8. **Never invent component or field names** — custom components verified
+   against the codebase, standard LSC objects/fields against the official
+   Salesforce documentation; unverifiable names marked `(proposed)`.
+   *(No MCP server required — see [Grounding](#grounding-there-is-nothing-you-need-to-install).)*
 
 A prototype without the grounding is worse than no prototype — it misleads the
 PO on cost shape. That's the whole point.
@@ -107,9 +108,9 @@ Every generated story follows one contract:
   a concise table naming components, change type, and a one-line note.
 - **Definition of Done** and a **Clarification Questions** table for unknowns.
 - **Estimated Effort** — component-level sizing (S / M / L / XL / XXL).
-- **Grounded components** — custom verified via `code-review-graph`, standard
-  LSC via `salesforce-docs`; proposals flagged when the LSC package isn't
-  deployed in the target workspace (RULE 3a).
+- **Grounded components** — custom verified against the codebase, standard LSC
+  against the official Salesforce docs; proposals flagged when the LSC package
+  isn't deployed in the target org (RULE 3a). No MCP server is required.
 
 ---
 
@@ -224,14 +225,57 @@ Type either of these and confirm the skill activates:
 
 ---
 
-## Optional: component grounding via MCP
+## Grounding: there is nothing you need to install
 
-For full structural grounding (caller/dependent/test context), configure the
-`code-review-graph` MCP server in your `.cursor/mcp.json`. For standard LSC
-object/field/feature verification with citations, configure the
-`salesforce-docs` MCP. Without either, the skill still works — it falls back
-to file search + curated references and clearly marks unverifiable names as
-`(proposed)`.
+**The skill has no MCP prerequisites.** Install the `.cursor/` folder, reload
+the window, and it works.
+
+This section used to tell you to configure `code-review-graph` and
+`salesforce-docs` in your `.cursor/mcp.json`. That was wrong, and it sent people
+looking for packages that do not exist. **Both are internal to the author's
+environment and are not publicly distributed** — there is no npm package, no
+repository, and nothing to request. If an assistant tells you to ask the author
+for the server definitions, it has misread the skill.
+
+Nor are they load-bearing here. `code-review-graph` has *never* been registered
+in the authoring workspace, and `salesforce-docs` has been in an error state
+since 2026-08-06. Every artifact this skill has produced — every Solution Plan,
+prototype, and story — was produced without them.
+
+What RULE 3 actually requires is a **capability**, not a server:
+
+| Capability | Default — no setup | Optional upgrade |
+|---|---|---|
+| Verify a **custom** component before naming it | Grep / Glob / Read over your repo. This is the normal path, not a degraded one. | `code-review-graph`, if your organisation happens to run one, adds caller / dependent / test context. |
+| Verify a **standard** LSC object, field, or feature | The official [help.salesforce.com](https://help.salesforce.com) and [developer.salesforce.com](https://developer.salesforce.com) pages, cited by URL. Authoritative and public. | The **official Salesforce DX MCP Server** — see below. |
+
+Either way the rule that matters is unchanged: anything unverifiable is marked
+`(proposed)`, and **a tool being unavailable is never evidence that a platform
+feature does not exist.** An out-of-the-box-versus-custom call that cannot be
+verified is a blocking question, not a licence to build custom.
+
+### The one worth configuring: Salesforce DX MCP
+
+If you want stronger grounding than documentation, use the **official, public**
+[Salesforce DX MCP Server](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_mcp_server.htm):
+
+```json
+{
+  "mcpServers": {
+    "salesforce-dx": {
+      "command": "npx",
+      "args": ["-y", "@salesforce/mcp@latest",
+               "--orgs", "DEFAULT_TARGET_ORG",
+               "--toolsets", "orgs,metadata,data,users,testing"]
+    }
+  }
+}
+```
+
+Pointed at an org where Life Sciences Cloud is deployed, `run_soql_query` and
+`retrieve_metadata` answer "does this object or field exist **here**" better
+than any document can — they describe your target org rather than the product
+in general. Still optional.
 
 ---
 
